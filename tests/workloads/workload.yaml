@@ -1,46 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wasm-slight
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: wasm-slight
-  template:
-    metadata:
-      labels:
-        app: wasm-slight
-    spec:
-      runtimeClassName: wasmtime-slight
-      containers:
-        - name: testwasm
-          image: docker.io/library/slight-hello-world:latest
-          imagePullPolicy: Never # prevent k8s from pulling the image from a registry
-          command: ["/"]
-          resources: # limit the resources to 128Mi of memory and 100m of CPU
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wasm-slight
-spec:
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
-  selector:
-    app: wasm-slight
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: wasm-spin
 spec:
   replicas: 1
@@ -160,84 +120,6 @@ spec:
   selector:
     app: spin-outbound-redis
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: wasm-wws
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: wasm-wws
-  template:
-    metadata:
-      labels:
-        app: wasm-wws
-    spec:
-      runtimeClassName: wasmtime-wws
-      containers:
-        - name: testwasm
-          image: docker.io/library/wws-hello-world:latest
-          imagePullPolicy: Never # prevent k8s from pulling the image from a registry
-          resources: # limit the resources to 128Mi of memory and 100m of CPU
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wasm-wws
-spec:
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
-  selector:
-    app: wasm-wws
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: wasm-lunatic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: wasm-lunatic
-  template:
-    metadata:
-      labels:
-        app: wasm-lunatic
-    spec:
-      runtimeClassName: wasmtime-lunatic
-      containers:
-        - name: testwasm
-          image: docker.io/library/lunatic-submillisecond-hello-world:latest
-          imagePullPolicy: Never # prevent k8s from pulling the image from a registry
-          resources: # limit the resources to 128Mi of memory and 100m of CPU
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wasm-lunatic
-spec:
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
-  selector:
-    app: wasm-lunatic
----
 # Middleware
 # Strip prefix /spin
 apiVersion: traefik.containo.us/v1alpha1
@@ -249,9 +131,6 @@ spec:
     forceSlash: false
     prefixes:
       - /spin
-      - /slight
-      - /wws
-      - /lunatic
       - /outboundredis
       - /keyvalue
 ---
@@ -272,27 +151,6 @@ spec:
             backend:
               service:
                 name: wasm-spin
-                port:
-                  number: 80
-          - path: /slight
-            pathType: Prefix
-            backend:
-              service:
-                name: wasm-slight
-                port:
-                  number: 80
-          - path: /wws
-            pathType: Prefix
-            backend:
-              service:
-                name: wasm-wws
-                port:
-                  number: 80
-          - path: /lunatic
-            pathType: Prefix
-            backend:
-              service:
-                name: wasm-lunatic
                 port:
                   number: 80
           - path: /keyvalue

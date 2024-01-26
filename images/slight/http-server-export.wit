@@ -1,3 +1,0 @@
-// use { http-router-error } from http-types
-
-on-server-init: func() -> expected<unit, string>

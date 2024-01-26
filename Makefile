@@ -1,12 +1,9 @@
-SHIMS := slight spin wws lunatic
+SHIMS := spin
 BUILD_TARGETS = $(foreach shim,$(SHIMS),build-$(shim)-cross-$(TARGET))
 
 PREFIX ?= /usr/local
 INSTALL ?= install
-TEST_IMG_NAME_lunatic ?= wasmtest_lunatic:latest
 TEST_IMG_NAME_spin ?= wasmtest_spin:latest
-TEST_IMG_NAME_slight ?= wasmtest_slight:latest
-TEST_IMG_NAME_wws ?= wasmtest_wws:latest
 ARCH ?= x86_64
 TARGET ?= $(ARCH)-unknown-linux-musl
 PYTHON ?= python3
@@ -48,10 +45,10 @@ workloads:
 
 .PHONY: integration-tests
 integration-tests: install-cross check-bins move-bins up pod-status-check workloads
-	cargo test -- --nocapture
+	cross test --release -- --nocapture
 
 .PHONY: tests/clean
-test/clean:
+tests/clean:
 	./scripts/down.sh
 
 .PHONY: fmt

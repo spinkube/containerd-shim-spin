@@ -2,7 +2,7 @@
 
 # Containerd Shim Installer Script
 #
-# This script automates the installation of specific containerd shim versions (slight, spin, wws, lunatic)
+# This script automates the installation of specific containerd shim versions (spin)
 # by checking their existence and copying them to a desired location if not found.
 #
 # Usage:
@@ -20,17 +20,14 @@
 set -euo pipefail
 
 target="${2:-x86_64-unknown-linux-musl}"
-release_pattern="${1:-containerd-shim-%s/target/$target/release}"
+release_pattern="${1:-target/$target/release}"
 
 dockerfile_path="deployments/k3d"
 bin_path="${dockerfile_path}/.tmp/"
 cluster_name="test-cluster"
 
 declare -A shims=(
-    [slight]="v1"
     [spin]="v2"
-    [wws]="v1"
-    [lunatic]="v1"
 )
 
 mkdir -p "$bin_path"
