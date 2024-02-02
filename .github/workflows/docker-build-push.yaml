@@ -43,7 +43,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v3
         if: ${{ inputs.test }}
         with:
           context: ${{ matrix.image.context }}
