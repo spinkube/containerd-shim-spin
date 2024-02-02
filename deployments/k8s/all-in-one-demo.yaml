@@ -24,7 +24,7 @@ spec:
       runtimeClassName: wasmtime-spin-v2
       containers:
         - name: testwasm
-          image: ghcr.io/deislabs/containerd-wasm-shims/examples/spin-rust-hello:latest
+          image: ghcr.io/spinkube/containerd-shim-spin/examples/spin-rust-hello:latest
 ---
 apiVersion: v1
 kind: Service

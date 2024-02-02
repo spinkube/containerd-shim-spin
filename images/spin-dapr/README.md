@@ -18,7 +18,7 @@ sudo mv ./spin /usr/local/bin/
 ### Run example with K3d:
 ```sh
 # start the K3d cluster
-k3d cluster create wasm-cluster --image ghcr.io/deislabs/containerd-wasm-shims/examples/k3d:v0.10.0 -p "8081:80@loadbalancer"  
+k3d cluster create wasm-cluster --image ghcr.io/spinkube/containerd-shim-spin/examples/k3d:v0.10.0 -p "8081:80@loadbalancer"
 # Install Dapr
 dapr init -k --wait
 # or via helm
@@ -36,7 +36,7 @@ mkdir -p test/out_spin-dapr/
 docker save spin-dapr:latest -o test/out_spin-dapr/img.tar
 k3d image load -c wasm-cluster spin-dapr:latest test/out_spin-dapr/img.tar 
 # Apply the manifest
-kubectl apply -f https://github.com/deislabs/containerd-wasm-shims/raw/main/deployments/workloads/runtime.yaml
+kubectl apply -f https://github.com/spinkube/containerd-shim-spin/raw/main/deployments/workloads/runtime.yaml
 kubectl apply -f images/spin-dapr/deploy.yaml
 
 # When everythin is up, forward the port and get the last kubernetes event

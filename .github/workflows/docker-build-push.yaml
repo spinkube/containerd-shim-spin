@@ -48,7 +48,7 @@ jobs:
         with:
           context: ${{ matrix.image.context }}
           load: true
-          tags: containerd-wasm-shims${{ matrix.image.imageName }}:test
+          tags: containerd-shim-spin/${{ matrix.image.imageName }}:test
           platforms: wasi/wasm
       - name: build and push
         # we use v3 here because we can't push wasi/wasm images with v4

@@ -48,12 +48,12 @@ jobs:
       - name: package release assets
         run: |
           mkdir _dist
-          cp containerd-shim-*/target/${{ matrix.config.arch }}-unknown-linux-musl/release/containerd-shim-*-${{ matrix.shims.version }} _dist/
+          cp containerd-shim-spin/target/${{ matrix.config.arch }}-unknown-linux-musl/release/containerd-shim-spin-${{ matrix.shims.version }} _dist/
           cd _dist
-          tar czf containerd-wasm-shims-${{ matrix.shims.version }}-${{ matrix.shims.name }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz containerd-shim-*-${{ matrix.shims.version }}
+          tar czf containerd-shim-spin-${{ matrix.shims.version }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz containerd-shim-spin-${{ matrix.shims.version }}
       - name: upload shim artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: containerd-wasm-shims-${{ matrix.shims.version }}-${{ matrix.shims.name }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}
-          path: _dist/containerd-wasm-shims-${{ matrix.shims.version }}-${{ matrix.shims.name }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz
+          name: containerd-shim-spin-${{ matrix.shims.version }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}
+          path: _dist/containerd-shim-spin-${{ matrix.shims.version }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz
           retention-days: 5

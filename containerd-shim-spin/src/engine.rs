@@ -197,6 +197,7 @@ impl SpinEngine {
         match resolved {
             ResolvedAppSource::File { manifest_path, .. } => {
                 // TODO: This should be configurable, see https://github.com/deislabs/containerd-wasm-shims/issues/166
+                // TODO: ^^ Move aforementioned issue to this repo
                 let files_mount_strategy = FilesMountStrategy::Direct;
                 spin_loader::from_file(&manifest_path, files_mount_strategy, None).await
             }
