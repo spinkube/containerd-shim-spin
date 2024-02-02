@@ -6497,7 +6497,11 @@ dependencies = [
 [[package]]
 name = "trigger-sqs"
 version = "0.5.0"
+<<<<<<< Updated upstream
 source = "git+https://github.com/fermyon/spin-trigger-sqs?rev=f60545012bc153071d8005d1b8ed117a614dce0b#f60545012bc153071d8005d1b8ed117a614dce0b"
+=======
+source = "git+https://github.com/fermyon/spin-trigger-sqs?rev=34ef90888a7374ca53d32654dcf02b3fbfd82119#34ef90888a7374ca53d32654dcf02b3fbfd82119"
+>>>>>>> Stashed changes
 dependencies = [
  "anyhow",
  "async-trait",
