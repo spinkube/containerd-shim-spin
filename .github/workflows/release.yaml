@@ -72,8 +72,8 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/examples/k3d:${{ env.RELEASE_VERSION }}
-            ghcr.io/${{ github.repository }}/examples/k3d:latest
+            ghcr.io/${{ github.repository }}/k3d:${{ env.RELEASE_VERSION }}
+            ghcr.io/${{ github.repository }}/k3d:latest
           context: deployments/k3d
           platforms: linux/amd64,linux/arm64
           build-args: |
