@@ -3,7 +3,7 @@ mod test {
     use redis::AsyncCommands;
     use tokio::process::Command;
 
-    use crate::{random_payload, retry_get, retry_put};
+    use crate::retry_get;
     use anyhow::Result;
 
     const RETRY_TIMES: u32 = 5;
