@@ -3,8 +3,8 @@ version = "0.10.0"
 edition = "2021"
 license = "Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/deislabs/containerd-wasm-shims"
-homepage = "https://github.com/deislabs/containerd-wasm-shims"
+repository = "https://github.com/spinkube/containerd-shim-spin"
+homepage = "https://github.com/spinkube/containerd-shim-spin"
 
 
 [workspace]

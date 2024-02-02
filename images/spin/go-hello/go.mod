@@ -1,6 +1,6 @@
 
 
-module github.com/deislabs/containerd-wasm-shims/go-hello
+module github.com/spinkube/containerd-shim-spin/go-hello
 
 go 1.20
 

@@ -3,9 +3,9 @@ name = "containerd-shim-spin-v2"
 version = "0.10.0"
 authors = ["DeisLabs Engineering Team"]
 edition = "2021"
-repository = 'https://github.com/deislabs/containerd-wasm-shims'
+repository = 'https://github.com/spinkube/containerd-shim-spin'
 license = "Apache-2.0"
-homepage = 'https://github.com/deislabs/containerd-wasm-shims'
+homepage = 'https://github.com/spinkube/containerd-shim-spin'
 description = """
 Containerd shim for running Spin workloads.
 """

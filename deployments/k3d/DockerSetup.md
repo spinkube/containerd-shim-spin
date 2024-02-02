@@ -56,7 +56,7 @@ docker buildx build --platform=wasi/wasm --load -t wasmtest_spin:latest ../../im
 
 The `wasi/wasm` platform specifies that the image is a wasm image. The major benefit of using this platform is that you don't need to build each image for a different computer architecture. 
 
-The `--load` flag tells Docker to load the image into the local Docker daemon. As described in this [issue](https://github.com/deislabs/containerd-wasm-shims/issues/87), this flag actually doesn't work for wasi/wasm platform. You will need to save the image to a tar file and load it into the local Docker daemon.
+The `--load` flag tells Docker to load the image into the local Docker daemon. As described in this [issue](https://github.com/spinkube/containerd-shim-spin/issues/87), this flag actually doesn't work for wasi/wasm platform. You will need to save the image to a tar file and load it into the local Docker daemon.
 
 ```shell
 docker save wasmtest_spin:latest -o wasmtest_spin.tar
@@ -64,7 +64,7 @@ docker save wasmtest_spin:latest -o wasmtest_spin.tar
 
 ### Load the image to k3d
 
-Refer to this [document](https://github.com/deislabs/containerd-wasm-shims/tree/main/deployments/k3d#how-build-get-started-from-source) to create a k3d cluster.
+Refer to this [document](https://github.com/spinkube/containerd-shim-spin/tree/main/deployments/k3d#how-build-get-started-from-source) to create a k3d cluster.
 
 Assume you have a k3d cluster named `k3d-default`, you can load the image to the cluster using the following command.
 
