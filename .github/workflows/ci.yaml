@@ -34,10 +34,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
-      - name: Extract containerd-wasm-shims-v1-linux-${{ env.ARCH }}
+      - name: Extract containerd-shim-spin-linux-${{ env.ARCH }}
         run: |
           mkdir -p ./bin
-          for f in containerd-wasm-shims-*-*-linux-${{ env.ARCH }}/containerd-wasm-shims-*-*-linux-${{ env.ARCH }}.tar.gz
+          for f in containerd-shim-spin-*-linux-${{ env.ARCH }}/containerd-shim-spin-*-linux-${{ env.ARCH }}.tar.gz
             do tar -xzf "$f" -C ./bin
           done
       - name: install k3d

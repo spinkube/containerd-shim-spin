@@ -1295,6 +1295,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "containerd-shim-spin-tests"
+version = "0.10.0"
+dependencies = [
+ "anyhow",
+ "curl",
+ "http",
+ "hyper 0.14.27",
+ "k8s-openapi",
+ "kube",
+ "rand 0.8.5",
+ "redis 0.23.3",
+ "tokio",
+ "tower",
+]
+
+[[package]]
 name = "containerd-shim-spin-v2"
 version = "0.10.0"
 dependencies = [
@@ -1347,22 +1363,6 @@ dependencies = [
  "ttrpc",
  "wat",
  "windows-sys 0.48.0",
-]
-
-[[package]]
-name = "containerd-wasm-shims-tests"
-version = "0.10.0"
-dependencies = [
- "anyhow",
- "curl",
- "http",
- "hyper 0.14.27",
- "k8s-openapi",
- "kube",
- "rand 0.8.5",
- "redis 0.23.3",
- "tokio",
- "tower",
 ]
 
 [[package]]
