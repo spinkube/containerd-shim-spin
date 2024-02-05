@@ -42,8 +42,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: examine docker buildx
+        run: docker buildx ls
+      
       - name: test
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         if: ${{ inputs.test }}
         with:
           context: ${{ matrix.image.context }}
