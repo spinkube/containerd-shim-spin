@@ -42,6 +42,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: create a new builder
+        run: |
+          docker buildx create --name wasm-builder --platform wasi/wasm
+          docker buildx use wasm-builder
       
       - name: examine docker buildx
         run: docker buildx ls
