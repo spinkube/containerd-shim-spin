@@ -43,13 +43,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: create a new builder
+      - name: enable containerd image store
         run: |
-          docker buildx create --name wasm-builder --platform wasi/wasm
-          docker buildx use wasm-builder
-      
-      - name: examine docker buildx
-        run: docker buildx ls
+          echo '{ "features": { "containerd-snapshotter": true } }' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
       
       - name: test
         uses: docker/build-push-action@v4
