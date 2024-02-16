@@ -26,6 +26,9 @@ jobs:
       ARCH: ${{ matrix.config.arch }}
     steps:
       - uses: actions/checkout@v3
+      - name: "test test"
+        run: |
+          which kubectl
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
