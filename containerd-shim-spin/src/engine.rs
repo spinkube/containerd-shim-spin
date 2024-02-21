@@ -7,10 +7,10 @@ use spin_app::locked::LockedApp;
 use spin_loader::cache::Cache;
 use spin_loader::FilesMountStrategy;
 use spin_manifest::schema::v2::AppManifest;
-use spin_redis_engine::RedisTrigger;
 use spin_trigger::TriggerHooks;
 use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
 use spin_trigger_http::HttpTrigger;
+use spin_trigger_redis::RedisTrigger;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
 use std::env;
@@ -209,15 +209,15 @@ impl SpinEngine {
                 info!(" >>> running spin trigger");
                 redis_trigger.run(spin_trigger::cli::NoArgs)
             }
-            SqsTrigger::TRIGGER_TYPE => {
-                let sqs_trigger: SqsTrigger = self
-                    .build_spin_trigger(working_dir, app)
-                    .await
-                    .context("failed to build spin trigger")?;
-
-                info!(" >>> running spin trigger");
-                sqs_trigger.run(spin_trigger::cli::NoArgs)
-            }
+            // SqsTrigger::TRIGGER_TYPE => {
+            //     let sqs_trigger: SqsTrigger = self
+            //         .build_spin_trigger(working_dir, app)
+            //         .await
+            //         .context("failed to build spin trigger")?;
+            //
+            //     info!(" >>> running spin trigger");
+            //     sqs_trigger.run(spin_trigger::cli::NoArgs)
+            // }
             _ => {
                 todo!("Only Http, Redis and SQS triggers are currently supported.")
             }
@@ -266,7 +266,7 @@ impl SpinEngine {
         let locked_url = self.write_locked_app(&app, &working_dir).await?;
 
         // Build trigger config
-        let loader = loader::TriggerLoader::new(working_dir.clone(), true);
+        let loader = loader::TriggerLoader::new(working_dir.clone(), true, true);
         let mut runtime_config = RuntimeConfig::new(PathBuf::from("/").into());
         // Load in runtime config if one exists at expected location
         if Path::new(RUNTIME_CONFIG_PATH).exists() {
@@ -318,8 +318,9 @@ impl Engine for SpinEngine {
         match layer.config.media_type() {
             MediaType::Other(name) => {
                 if name == "application/vnd.wasm.content.layer.v1+wasm" {
-                    let component = spin_componentize::componentize_if_necessary(&layer.layer)?;
-                    Some(self.wasmtime_engine.precompile_module(&component))
+                    let component =
+                        spin_componentize::componentize_if_necessary(&layer.layer).unwrap();
+                    Some(self.wasmtime_engine.precompile_component(&component))
                 } else {
                     None
                 }
@@ -379,9 +380,7 @@ fn trigger_command_for_resolved_app_source(resolved: &ResolvedAppSource) -> Resu
     let trigger_type = resolved.trigger_type()?;
 
     match trigger_type {
-        RedisTrigger::TRIGGER_TYPE | HttpTrigger::TRIGGER_TYPE | SqsTrigger::TRIGGER_TYPE => {
-            Ok(trigger_type.to_owned())
-        }
+        RedisTrigger::TRIGGER_TYPE | HttpTrigger::TRIGGER_TYPE => Ok(trigger_type.to_owned()),
         _ => {
             todo!("Only Http, Redis and SQS triggers are currently supported.")
         }
