@@ -318,7 +318,8 @@ impl Engine for SpinEngine {
         match layer.config.media_type() {
             MediaType::Other(name) => {
                 if name == "application/vnd.wasm.content.layer.v1+wasm" {
-                    Some(self.wasmtime_engine.precompile_module(&layer.layer))
+                    let component = spin_componentize::componentize_if_necessary(&layer.layer)?;
+                    Some(self.wasmtime_engine.precompile_module(&component))
                 } else {
                     None
                 }
