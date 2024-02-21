@@ -1,5 +1,6 @@
 use anyhow::{anyhow, ensure, Context, Result};
 use containerd_shim_wasm::container::{Engine, RuntimeContext, Stdio};
+use containerd_shim_wasm::sandbox::WasmLayer;
 use log::info;
 use oci_spec::image::MediaType;
 use spin_app::locked::LockedApp;
@@ -10,9 +11,11 @@ use spin_redis_engine::RedisTrigger;
 use spin_trigger::TriggerHooks;
 use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
 use spin_trigger_http::HttpTrigger;
+use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
 use std::env;
 use std::fs::File;
+use std::hash::{Hash, Hasher};
 use std::io::Write;
 use std::net::SocketAddr;
 use std::net::ToSocketAddrs;
@@ -27,8 +30,22 @@ const SPIN_ADDR: &str = "0.0.0.0:80";
 /// root `/` of the container.
 const RUNTIME_CONFIG_PATH: &str = "/runtime-config.toml";
 
-#[derive(Clone, Default)]
-pub struct SpinEngine;
+#[derive(Clone)]
+pub struct SpinEngine {
+    pub(crate) wasmtime_engine: wasmtime::Engine,
+}
+
+impl Default for SpinEngine {
+    fn default() -> Self {
+        // the host expects epoch interruption to be enabled, so this has to be
+        // turned on for the components we compile.
+        let mut config = wasmtime::Config::default();
+        config.epoch_interruption(true);
+        Self {
+            wasmtime_engine: wasmtime::Engine::new(&config).unwrap(),
+        }
+    }
+}
 
 struct StdioTriggerHook;
 impl TriggerHooks for StdioTriggerHook {
@@ -64,15 +81,21 @@ impl std::fmt::Debug for AppSource {
 
 impl SpinEngine {
     async fn app_source(&self, ctx: &impl RuntimeContext, cache: &Cache) -> Result<AppSource> {
-        match ctx.wasm_layers() {
-            [] => Ok(AppSource::File(
-                spin_common::paths::resolve_manifest_file_path("/spin.toml")?,
-            )),
-            layers => {
-                info!(
-                    " >>> configuring spin oci application {}",
-                    ctx.wasm_layers().len()
+        match ctx.entrypoint().source {
+            containerd_shim_wasm::container::Source::File(f) => {
+                log::warn!(
+                    ">>> attempting to load a spin application from a local file {:?}",
+                    f
                 );
+
+                Ok(AppSource::File(f))
+            }
+            containerd_shim_wasm::container::Source::Oci(layers) => {
+                info!(" >>> configuring spin oci application {}", layers.len());
+
+                for layer in layers {
+                    log::debug!("<<< layer config: {:?}", layer.config);
+                }
 
                 for artifact in layers {
                     match artifact.config.media_type() {
@@ -90,8 +113,8 @@ impl SpinEngine {
                             if name == "application/vnd.wasm.content.layer.v1+wasm" =>
                         {
                             log::info!(
-                                "writing artifact config to cache, near {:?}",
-                                cache.manifests_dir()
+                                "<<< writing wasm artifact with length {:?} config to cache, near {:?}",
+                                artifact.layer.len(), cache.manifests_dir()
                             );
                             cache
                                 .write_wasm(&artifact.layer, &artifact.config.digest())
@@ -100,15 +123,20 @@ impl SpinEngine {
                         MediaType::Other(name)
                             if name == "application/vnd.wasm.content.layer.v1+data" =>
                         {
-                            log::info!(
-                                "writing data layer to cache, near {:?}",
+                            log::debug!(
+                                "<<< writing data layer to cache, near {:?}",
                                 cache.manifests_dir()
                             );
                             cache
                                 .write_data(&artifact.layer, &artifact.config.digest())
                                 .await?;
                         }
-                        _ => {}
+                        _ => {
+                            log::debug!(
+                                "<<< unknown media type {:?}",
+                                artifact.config.media_type()
+                            );
+                        }
                     }
                 }
                 Ok(AppSource::Oci)
@@ -168,6 +196,7 @@ impl SpinEngine {
                     .build_spin_trigger(working_dir, app)
                     .await
                     .context("failed to build spin trigger")?;
+
                 info!(" >>> running spin trigger");
                 http_trigger.run(spin_trigger_http::CliArgs {
                     address: parse_addr(SPIN_ADDR).unwrap(),
@@ -256,7 +285,7 @@ impl SpinEngine {
         let locked_url = self.write_locked_app(&app, &working_dir).await?;
 
         // Build trigger config
-        let loader = loader::TriggerLoader::new(working_dir.clone(), true);
+        let loader = loader::TriggerLoader::new(working_dir.clone(), true, true);
         let mut runtime_config = RuntimeConfig::new(PathBuf::from("/").into());
         // Load in runtime config if one exists at expected location
         if Path::new(RUNTIME_CONFIG_PATH).exists() {
@@ -289,6 +318,43 @@ impl Engine for SpinEngine {
 
     fn can_handle(&self, _ctx: &impl RuntimeContext) -> Result<()> {
         Ok(())
+    }
+
+    fn supported_layers_types() -> &'static [&'static str] {
+        &[
+            "application/vnd.wasm.content.layer.v1+wasm",
+            "application/vnd.wasm.content.layer.v1+data",
+            "application/vnd.fermyon.spin.application.v1+config",
+        ]
+    }
+
+    fn precompile(&self, layer: &WasmLayer) -> Option<Result<Vec<u8>>> {
+        log::info!(
+            "Precompiling layer with Spin Engine: {:?}",
+            layer.config.digest()
+        );
+
+        match layer.config.media_type() {
+            MediaType::Other(name) => {
+                log::info!("Precompiling layer {:?}", layer.config.digest());
+                if name == "application/vnd.wasm.content.layer.v1+wasm" {
+                    let component =
+                        spin_componentize::componentize_if_necessary(&layer.layer).unwrap();
+                    Some(self.wasmtime_engine.precompile_component(&component))
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        }
+    }
+
+    fn can_precompile(&self) -> Option<String> {
+        let mut hasher = DefaultHasher::new();
+        self.wasmtime_engine
+            .precompile_compatibility_hash()
+            .hash(&mut hasher);
+        Some(hasher.finish().to_string())
     }
 }
 
