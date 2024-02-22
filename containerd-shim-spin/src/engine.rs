@@ -21,7 +21,7 @@ use std::net::SocketAddr;
 use std::net::ToSocketAddrs;
 use std::path::{Path, PathBuf};
 use tokio::runtime::Runtime;
-use trigger_sqs::SqsTrigger;
+// use trigger_sqs::SqsTrigger;
 use url::Url;
 
 const SPIN_ADDR: &str = "0.0.0.0:80";
@@ -37,8 +37,12 @@ pub struct SpinEngine {
 
 impl Default for SpinEngine {
     fn default() -> Self {
+        // the host expects epoch interruption to be enabled, so this has to be
+        // turned on for the components we compile.
+        let mut config = wasmtime::Config::default();
+        config.epoch_interruption(true);
         Self {
-            wasmtime_engine: wasmtime::Engine::new(&wasmtime::Config::default()).unwrap(),
+            wasmtime_engine: wasmtime::Engine::new(&config).unwrap(),
         }
     }
 }
@@ -109,9 +113,9 @@ impl SpinEngine {
                         MediaType::Other(name)
                             if name == "application/vnd.wasm.content.layer.v1+wasm" =>
                         {
-                            log::debug!(
-                                "<<< writing artifact config to cache, near {:?}",
-                                cache.manifests_dir()
+                            log::info!(
+                                "<<< writing wasm artifact with length {:?} config to cache, near {:?}",
+                                artifact.layer.len(), cache.manifests_dir()
                             );
                             cache
                                 .write_wasm(&artifact.layer, &artifact.config.digest())
@@ -189,10 +193,20 @@ impl SpinEngine {
         let working_dir = PathBuf::from("/");
         let f = match trigger_type {
             HttpTrigger::TRIGGER_TYPE => {
-                let http_trigger: HttpTrigger = self
-                    .build_spin_trigger(working_dir, app)
-                    .await
-                    .context("failed to build spin trigger")?;
+                // let http_trigger: HttpTrigger = self
+                //     .build_spin_trigger(working_dir, app)
+                //     .await
+                //     .context("failed to build spin trigger")?;
+
+                let http_trigger: HttpTrigger =
+                    match self.build_spin_trigger(working_dir, app).await {
+                        Ok(x) => x,
+                        Err(err) => {
+                            log::info!("Error building the spin trigger: {:?}", err);
+                            todo!()
+                        }
+                    };
+
                 info!(" >>> running spin trigger");
                 http_trigger.run(spin_trigger_http::CliArgs {
                     address: parse_addr(SPIN_ADDR).unwrap(),
@@ -317,6 +331,7 @@ impl Engine for SpinEngine {
 
         match layer.config.media_type() {
             MediaType::Other(name) => {
+                log::info!("Precompiling layer {:?}", layer.config.digest());
                 if name == "application/vnd.wasm.content.layer.v1+wasm" {
                     let component =
                         spin_componentize::componentize_if_necessary(&layer.layer).unwrap();
