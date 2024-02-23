@@ -47,4 +47,4 @@ jobs:
         run: BIN_DIR="./bin" make integration-tests
       - name: clean up k3d
         if: always()
-        run: make test/clean
+        run: make tests/clean
