@@ -1321,16 +1321,16 @@ dependencies = [
  "openssl",
  "serde",
  "serde_json",
- "spin-app 2.3.0-pre0",
- "spin-common 2.3.0-pre0",
+ "spin-app",
+ "spin-common",
  "spin-componentize",
- "spin-core 2.3.0-pre0",
- "spin-loader 2.3.0-pre0",
- "spin-manifest 2.3.0-pre0",
+ "spin-core",
+ "spin-loader",
+ "spin-manifest",
  "spin-oci",
- "spin-trigger 2.3.0-pre0",
+ "spin-redis-engine",
+ "spin-trigger",
  "spin-trigger-http",
- "spin-trigger-redis",
  "tokio",
  "trigger-sqs",
  "url",
@@ -1340,6 +1340,7 @@ dependencies = [
 [[package]]
 name = "containerd-shim-wasm"
 version = "0.5.0"
+source = "git+https://github.com/jsturtevant/runwasi?branch=runwasi-precompile-take-2#3e96dddd893085e7f71dac57f436bb9efc09c646"
 dependencies = [
  "anyhow",
  "caps",
@@ -3617,6 +3618,15 @@ dependencies = [
 
 [[package]]
 name = "memoffset"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5aa361d4faea93603064a027415f07bd8e1d5c88c9fbf68bf56a285428fd79ce"
+dependencies = [
+ "autocfg",
+]
+
+[[package]]
+name = "memoffset"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5de893c32cde5f383baa4c04c5d6dbdd735cfd4a794b0debdb2bb1b421da5ff4"
@@ -3807,6 +3817,8 @@ dependencies = [
  "bitflags 1.3.2",
  "cfg-if 1.0.0",
  "libc",
+ "memoffset 0.6.5",
+ "pin-utils",
 ]
 
 [[package]]
@@ -4110,34 +4122,17 @@ dependencies = [
 [[package]]
 name = "outbound-http"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "http 0.2.11",
  "reqwest",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-locked-app 2.2.0",
- "spin-outbound-networking 2.2.0",
- "spin-world 2.2.0",
- "terminal 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "outbound-http"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "http 0.2.11",
- "reqwest",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-locked-app 2.3.0-pre0",
- "spin-outbound-networking 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "terminal 0.1.0",
+ "spin-app",
+ "spin-core",
+ "spin-locked-app",
+ "spin-outbound-networking",
+ "spin-world",
+ "terminal",
  "tracing",
  "url",
 ]
@@ -4145,35 +4140,17 @@ dependencies = [
 [[package]]
 name = "outbound-mysql"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "flate2",
  "mysql_async",
  "mysql_common",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-outbound-networking 2.2.0",
- "spin-world 2.2.0",
- "table 2.2.0",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "outbound-mysql"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "flate2",
- "mysql_async",
- "mysql_common",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-outbound-networking 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "table 2.3.0-pre0",
+ "spin-app",
+ "spin-core",
+ "spin-outbound-networking",
+ "spin-world",
+ "table",
  "tokio",
  "tracing",
  "url",
@@ -4182,33 +4159,16 @@ dependencies = [
 [[package]]
 name = "outbound-pg"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "native-tls",
  "postgres-native-tls",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-outbound-networking 2.2.0",
- "spin-world 2.2.0",
- "table 2.2.0",
- "tokio",
- "tokio-postgres",
- "tracing",
-]
-
-[[package]]
-name = "outbound-pg"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "native-tls",
- "postgres-native-tls",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-outbound-networking 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "table 2.3.0-pre0",
+ "spin-app",
+ "spin-core",
+ "spin-outbound-networking",
+ "spin-world",
+ "table",
  "tokio",
  "tokio-postgres",
  "tracing",
@@ -4217,30 +4177,15 @@ dependencies = [
 [[package]]
 name = "outbound-redis"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "redis 0.21.7",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-outbound-networking 2.2.0",
- "spin-world 2.2.0",
- "table 2.2.0",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "outbound-redis"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "redis 0.21.7",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-outbound-networking 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "table 2.3.0-pre0",
+ "spin-app",
+ "spin-core",
+ "spin-outbound-networking",
+ "spin-world",
+ "table",
  "tokio",
  "tracing",
 ]
@@ -4570,7 +4515,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "059a34f111a9dee2ce1ac2826a68b24601c4298cfeb1a587c3cb493d5ab46f52"
 dependencies = [
  "libc",
- "nix 0.27.1",
+ "nix 0.25.1",
 ]
 
 [[package]]
@@ -5768,50 +5713,23 @@ checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
 [[package]]
 name = "spin-app"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
  "ouroboros",
  "serde",
  "serde_json",
- "spin-core 2.2.0",
- "spin-locked-app 2.2.0",
- "spin-serde 2.2.0",
- "thiserror",
-]
-
-[[package]]
-name = "spin-app"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "ouroboros",
- "serde",
- "serde_json",
- "spin-core 2.3.0-pre0",
- "spin-locked-app 2.3.0-pre0",
- "spin-serde 2.3.0-pre0",
+ "spin-core",
+ "spin-locked-app",
+ "spin-serde",
  "thiserror",
 ]
 
 [[package]]
 name = "spin-common"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "dirs 4.0.0",
- "sha2",
- "tempfile",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "spin-common"
-version = "2.3.0-pre0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "dirs 4.0.0",
@@ -5836,28 +5754,7 @@ dependencies = [
 [[package]]
 name = "spin-core"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "async-trait",
- "bytes",
- "cap-primitives",
- "cap-std",
- "crossbeam-channel",
- "io-extras",
- "rustix 0.37.27",
- "system-interface",
- "tokio",
- "tracing",
- "wasi-common",
- "wasmtime",
- "wasmtime-wasi",
- "wasmtime-wasi-http",
-]
-
-[[package]]
-name = "spin-core"
-version = "2.3.0-pre0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5878,7 +5775,8 @@ dependencies = [
 
 [[package]]
 name = "spin-http"
-version = "2.3.0-pre0"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "http 1.0.0",
@@ -5887,8 +5785,8 @@ dependencies = [
  "indexmap 1.9.3",
  "percent-encoding",
  "serde",
- "spin-app 2.3.0-pre0",
- "spin-locked-app 2.3.0-pre0",
+ "spin-app",
+ "spin-locked-app",
  "tracing",
  "wasmtime-wasi-http",
 ]
@@ -5896,28 +5794,14 @@ dependencies = [
 [[package]]
 name = "spin-key-value"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "lru 0.9.0",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-world 2.2.0",
- "table 2.2.0",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "spin-key-value"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "lru 0.9.0",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "table 2.3.0-pre0",
+ "spin-app",
+ "spin-core",
+ "spin-world",
+ "table",
  "tokio",
  "tracing",
 ]
@@ -5925,28 +5809,14 @@ dependencies = [
 [[package]]
 name = "spin-key-value-azure"
 version = "0.1.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "azure_data_cosmos",
  "futures",
  "serde",
- "spin-core 2.3.0-pre0",
- "spin-key-value 2.3.0-pre0",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "spin-key-value-azure"
-version = "0.1.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "azure_data_cosmos",
- "futures",
- "serde",
- "spin-core 2.2.0",
- "spin-key-value 2.2.0",
+ "spin-core",
+ "spin-key-value",
  "tokio",
  "url",
 ]
@@ -5954,26 +5824,13 @@ dependencies = [
 [[package]]
 name = "spin-key-value-redis"
 version = "0.1.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "redis 0.21.7",
- "spin-core 2.3.0-pre0",
- "spin-key-value 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "spin-key-value-redis"
-version = "0.1.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "redis 0.21.7",
- "spin-core 2.2.0",
- "spin-key-value 2.2.0",
- "spin-world 2.2.0",
+ "spin-core",
+ "spin-key-value",
+ "spin-world",
  "tokio",
  "url",
 ]
@@ -5981,59 +5838,34 @@ dependencies = [
 [[package]]
 name = "spin-key-value-sqlite"
 version = "0.1.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "once_cell",
  "rusqlite",
- "spin-core 2.3.0-pre0",
- "spin-key-value 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "tokio",
-]
-
-[[package]]
-name = "spin-key-value-sqlite"
-version = "0.1.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "once_cell",
- "rusqlite",
- "spin-core 2.2.0",
- "spin-key-value 2.2.0",
- "spin-world 2.2.0",
+ "spin-core",
+ "spin-key-value",
+ "spin-world",
  "tokio",
 ]
 
 [[package]]
 name = "spin-llm"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "bytesize",
  "llm",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-world 2.2.0",
-]
-
-[[package]]
-name = "spin-llm"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "bytesize",
- "llm",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
+ "spin-app",
+ "spin-core",
+ "spin-world",
 ]
 
 [[package]]
 name = "spin-llm-remote-http"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "http 0.2.11",
@@ -6041,32 +5873,16 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "spin-core 2.2.0",
- "spin-llm 2.2.0",
- "spin-world 2.2.0",
- "tracing",
-]
-
-[[package]]
-name = "spin-llm-remote-http"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "http 0.2.11",
- "llm",
- "reqwest",
- "serde",
- "serde_json",
- "spin-core 2.3.0-pre0",
- "spin-llm 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
+ "spin-core",
+ "spin-llm",
+ "spin-world",
  "tracing",
 ]
 
 [[package]]
 name = "spin-loader"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6078,7 +5894,7 @@ dependencies = [
  "itertools 0.10.5",
  "lazy_static",
  "mime_guess",
- "outbound-http 2.2.0",
+ "outbound-http",
  "path-absolutize",
  "regex",
  "reqwest",
@@ -6087,49 +5903,12 @@ dependencies = [
  "serde_json",
  "sha2",
  "shellexpand 3.1.0",
- "spin-common 2.2.0",
- "spin-locked-app 2.2.0",
- "spin-manifest 2.2.0",
- "spin-outbound-networking 2.2.0",
+ "spin-common",
+ "spin-locked-app",
+ "spin-manifest",
+ "spin-outbound-networking",
  "tempfile",
- "terminal 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
- "thiserror",
- "tokio",
- "tokio-util 0.6.10",
- "toml 0.8.8",
- "tracing",
- "walkdir",
-]
-
-[[package]]
-name = "spin-loader"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "bytes",
- "dirs 4.0.0",
- "dunce",
- "futures",
- "glob",
- "itertools 0.10.5",
- "lazy_static",
- "mime_guess",
- "outbound-http 2.3.0-pre0",
- "path-absolutize",
- "regex",
- "reqwest",
- "semver",
- "serde",
- "serde_json",
- "sha2",
- "shellexpand 3.1.0",
- "spin-common 2.3.0-pre0",
- "spin-locked-app 2.3.0-pre0",
- "spin-manifest 2.3.0-pre0",
- "spin-outbound-networking 2.3.0-pre0",
- "tempfile",
- "terminal 0.1.0",
+ "terminal",
  "thiserror",
  "tokio",
  "tokio-util 0.6.10",
@@ -6141,54 +5920,27 @@ dependencies = [
 [[package]]
 name = "spin-locked-app"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
  "ouroboros",
  "serde",
  "serde_json",
- "spin-serde 2.2.0",
- "thiserror",
-]
-
-[[package]]
-name = "spin-locked-app"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "ouroboros",
- "serde",
- "serde_json",
- "spin-serde 2.3.0-pre0",
+ "spin-serde",
  "thiserror",
 ]
 
 [[package]]
 name = "spin-manifest"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "indexmap 1.9.3",
  "serde",
- "spin-serde 2.2.0",
- "terminal 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
- "thiserror",
- "toml 0.8.8",
- "url",
-]
-
-[[package]]
-name = "spin-manifest"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "indexmap 1.9.3",
- "serde",
- "spin-serde 2.3.0-pre0",
- "terminal 0.1.0",
+ "spin-serde",
+ "terminal",
  "thiserror",
  "toml 0.8.8",
  "url",
@@ -6196,7 +5948,8 @@ dependencies = [
 
 [[package]]
 name = "spin-oci"
-version = "2.3.0-pre0"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-compression",
@@ -6210,10 +5963,10 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "spin-common 2.3.0-pre0",
- "spin-loader 2.3.0-pre0",
- "spin-locked-app 2.3.0-pre0",
- "spin-manifest 2.3.0-pre0",
+ "spin-common",
+ "spin-loader",
+ "spin-locked-app",
+ "spin-manifest",
  "tempfile",
  "tokio",
  "tokio-util 0.7.10",
@@ -6224,181 +5977,90 @@ dependencies = [
 [[package]]
 name = "spin-outbound-networking"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "ipnet",
- "spin-locked-app 2.2.0",
- "terminal 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
+ "spin-locked-app",
+ "terminal",
  "url",
  "urlencoding",
 ]
 
 [[package]]
-name = "spin-outbound-networking"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "ipnet",
- "spin-locked-app 2.3.0-pre0",
- "terminal 0.1.0",
- "url",
- "urlencoding",
-]
-
-[[package]]
-name = "spin-serde"
+name = "spin-redis-engine"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "base64 0.21.5",
- "serde",
-]
-
-[[package]]
-name = "spin-serde"
-version = "2.3.0-pre0"
-dependencies = [
- "base64 0.21.5",
- "serde",
-]
-
-[[package]]
-name = "spin-sqlite"
-version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-world 2.2.0",
- "table 2.2.0",
- "tokio",
-]
-
-[[package]]
-name = "spin-sqlite"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "table 2.3.0-pre0",
- "tokio",
-]
-
-[[package]]
-name = "spin-sqlite-inproc"
-version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "async-trait",
- "once_cell",
- "rand 0.8.5",
- "rusqlite",
- "spin-sqlite 2.2.0",
- "spin-world 2.2.0",
- "tokio",
-]
-
-[[package]]
-name = "spin-sqlite-inproc"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "once_cell",
- "rand 0.8.5",
- "rusqlite",
- "spin-sqlite 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "tokio",
-]
-
-[[package]]
-name = "spin-sqlite-libsql"
-version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "async-trait",
- "libsql",
- "rusqlite",
- "spin-sqlite 2.2.0",
- "spin-world 2.2.0",
- "sqlparser",
- "tokio",
-]
-
-[[package]]
-name = "spin-sqlite-libsql"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "libsql",
- "rusqlite",
- "spin-sqlite 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "sqlparser",
- "tokio",
-]
-
-[[package]]
-name = "spin-trigger"
-version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "anyhow",
- "async-trait",
- "clap",
- "ctrlc",
- "dirs 4.0.0",
  "futures",
- "indexmap 1.9.3",
- "ipnet",
- "outbound-http 2.2.0",
- "outbound-mysql 2.2.0",
- "outbound-pg 2.2.0",
- "outbound-redis 2.2.0",
- "sanitize-filename",
+ "redis 0.21.7",
  "serde",
- "serde_json",
- "spin-app 2.2.0",
- "spin-common 2.2.0",
- "spin-componentize",
- "spin-core 2.2.0",
- "spin-key-value 2.2.0",
- "spin-key-value-azure 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
- "spin-key-value-redis 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
- "spin-key-value-sqlite 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
- "spin-llm 2.2.0",
- "spin-llm-remote-http 2.2.0",
- "spin-loader 2.2.0",
- "spin-manifest 2.2.0",
- "spin-outbound-networking 2.2.0",
- "spin-sqlite 2.2.0",
- "spin-sqlite-inproc 2.2.0",
- "spin-sqlite-libsql 2.2.0",
- "spin-variables 2.2.0",
- "spin-world 2.2.0",
- "terminal 0.1.0 (git+https://github.com/fermyon/spin?tag=v2.2.0)",
- "tokio",
- "toml 0.5.11",
+ "spin-app",
+ "spin-core",
+ "spin-trigger",
+ "spin-world",
  "tracing",
- "url",
- "wasmtime",
- "wasmtime-wasi",
- "wasmtime-wasi-http",
+]
+
+[[package]]
+name = "spin-serde"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
+dependencies = [
+ "base64 0.21.5",
+ "serde",
+]
+
+[[package]]
+name = "spin-sqlite"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "spin-app",
+ "spin-core",
+ "spin-world",
+ "table",
+ "tokio",
+]
+
+[[package]]
+name = "spin-sqlite-inproc"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "once_cell",
+ "rand 0.8.5",
+ "rusqlite",
+ "spin-sqlite",
+ "spin-world",
+ "tokio",
+]
+
+[[package]]
+name = "spin-sqlite-libsql"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "libsql",
+ "rusqlite",
+ "spin-sqlite",
+ "spin-world",
+ "sqlparser",
+ "tokio",
 ]
 
 [[package]]
 name = "spin-trigger"
-version = "2.3.0-pre0"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6408,32 +6070,32 @@ dependencies = [
  "futures",
  "indexmap 1.9.3",
  "ipnet",
- "outbound-http 2.3.0-pre0",
- "outbound-mysql 2.3.0-pre0",
- "outbound-pg 2.3.0-pre0",
- "outbound-redis 2.3.0-pre0",
+ "outbound-http",
+ "outbound-mysql",
+ "outbound-pg",
+ "outbound-redis",
  "sanitize-filename",
  "serde",
  "serde_json",
- "spin-app 2.3.0-pre0",
- "spin-common 2.3.0-pre0",
+ "spin-app",
+ "spin-common",
  "spin-componentize",
- "spin-core 2.3.0-pre0",
- "spin-key-value 2.3.0-pre0",
- "spin-key-value-azure 0.1.0",
- "spin-key-value-redis 0.1.0",
- "spin-key-value-sqlite 0.1.0",
- "spin-llm 2.3.0-pre0",
- "spin-llm-remote-http 2.3.0-pre0",
- "spin-loader 2.3.0-pre0",
- "spin-manifest 2.3.0-pre0",
- "spin-outbound-networking 2.3.0-pre0",
- "spin-sqlite 2.3.0-pre0",
- "spin-sqlite-inproc 2.3.0-pre0",
- "spin-sqlite-libsql 2.3.0-pre0",
- "spin-variables 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "terminal 0.1.0",
+ "spin-core",
+ "spin-key-value",
+ "spin-key-value-azure",
+ "spin-key-value-redis",
+ "spin-key-value-sqlite",
+ "spin-llm",
+ "spin-llm-remote-http",
+ "spin-loader",
+ "spin-manifest",
+ "spin-outbound-networking",
+ "spin-sqlite",
+ "spin-sqlite-inproc",
+ "spin-sqlite-libsql",
+ "spin-variables",
+ "spin-world",
+ "terminal",
  "tokio",
  "toml 0.5.11",
  "tracing",
@@ -6445,7 +6107,8 @@ dependencies = [
 
 [[package]]
 name = "spin-trigger-http"
-version = "2.3.0-pre0"
+version = "2.2.0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6457,18 +6120,18 @@ dependencies = [
  "hyper 1.1.0",
  "hyper-util",
  "indexmap 1.9.3",
- "outbound-http 2.3.0-pre0",
+ "outbound-http",
  "percent-encoding",
  "rustls-pemfile 0.3.0",
  "serde",
  "serde_json",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
+ "spin-app",
+ "spin-core",
  "spin-http",
- "spin-outbound-networking 2.3.0-pre0",
- "spin-trigger 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "terminal 0.1.0",
+ "spin-outbound-networking",
+ "spin-trigger",
+ "spin-world",
+ "terminal",
  "tls-listener",
  "tokio",
  "tokio-rustls 0.23.4",
@@ -6481,51 +6144,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "spin-trigger-redis"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "redis 0.21.7",
- "serde",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-trigger 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
- "tracing",
-]
-
-[[package]]
 name = "spin-variables"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "anyhow",
  "async-trait",
  "dotenvy",
  "once_cell",
  "serde",
- "spin-app 2.2.0",
- "spin-core 2.2.0",
- "spin-world 2.2.0",
- "thiserror",
- "tokio",
- "vaultrs",
-]
-
-[[package]]
-name = "spin-variables"
-version = "2.3.0-pre0"
-dependencies = [
- "anyhow",
- "async-trait",
- "dotenvy",
- "once_cell",
- "serde",
- "spin-app 2.3.0-pre0",
- "spin-core 2.3.0-pre0",
- "spin-world 2.3.0-pre0",
+ "spin-app",
+ "spin-core",
+ "spin-world",
  "thiserror",
  "tokio",
  "vaultrs",
@@ -6534,14 +6164,7 @@ dependencies = [
 [[package]]
 name = "spin-world"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-dependencies = [
- "wasmtime",
-]
-
-[[package]]
-name = "spin-world"
-version = "2.3.0-pre0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "wasmtime",
 ]
@@ -6717,11 +6340,7 @@ dependencies = [
 [[package]]
 name = "table"
 version = "2.2.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
-
-[[package]]
-name = "table"
-version = "2.3.0-pre0"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 
 [[package]]
 name = "tar"
@@ -6765,16 +6384,7 @@ dependencies = [
 [[package]]
 name = "terminal"
 version = "0.1.0"
-dependencies = [
- "atty",
- "once_cell",
- "termcolor",
-]
-
-[[package]]
-name = "terminal"
-version = "0.1.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.2.0#eebfae1d6de6a166da16ec8858332f4cc3b6c557"
+source = "git+https://github.com/fermyon/spin?branch=load-aot-compiled-components#7ee3418013f4471ebf3a970a046b87b797dadf8f"
 dependencies = [
  "atty",
  "once_cell",
@@ -7283,7 +6893,7 @@ dependencies = [
 [[package]]
 name = "trigger-sqs"
 version = "0.6.0"
-source = "git+https://github.com/fermyon/spin-trigger-sqs?tag=v0.6.0#61e355aab257279c033b19e766d5d470b6ef343c"
+source = "git+https://github.com/kate-goldenring/spin-trigger-sqs?branch=uses-aot-compilation-loader#b03027821d3a0e9ec9e03f523e90a63baec62b7f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -7293,8 +6903,8 @@ dependencies = [
  "futures",
  "is-terminal",
  "serde",
- "spin-core 2.2.0",
- "spin-trigger 2.2.0",
+ "spin-core",
+ "spin-trigger",
  "tokio",
  "tokio-scoped",
  "tracing",
