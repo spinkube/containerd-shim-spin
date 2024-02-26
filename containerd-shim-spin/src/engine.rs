@@ -315,15 +315,21 @@ impl Engine for SpinEngine {
     }
 
     fn precompile(&self, layer: &WasmLayer) -> Option<Result<Vec<u8>>> {
-        log::info!(
-            "Precompiling layer with Spin Engine: {:?}",
-            layer.config.digest()
-        );
-
         match layer.config.media_type() {
             MediaType::Other(name) => {
-                log::info!("Precompiling layer {:?}", layer.config.digest());
+                log::info!(
+                    "Precompiling layer with Spin Engine: {:?}",
+                    layer.config.digest()
+                );
                 if name == "application/vnd.wasm.content.layer.v1+wasm" {
+                    if self
+                        .wasmtime_engine
+                        .detect_precompiled(&layer.layer)
+                        .is_some()
+                    {
+                        log::info!("Layer already precompiled {:?}", layer.config.digest());
+                        return None;
+                    }
                     let component =
                         spin_componentize::componentize_if_necessary(&layer.layer).unwrap();
                     Some(self.wasmtime_engine.precompile_component(&component))
