@@ -11,7 +11,7 @@ Containerd shim for running Spin workloads.
 """
 
 [dependencies]
-containerd-shim-wasm = { git = "https://github.com/jsturtevant/runwasi", branch = "runwasi-precompile-take-2" }
+containerd-shim-wasm = { git = "https://github.com/containerd/runwasi", rev = "d8003bd16e2b2c9fc39c19d134a23df66e12d597" }
 containerd-shim = "0.6.0"
 log = "0.4"
 spin-app = { git = "https://github.com/fermyon/spin", branch = "load-aot-compiled-components" }
