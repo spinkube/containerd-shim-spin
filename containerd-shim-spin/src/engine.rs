@@ -7,10 +7,10 @@ use spin_app::locked::LockedApp;
 use spin_loader::cache::Cache;
 use spin_loader::FilesMountStrategy;
 use spin_manifest::schema::v2::AppManifest;
-use spin_redis_engine::RedisTrigger;
 use spin_trigger::TriggerHooks;
 use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
 use spin_trigger_http::HttpTrigger;
+use spin_trigger_redis::RedisTrigger;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
 use std::env;
@@ -285,7 +285,13 @@ impl SpinEngine {
         let locked_url = self.write_locked_app(&app, &working_dir).await?;
 
         // Build trigger config
-        let loader = loader::TriggerLoader::new(working_dir.clone(), true, true);
+        let mut loader = loader::TriggerLoader::new(working_dir.clone(), true);
+        // Configure the loader to support loading AOT compiled components..
+        // Since all components were compiled by the shim (during `precompile`),
+        // this operation can be considered safe.
+        unsafe {
+            loader.enable_loading_aot_compiled_components();
+        }
         let mut runtime_config = RuntimeConfig::new(PathBuf::from("/").into());
         // Load in runtime config if one exists at expected location
         if Path::new(RUNTIME_CONFIG_PATH).exists() {
@@ -300,6 +306,16 @@ impl SpinEngine {
         let init_data = Default::default();
         let executor = builder.build(locked_url, runtime_config, init_data).await?;
         Ok(executor)
+    }
+
+    // Returns Some(WasmLayer) if the layer contains wasm, otherwise None
+    fn is_wasm_content(layer: &WasmLayer) -> Option<WasmLayer> {
+        if let MediaType::Other(name) = layer.config.media_type() {
+            if name == "application/vnd.wasm.content.layer.v1+wasm" {
+                return Some(layer.clone());
+            }
+        }
+        None
     }
 }
 
@@ -328,31 +344,34 @@ impl Engine for SpinEngine {
         ]
     }
 
-    fn precompile(&self, layer: &WasmLayer) -> Option<Result<Vec<u8>>> {
-        match layer.config.media_type() {
-            MediaType::Other(name) => {
+    fn precompile(&self, layers: &[WasmLayer]) -> Result<Vec<Option<Vec<u8>>>> {
+        // Runwasi expects layers to be returned in the same order, so wrap each layer in an option, setting non Wasm layers to None
+        let mut wasm_content_layers: Vec<Option<WasmLayer>> =
+            layers.iter().map(SpinEngine::is_wasm_content).collect();
+        for layer in &mut wasm_content_layers {
+            if let Some(wasm_layer) = layer.as_mut() {
                 log::info!(
-                    "Precompiling layer with Spin Engine: {:?}",
-                    layer.config.digest()
+                    "Precompile called for wasm layer {:?}",
+                    wasm_layer.config.digest()
                 );
-                if name == "application/vnd.wasm.content.layer.v1+wasm" {
-                    if self
-                        .wasmtime_engine
-                        .detect_precompiled(&layer.layer)
-                        .is_some()
-                    {
-                        log::info!("Layer already precompiled {:?}", layer.config.digest());
-                        return None;
-                    }
-                    let component =
-                        spin_componentize::componentize_if_necessary(&layer.layer).unwrap();
-                    Some(self.wasmtime_engine.precompile_component(&component))
-                } else {
-                    None
+                if self
+                    .wasmtime_engine
+                    .detect_precompiled(&wasm_layer.layer)
+                    .is_some()
+                {
+                    log::info!("Layer already precompiled {:?}", wasm_layer.config.digest());
+                    continue;
                 }
+                let component = spin_componentize::componentize_if_necessary(&wasm_layer.layer)?;
+                let precompiled = self.wasmtime_engine.precompile_component(&component)?;
+                wasm_layer.layer = precompiled;
             }
-            _ => None,
         }
+        let precompiled_layers: Vec<Option<Vec<u8>>> = wasm_content_layers
+            .into_iter()
+            .map(|l| l.map(|l| l.layer))
+            .collect();
+        Ok(precompiled_layers)
     }
 
     fn can_precompile(&self) -> Option<String> {
@@ -424,5 +443,73 @@ mod tests {
         let parsed = parse_addr(SPIN_ADDR).unwrap();
         assert_eq!(parsed.clone().port(), 80);
         assert_eq!(parsed.ip().to_string(), "0.0.0.0");
+    }
+
+    #[test]
+    fn is_wasm_content() {
+        let wasm_content = WasmLayer {
+            layer: vec![],
+            config: oci_spec::image::Descriptor::new(
+                MediaType::Other("application/vnd.wasm.content.layer.v1+wasm".to_string()),
+                1024,
+                "sha256:1234",
+            ),
+        };
+        // Should be ignored
+        let data_content = WasmLayer {
+            layer: vec![],
+            config: oci_spec::image::Descriptor::new(
+                MediaType::Other("application/vnd.wasm.content.layer.v1+data".to_string()),
+                1024,
+                "sha256:1234",
+            ),
+        };
+        assert!(SpinEngine::is_wasm_content(&wasm_content).is_some());
+        assert!(SpinEngine::is_wasm_content(&data_content).is_none());
+    }
+
+    #[test]
+    fn precompile() {
+        let module = wat::parse_str("(module)").unwrap();
+        let wasmtime_engine = wasmtime::Engine::default();
+        let component = wasmtime::component::Component::new(&wasmtime_engine, "(component)")
+            .unwrap()
+            .serialize()
+            .unwrap();
+        let wasm_layers: Vec<WasmLayer> = vec![
+            // Needs to be precompiled
+            WasmLayer {
+                layer: module.clone(),
+                config: oci_spec::image::Descriptor::new(
+                    MediaType::Other("application/vnd.wasm.content.layer.v1+wasm".to_string()),
+                    1024,
+                    "sha256:1234",
+                ),
+            },
+            // Precompiled
+            WasmLayer {
+                layer: component.to_owned(),
+                config: oci_spec::image::Descriptor::new(
+                    MediaType::Other("application/vnd.wasm.content.layer.v1+wasm".to_string()),
+                    1024,
+                    "sha256:1234",
+                ),
+            },
+            // Content that should be skipped
+            WasmLayer {
+                layer: vec![],
+                config: oci_spec::image::Descriptor::new(
+                    MediaType::Other("application/vnd.wasm.content.layer.v1+data".to_string()),
+                    1024,
+                    "sha256:1234",
+                ),
+            },
+        ];
+        let spin_engine = SpinEngine::default();
+        let precompiled = spin_engine.precompile(&wasm_layers).unwrap();
+        assert_eq!(precompiled.len(), 3);
+        assert_ne!(precompiled[0].as_deref().unwrap(), module);
+        assert_eq!(precompiled[1].as_deref().unwrap(), component);
+        assert!(precompiled[2].is_none());
     }
 }
