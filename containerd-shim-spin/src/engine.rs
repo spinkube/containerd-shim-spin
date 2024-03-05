@@ -85,8 +85,6 @@ impl SpinEngine {
                                 .context("failed to create spin.json")?
                                 .write_all(&artifact.layer)
                                 .context("failed to write spin.json")?;
-                            let lockfile = std::str::from_utf8(&artifact.layer)?;
-                            log::info!("lockfile: {:?}", lockfile);
                         }
                         MediaType::Other(name)
                             if name == "application/vnd.wasm.content.layer.v1+wasm" =>
