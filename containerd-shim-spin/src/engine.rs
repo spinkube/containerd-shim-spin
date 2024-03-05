@@ -97,6 +97,17 @@ impl SpinEngine {
                                 .write_wasm(&artifact.layer, &artifact.config.digest())
                                 .await?;
                         }
+                        MediaType::Other(name)
+                            if name == "application/vnd.wasm.content.layer.v1+data" =>
+                        {
+                            log::info!(
+                                "writing data layer to cache, near {:?}",
+                                cache.manifests_dir()
+                            );
+                            cache
+                                .write_data(&artifact.layer, &artifact.config.digest())
+                                .await?;
+                        }
                         _ => {}
                     }
                 }
