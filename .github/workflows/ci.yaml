@@ -26,6 +26,11 @@ jobs:
       test: true
   build:
     uses: ./.github/workflows/build.yaml
+  publish-node-installer-image:
+    uses: ./.github/workflows/node-installer.yaml
+    needs: build
+    with:
+      release: false
   test:
     needs: build
     runs-on: ubuntu-latest
