@@ -198,7 +198,22 @@ impl SpinEngine {
             }
         };
         info!(" >>> notifying main thread we are about to start");
-        f.await
+        let (abortable, abort_handle) = futures::future::abortable(f);
+        ctrlc::set_handler(move || abort_handle.abort())?;
+        match abortable.await {
+            Ok(Ok(())) => {
+                info!("Trigger executor shut down: exiting");
+                Ok(())
+            }
+            Ok(Err(err)) => {
+                log::error!("ERROR >>> Trigger executor failed: {:?}", err);
+                Err(err)
+            }
+            Err(aborted) => {
+                info!("Received signal to abort: {:?}", aborted);
+                Ok(())
+            }
+        }
     }
 
     async fn load_resolved_app_source(

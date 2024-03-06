@@ -1317,6 +1317,8 @@ dependencies = [
  "anyhow",
  "containerd-shim",
  "containerd-shim-wasm",
+ "ctrlc",
+ "futures",
  "log",
  "oci-spec",
  "openssl",
