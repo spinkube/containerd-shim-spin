@@ -1,8 +1,8 @@
 # Shim Deployment Examples
-This directory contains examples of how to deploy the shims.
+This directory contains examples of how to deploy the Spin shim.
 
 ## K3ds Deployment
-[This deployment](k3d) uses k3d to deploy a local Kubernetes cluster. It illustrates how to customize the k3ds image that is deployed. The image used to run the k3ds Kubernetes nodes has the shims copied into the `/bin` directory and the containerd config updated to include runtime bindings for the shims.
+[This deployment](k3d) uses k3d to deploy a local Kubernetes cluster. It illustrates how to customize the k3ds image that is deployed. The image used to run the k3ds Kubernetes nodes has the Spin shim copied into the `/bin` directory and the containerd config updated to include runtime bindings for the shim.
 
 ## Cluster API Deployment
 Coming soon...
