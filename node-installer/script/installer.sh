@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 set -euo pipefail
 
-# Based on: https://github.com/KWasm/kwasm-node-installer/blob/main/script/installer.sh
+# Based on https://github.com/KWasm/kwasm-node-installer/blob/main/script/installer.sh
+# Distilled to only configuring the Spin shim
 
 KWASM_DIR=/opt/kwasm
 
@@ -30,19 +31,12 @@ fi
 
 mkdir -p $NODE_ROOT$KWASM_DIR/bin/
 
-cp /assets/containerd-shim-* $NODE_ROOT$KWASM_DIR/bin/
+cp /assets/containerd-shim-spin-v2 $NODE_ROOT$KWASM_DIR/bin/
 
-# TODO check if runtime config is already present
-if ! grep -q wasmtime $NODE_ROOT$CONTAINERD_CONF; then
+if ! grep -q spin $NODE_ROOT$CONTAINERD_CONF; then
     echo '
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
     runtime_type = "'$KWASM_DIR'/bin/containerd-shim-spin-v2"
-[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wasmedge]
-    runtime_type = "'$KWASM_DIR'/bin/containerd-shim-wasmedge-v1"
-[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wasmer]
-    runtime_type = "'$KWASM_DIR'/bin/containerd-shim-wasmer-v1"
-[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wasmtime]
-    runtime_type = "'$KWASM_DIR'/bin/containerd-shim-wasmtime-v1"
 ' >> $NODE_ROOT$CONTAINERD_CONF
     rm -Rf $NODE_ROOT$KWASM_DIR/active
 fi
