@@ -29,6 +29,9 @@ jobs:
   publish-node-installer-image:
     uses: ./.github/workflows/node-installer.yaml
     needs: build
+    # This action requires use of the GITHUB_TOKEN to publish the image
+    # By default, PRs from forks don't have access, so we only run when the PR branch is on origin.
+    if: ${{ ! github.event.pull_request.head.repo.fork }}
     with:
       ref: ${{ github.ref }}
   test:
