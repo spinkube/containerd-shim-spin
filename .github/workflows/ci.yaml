@@ -30,7 +30,7 @@ jobs:
     uses: ./.github/workflows/node-installer.yaml
     needs: build
     with:
-      release: false
+      ref: ${{ github.ref }}
   test:
     needs: build
     runs-on: ubuntu-latest
