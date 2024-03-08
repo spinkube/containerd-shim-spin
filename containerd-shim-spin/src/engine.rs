@@ -29,6 +29,12 @@ const SPIN_ADDR: &str = "0.0.0.0:80";
 /// config for a Spin application. The runtime config should be loaded into the
 /// root `/` of the container.
 const RUNTIME_CONFIG_PATH: &str = "/runtime-config.toml";
+/// Describes an OCI layer with Wasm content
+const OCI_LAYER_MEDIA_TYPE_WASM: &str = "application/vnd.wasm.content.layer.v1+wasm";
+/// Describes an OCI layer with data content
+const OCI_LAYER_MEDIA_TYPE_DATA: &str = "application/vnd.wasm.content.layer.v1+data";
+/// Describes an OCI layer containing a Spin application config
+const OCI_LAYER_MEDIA_TYPE_SPIN_CONFIG: &str = "application/vnd.fermyon.spin.application.v1+config";
 
 #[derive(Clone)]
 pub struct SpinEngine {
@@ -109,9 +115,7 @@ impl SpinEngine {
                                 .write_all(&artifact.layer)
                                 .context("failed to write spin.json")?;
                         }
-                        MediaType::Other(name)
-                            if name == "application/vnd.wasm.content.layer.v1+wasm" =>
-                        {
+                        MediaType::Other(name) if name == OCI_LAYER_MEDIA_TYPE_WASM => {
                             log::info!(
                                 "<<< writing wasm artifact with length {:?} config to cache, near {:?}",
                                 artifact.layer.len(), cache.manifests_dir()
@@ -120,9 +124,7 @@ impl SpinEngine {
                                 .write_wasm(&artifact.layer, &artifact.config.digest())
                                 .await?;
                         }
-                        MediaType::Other(name)
-                            if name == "application/vnd.wasm.content.layer.v1+data" =>
-                        {
+                        MediaType::Other(name) if name == OCI_LAYER_MEDIA_TYPE_DATA => {
                             log::debug!(
                                 "<<< writing data layer to cache, near {:?}",
                                 cache.manifests_dir()
@@ -322,7 +324,7 @@ impl SpinEngine {
     // Returns Some(WasmLayer) if the layer contains wasm, otherwise None
     fn is_wasm_content(layer: &WasmLayer) -> Option<WasmLayer> {
         if let MediaType::Other(name) = layer.config.media_type() {
-            if name == "application/vnd.wasm.content.layer.v1+wasm" {
+            if name == OCI_LAYER_MEDIA_TYPE_WASM {
                 return Some(layer.clone());
             }
         }
@@ -349,9 +351,9 @@ impl Engine for SpinEngine {
 
     fn supported_layers_types() -> &'static [&'static str] {
         &[
-            "application/vnd.wasm.content.layer.v1+wasm",
-            "application/vnd.wasm.content.layer.v1+data",
-            "application/vnd.fermyon.spin.application.v1+config",
+            OCI_LAYER_MEDIA_TYPE_WASM,
+            OCI_LAYER_MEDIA_TYPE_DATA,
+            OCI_LAYER_MEDIA_TYPE_SPIN_CONFIG,
         ]
     }
 
@@ -461,7 +463,7 @@ mod tests {
         let wasm_content = WasmLayer {
             layer: vec![],
             config: oci_spec::image::Descriptor::new(
-                MediaType::Other("application/vnd.wasm.content.layer.v1+wasm".to_string()),
+                MediaType::Other(OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
                 1024,
                 "sha256:1234",
             ),
@@ -470,7 +472,7 @@ mod tests {
         let data_content = WasmLayer {
             layer: vec![],
             config: oci_spec::image::Descriptor::new(
-                MediaType::Other("application/vnd.wasm.content.layer.v1+data".to_string()),
+                MediaType::Other(OCI_LAYER_MEDIA_TYPE_DATA.to_string()),
                 1024,
                 "sha256:1234",
             ),
@@ -492,7 +494,7 @@ mod tests {
             WasmLayer {
                 layer: module.clone(),
                 config: oci_spec::image::Descriptor::new(
-                    MediaType::Other("application/vnd.wasm.content.layer.v1+wasm".to_string()),
+                    MediaType::Other(OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
                     1024,
                     "sha256:1234",
                 ),
@@ -501,7 +503,7 @@ mod tests {
             WasmLayer {
                 layer: component.to_owned(),
                 config: oci_spec::image::Descriptor::new(
-                    MediaType::Other("application/vnd.wasm.content.layer.v1+wasm".to_string()),
+                    MediaType::Other(OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
                     1024,
                     "sha256:1234",
                 ),
@@ -510,7 +512,7 @@ mod tests {
             WasmLayer {
                 layer: vec![],
                 config: oci_spec::image::Descriptor::new(
-                    MediaType::Other("application/vnd.wasm.content.layer.v1+data".to_string()),
+                    MediaType::Other(OCI_LAYER_MEDIA_TYPE_DATA.to_string()),
                     1024,
                     "sha256:1234",
                 ),
