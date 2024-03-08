@@ -185,15 +185,20 @@ impl SpinEngine {
         let trigger_cmd = trigger_command_for_resolved_app_source(&resolved_app_source)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
         let locked_app = self.load_resolved_app_source(resolved_app_source).await?;
-        self.run_trigger(&trigger_cmd, locked_app).await
+        self.run_trigger(&trigger_cmd, locked_app, app_source).await
     }
 
-    async fn run_trigger(&self, trigger_type: &str, app: LockedApp) -> Result<()> {
+    async fn run_trigger(
+        &self,
+        trigger_type: &str,
+        app: LockedApp,
+        app_source: AppSource,
+    ) -> Result<()> {
         let working_dir = PathBuf::from("/");
         let f = match trigger_type {
             HttpTrigger::TRIGGER_TYPE => {
                 let http_trigger: HttpTrigger = self
-                    .build_spin_trigger(working_dir, app)
+                    .build_spin_trigger(working_dir, app, app_source)
                     .await
                     .context("failed to build spin trigger")?;
 
@@ -206,7 +211,7 @@ impl SpinEngine {
             }
             RedisTrigger::TRIGGER_TYPE => {
                 let redis_trigger: RedisTrigger = self
-                    .build_spin_trigger(working_dir, app)
+                    .build_spin_trigger(working_dir, app, app_source)
                     .await
                     .context("failed to build spin trigger")?;
 
@@ -215,7 +220,7 @@ impl SpinEngine {
             }
             SqsTrigger::TRIGGER_TYPE => {
                 let sqs_trigger: SqsTrigger = self
-                    .build_spin_trigger(working_dir, app)
+                    .build_spin_trigger(working_dir, app, app_source)
                     .await
                     .context("failed to build spin trigger")?;
 
@@ -278,6 +283,7 @@ impl SpinEngine {
         &self,
         working_dir: PathBuf,
         app: LockedApp,
+        app_source: AppSource,
     ) -> Result<T>
     where
         for<'de> <T as TriggerExecutor>::TriggerConfig: serde::de::Deserialize<'de>,
@@ -289,9 +295,14 @@ impl SpinEngine {
         // Configure the loader to support loading AOT compiled components..
         // Since all components were compiled by the shim (during `precompile`),
         // this operation can be considered safe.
-        unsafe {
-            loader.enable_loading_aot_compiled_components();
-        }
+        match app_source {
+            AppSource::Oci => unsafe {
+                loader.enable_loading_aot_compiled_components();
+            },
+            // Currently, it is only possible to precompile applications distributed using
+            // `spin registry push`
+            AppSource::File(_) => {}
+        };
         let mut runtime_config = RuntimeConfig::new(PathBuf::from("/").into());
         // Load in runtime config if one exists at expected location
         if Path::new(RUNTIME_CONFIG_PATH).exists() {
