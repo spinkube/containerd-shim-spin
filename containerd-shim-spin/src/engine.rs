@@ -35,6 +35,9 @@ const OCI_LAYER_MEDIA_TYPE_WASM: &str = "application/vnd.wasm.content.layer.v1+w
 const OCI_LAYER_MEDIA_TYPE_DATA: &str = "application/vnd.wasm.content.layer.v1+data";
 /// Describes an OCI layer containing a Spin application config
 const OCI_LAYER_MEDIA_TYPE_SPIN_CONFIG: &str = "application/vnd.fermyon.spin.application.v1+config";
+/// Expected location of the Spin manifest when loading from a file rather than
+/// an OCI image
+const SPIN_MANIFEST_FILE_PATH: &str = "/spin.toml";
 
 #[derive(Clone)]
 pub struct SpinEngine {
@@ -88,13 +91,8 @@ impl std::fmt::Debug for AppSource {
 impl SpinEngine {
     async fn app_source(&self, ctx: &impl RuntimeContext, cache: &Cache) -> Result<AppSource> {
         match ctx.entrypoint().source {
-            containerd_shim_wasm::container::Source::File(f) => {
-                log::warn!(
-                    ">>> attempting to load a spin application from a local file {:?}",
-                    f
-                );
-
-                Ok(AppSource::File(f))
+            containerd_shim_wasm::container::Source::File(_) => {
+                Ok(AppSource::File(SPIN_MANIFEST_FILE_PATH.into()))
             }
             containerd_shim_wasm::container::Source::Oci(layers) => {
                 info!(" >>> configuring spin oci application {}", layers.len());
