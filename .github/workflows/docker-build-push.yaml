@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set RELEASE_VERSION ENV var
-        run: echo "RELEASE_VERSION=${GITHUB_REF:10}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=$(echo -n ${GITHUB_REF} | cut -d '/' -f 3)" >> $GITHUB_ENV
       - name: lowercase the runner OS name
         shell: bash
         run: |
