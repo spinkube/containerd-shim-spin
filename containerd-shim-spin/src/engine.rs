@@ -292,11 +292,11 @@ impl SpinEngine {
 
         // Build trigger config
         let mut loader = loader::TriggerLoader::new(working_dir.clone(), true);
-        // Configure the loader to support loading AOT compiled components..
-        // Since all components were compiled by the shim (during `precompile`),
-        // this operation can be considered safe.
         match app_source {
             AppSource::Oci => unsafe {
+                // Configure the loader to support loading AOT compiled components..
+                // Since all components were compiled by the shim (during `precompile`),
+                // this operation can be considered safe.
                 loader.enable_loading_aot_compiled_components();
             },
             // Currently, it is only possible to precompile applications distributed using
@@ -357,31 +357,31 @@ impl Engine for SpinEngine {
 
     fn precompile(&self, layers: &[WasmLayer]) -> Result<Vec<Option<Vec<u8>>>> {
         // Runwasi expects layers to be returned in the same order, so wrap each layer in an option, setting non Wasm layers to None
-        let mut wasm_content_layers: Vec<Option<WasmLayer>> =
-            layers.iter().map(SpinEngine::is_wasm_content).collect();
-        for layer in &mut wasm_content_layers {
-            if let Some(wasm_layer) = layer.as_mut() {
-                log::info!(
-                    "Precompile called for wasm layer {:?}",
-                    wasm_layer.config.digest()
-                );
-                if self
-                    .wasmtime_engine
-                    .detect_precompiled(&wasm_layer.layer)
-                    .is_some()
-                {
-                    log::info!("Layer already precompiled {:?}", wasm_layer.config.digest());
-                    continue;
+        let precompiled_layers = layers
+            .iter()
+            .map(|layer| match SpinEngine::is_wasm_content(layer) {
+                Some(wasm_layer) => {
+                    log::info!(
+                        "Precompile called for wasm layer {:?}",
+                        wasm_layer.config.digest()
+                    );
+                    if self
+                        .wasmtime_engine
+                        .detect_precompiled(&wasm_layer.layer)
+                        .is_some()
+                    {
+                        log::info!("Layer already precompiled {:?}", wasm_layer.config.digest());
+                        Ok(Some(wasm_layer.layer))
+                    } else {
+                        let component =
+                            spin_componentize::componentize_if_necessary(&wasm_layer.layer)?;
+                        let precompiled = self.wasmtime_engine.precompile_component(&component)?;
+                        Ok(Some(precompiled))
+                    }
                 }
-                let component = spin_componentize::componentize_if_necessary(&wasm_layer.layer)?;
-                let precompiled = self.wasmtime_engine.precompile_component(&component)?;
-                wasm_layer.layer = precompiled;
-            }
-        }
-        let precompiled_layers: Vec<Option<Vec<u8>>> = wasm_content_layers
-            .into_iter()
-            .map(|l| l.map(|l| l.layer))
-            .collect();
+                None => Ok(None),
+            })
+            .collect::<anyhow::Result<_>>()?;
         Ok(precompiled_layers)
     }
 
@@ -517,10 +517,15 @@ mod tests {
             },
         ];
         let spin_engine = SpinEngine::default();
-        let precompiled = spin_engine.precompile(&wasm_layers).unwrap();
+        let precompiled = spin_engine
+            .precompile(&wasm_layers)
+            .expect("precompile failed");
         assert_eq!(precompiled.len(), 3);
-        assert_ne!(precompiled[0].as_deref().unwrap(), module);
-        assert_eq!(precompiled[1].as_deref().unwrap(), component);
+        assert_ne!(precompiled[0].as_deref().expect("no first entry"), module);
+        assert_eq!(
+            precompiled[1].as_deref().expect("no second entry"),
+            component
+        );
         assert!(precompiled[2].is_none());
     }
 }
