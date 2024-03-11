@@ -2,7 +2,7 @@ spin_manifest_version = 2
 
 [application]
 name = "spin-hello"
-authors = ["Kate Goldenring <kate.goldenring@fermyon.com>", "DeisLabs Engineering Team"]
+authors = ["Kate Goldenring <kate.goldenring@fermyon.com>", "SpinKube Engineering Team"]
 description = "hello"
 version = "0.1.0"
 

@@ -1,7 +1,7 @@
 [package]
 name = "containerd-shim-spin-v2"
-version = "0.10.0"
-authors = ["DeisLabs Engineering Team"]
+version = "0.12.0"
+authors = ["SpinKube Engineering Team"]
 edition = "2021"
 repository = 'https://github.com/spinkube/containerd-shim-spin'
 license = "Apache-2.0"
