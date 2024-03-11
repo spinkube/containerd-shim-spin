@@ -1296,7 +1296,7 @@ dependencies = [
 
 [[package]]
 name = "containerd-shim-spin-tests"
-version = "0.10.0"
+version = "0.12.0"
 dependencies = [
  "anyhow",
  "curl",
@@ -1312,7 +1312,7 @@ dependencies = [
 
 [[package]]
 name = "containerd-shim-spin-v2"
-version = "0.10.0"
+version = "0.12.0"
 dependencies = [
  "anyhow",
  "containerd-shim",
