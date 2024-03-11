@@ -34,7 +34,7 @@ which_binary() {
 
 
 # List of binary names
-binaries=("k3d" "cross" "docker" "kubectl")
+binaries=("k3d" "docker" "kubectl")
 
 for binary in "${binaries[@]}"; do
   which_binary "$binary"

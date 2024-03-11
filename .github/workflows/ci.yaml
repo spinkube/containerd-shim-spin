@@ -42,6 +42,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
+      - uses: azure/setup-kubectl@v3
+      - name: "Install dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler libseccomp-dev
       - name: Extract containerd-shim-spin-linux-${{ env.ARCH }}
         run: |
           mkdir -p ./bin
