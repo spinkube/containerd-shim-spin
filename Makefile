@@ -44,8 +44,8 @@ workloads:
 	./scripts/workloads.sh
 
 .PHONY: integration-tests
-integration-tests: install-cross check-bins move-bins up pod-status-check workloads
-	cross test --release -- --nocapture
+integration-tests: check-bins move-bins up pod-status-check workloads
+	cargo test -p containerd-shim-spin-tests -- --nocapture
 
 .PHONY: tests/clean
 tests/clean:
