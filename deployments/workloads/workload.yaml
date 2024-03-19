@@ -15,7 +15,7 @@ spec:
       runtimeClassName: wasmtime-spin
       containers:
         - name: spin-hello
-          image: ghcr.io/spinkube/containerd-shim-spin/examples/spin-rust-hello:v0.13.0
+          image: ghcr.io/spinkube/containerd-shim-spin/examples/spin-rust-hello:v0.13.1
           command: ["/"]
           resources: # limit the resources to 128Mi of memory and 100m of CPU
             limits:
