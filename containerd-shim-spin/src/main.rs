@@ -5,11 +5,9 @@ use containerd_shim_wasm::sandbox::cli::{revision, shim_main, version};
 mod engine;
 
 fn main() {
-    // Configure the shim to disable all logging for performance improvements.
-    // TODO: consider supporting some logging once log level specification is
-    // supported in https://github.com/containerd/rust-extensions/pull/247
+    // Configure the shim to have only error level logging for performance improvements.
     let shim_config = Config {
-        no_setup_logger: true,
+        default_log_level: "error".to_string(),
         ..Default::default()
     };
     shim_main::<Instance<engine::SpinEngine>>(
