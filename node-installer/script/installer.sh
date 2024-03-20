@@ -45,14 +45,14 @@ if [ ! -f $NODE_ROOT$KWASM_DIR/active ]; then
     touch $NODE_ROOT$KWASM_DIR/active
     if $IS_MICROK8S; then
         nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart snap.microk8s.daemon-containerd
+    elif $IS_K3S; then
+        nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart k3s
+    elif $IS_RKE2_AGENT; then
+        nsenter --target 1 --mount --uts --ipc --net -- systemctl restart rke2-agent
     elif ls $NODE_ROOT/etc/init.d/containerd > /dev/null 2>&1 ; then
         nsenter --target 1 --mount --uts --ipc --net -- /etc/init.d/containerd restart
-    elif ls $NODE_ROOT/etc/init.d/k3s > /dev/null 2>&1 ; then
-        nsenter --target 1 --mount --uts --ipc --net -- /etc/init.d/k3s restart
-    elif $IS_RKE2_AGENT; then
-        nsenter --target 1 --mount --uts --ipc --net -- /bin/systemctl restart rke2-agent
     else
-        nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- /bin/systemctl restart containerd
+        nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart containerd
     fi
 else
     echo "No change in containerd/config.toml"
