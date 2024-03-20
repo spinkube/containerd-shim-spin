@@ -1,6 +1,6 @@
 [package]
 name = "spin-keyvalue"
-version = "0.13.0"
+version = "0.13.1"
 authors = ["SpinKube Engineering Team"]
 edition = "2021"
 
