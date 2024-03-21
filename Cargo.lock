@@ -1322,14 +1322,16 @@ dependencies = [
  "openssl",
  "serde",
  "serde_json",
- "spin-app",
- "spin-common",
+ "spin-app 2.4.0",
+ "spin-common 2.4.0",
  "spin-componentize 0.1.0",
- "spin-core",
- "spin-loader",
- "spin-manifest",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-loader 2.4.0",
+ "spin-manifest 2.4.0",
  "spin-oci",
- "spin-trigger",
+ "spin-telemetry",
+ "spin-trigger 2.4.0",
  "spin-trigger-http",
  "spin-trigger-redis",
  "tokio",
@@ -2175,6 +2177,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "flume"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "55ac459de2512911e4b674ce33cf20befaba382d05b62b008afc1c8b57cbf181"
+dependencies = [
+ "futures-core",
+ "futures-sink",
+ "spin 0.9.8",
+]
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2781,7 +2794,7 @@ dependencies = [
  "hyper 0.14.28",
  "log",
  "rustls 0.20.9",
- "rustls-native-certs",
+ "rustls-native-certs 0.6.3",
  "tokio",
  "tokio-rustls 0.23.4",
  "webpki-roots 0.22.6",
@@ -2798,10 +2811,28 @@ dependencies = [
  "hyper 0.14.28",
  "log",
  "rustls 0.21.10",
- "rustls-native-certs",
+ "rustls-native-certs 0.6.3",
  "tokio",
  "tokio-rustls 0.24.1",
  "webpki-roots 0.25.4",
+]
+
+[[package]]
+name = "hyper-rustls"
+version = "0.25.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "399c78f9338483cb7e630c8474b07268983c6bd5acee012e4211f9f7bb21b070"
+dependencies = [
+ "futures-util",
+ "http 0.2.12",
+ "hyper 0.14.28",
+ "log",
+ "rustls 0.22.2",
+ "rustls-native-certs 0.7.0",
+ "rustls-pki-types",
+ "tokio",
+ "tokio-rustls 0.25.0",
+ "webpki-roots 0.26.1",
 ]
 
 [[package]]
@@ -3421,6 +3452,45 @@ dependencies = [
  "tokio",
  "tower",
  "tracing",
+]
+
+[[package]]
+name = "libsql"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3879a4ed80a245fd4dd8c8fa139245653e86184ed3ab97a6d6ea592045d25793"
+dependencies = [
+ "async-stream",
+ "async-trait",
+ "base64 0.21.7",
+ "bitflags 2.5.0",
+ "bytes",
+ "fallible-iterator 0.3.0",
+ "futures",
+ "http 0.2.12",
+ "hyper 0.14.28",
+ "hyper-rustls 0.25.0",
+ "libsql-hrana",
+ "libsql-sqlite3-parser",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tokio-util 0.7.10",
+ "tower",
+ "tracing",
+]
+
+[[package]]
+name = "libsql-hrana"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "40f256c5c98e84808e067133253471d6f5961c670f0127150694210fb8e6116a"
+dependencies = [
+ "base64 0.21.7",
+ "bytes",
+ "prost 0.12.3",
+ "serde",
 ]
 
 [[package]]
@@ -4147,6 +4217,93 @@ dependencies = [
 ]
 
 [[package]]
+name = "opentelemetry"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "900d57987be3f2aeb70d385fff9b27fb74c5723cc9a52d904d4f9c807a0667bf"
+dependencies = [
+ "futures-core",
+ "futures-sink",
+ "js-sys",
+ "once_cell",
+ "pin-project-lite",
+ "thiserror",
+ "urlencoding",
+]
+
+[[package]]
+name = "opentelemetry-http"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7cbfa5308166ca861434f0b0913569579b8e587430a3d6bcd7fd671921ec145a"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "http 0.2.12",
+ "opentelemetry",
+ "reqwest",
+]
+
+[[package]]
+name = "opentelemetry-otlp"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a016b8d9495c639af2145ac22387dcb88e44118e45320d9238fbf4e7889abcb"
+dependencies = [
+ "async-trait",
+ "futures-core",
+ "http 0.2.12",
+ "opentelemetry",
+ "opentelemetry-http",
+ "opentelemetry-proto",
+ "opentelemetry-semantic-conventions",
+ "opentelemetry_sdk",
+ "prost 0.12.3",
+ "reqwest",
+ "thiserror",
+]
+
+[[package]]
+name = "opentelemetry-proto"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3a8fddc9b68f5b80dae9d6f510b88e02396f006ad48cac349411fbecc80caae4"
+dependencies = [
+ "opentelemetry",
+ "opentelemetry_sdk",
+ "prost 0.12.3",
+ "tonic",
+]
+
+[[package]]
+name = "opentelemetry-semantic-conventions"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9ab5bd6c42fb9349dcf28af2ba9a0667f697f9bdcca045d39f2cec5543e2910"
+
+[[package]]
+name = "opentelemetry_sdk"
+version = "0.22.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9e90c7113be649e31e9a0f8b5ee24ed7a16923b322c3c5ab6367469c049d6b7e"
+dependencies = [
+ "async-trait",
+ "crossbeam-channel",
+ "futures-channel",
+ "futures-executor",
+ "futures-util",
+ "glob",
+ "once_cell",
+ "opentelemetry",
+ "ordered-float 4.2.0",
+ "percent-encoding",
+ "rand 0.8.5",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+]
+
+[[package]]
 name = "option-ext"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4157,6 +4314,15 @@ name = "ordered-float"
 version = "2.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68f19d67e5a2795c94e73e0bb1cc1a7edeb2e28efd39e2e1c9b7a40c1108b11c"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
+name = "ordered-float"
+version = "4.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a76df7075c7d4d01fdcb46c912dd17fba5b60c78ea480b475f2b6ab6f666584e"
 dependencies = [
  "num-traits",
 ]
@@ -4210,14 +4376,50 @@ dependencies = [
  "anyhow",
  "http 0.2.12",
  "reqwest",
- "spin-app",
- "spin-core",
- "spin-locked-app",
- "spin-outbound-networking",
- "spin-world",
- "terminal",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-locked-app 2.3.1",
+ "spin-outbound-networking 2.3.1",
+ "spin-world 2.3.1",
+ "terminal 0.1.0",
  "tracing",
  "url",
+]
+
+[[package]]
+name = "outbound-http"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "http 0.2.12",
+ "reqwest",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-locked-app 2.4.0",
+ "spin-outbound-networking 2.4.0",
+ "spin-world 2.4.0",
+ "terminal 2.4.0",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "outbound-mqtt"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "rumqttc",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-outbound-networking 2.4.0",
+ "spin-world 2.4.0",
+ "table 2.4.0",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -4229,11 +4431,31 @@ dependencies = [
  "flate2",
  "mysql_async",
  "mysql_common",
- "spin-app",
- "spin-core",
- "spin-outbound-networking",
- "spin-world",
- "table",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-outbound-networking 2.3.1",
+ "spin-world 2.3.1",
+ "table 2.3.1",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "outbound-mysql"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "flate2",
+ "mysql_async",
+ "mysql_common",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-outbound-networking 2.4.0",
+ "spin-world 2.4.0",
+ "table 2.4.0",
  "tokio",
  "tracing",
  "url",
@@ -4247,11 +4469,30 @@ dependencies = [
  "anyhow",
  "native-tls",
  "postgres-native-tls",
- "spin-app",
- "spin-core",
- "spin-outbound-networking",
- "spin-world",
- "table",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-outbound-networking 2.3.1",
+ "spin-world 2.3.1",
+ "table 2.3.1",
+ "tokio",
+ "tokio-postgres",
+ "tracing",
+]
+
+[[package]]
+name = "outbound-pg"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "native-tls",
+ "postgres-native-tls",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-outbound-networking 2.4.0",
+ "spin-world 2.4.0",
+ "table 2.4.0",
  "tokio",
  "tokio-postgres",
  "tracing",
@@ -4264,11 +4505,28 @@ source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79
 dependencies = [
  "anyhow",
  "redis 0.21.7",
- "spin-app",
- "spin-core",
- "spin-outbound-networking",
- "spin-world",
- "table",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-outbound-networking 2.3.1",
+ "spin-world 2.3.1",
+ "table 2.3.1",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "outbound-redis"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "redis 0.21.7",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-outbound-networking 2.4.0",
+ "spin-world 2.4.0",
+ "table 2.4.0",
  "tokio",
  "tracing",
 ]
@@ -5232,6 +5490,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3582f63211428f83597b51b2ddb88e2a91a9d52d12831f9d08f5e624e8977422"
 
 [[package]]
+name = "rumqttc"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1568e15fab2d546f940ed3a21f48bbbd1c494c90c99c4481339364a497f94a9"
+dependencies = [
+ "bytes",
+ "flume",
+ "futures-util",
+ "log",
+ "rustls-native-certs 0.7.0",
+ "rustls-pemfile 2.1.1",
+ "rustls-webpki 0.102.2",
+ "thiserror",
+ "tokio",
+ "tokio-rustls 0.25.0",
+ "url",
+]
+
+[[package]]
 name = "rusqlite"
 version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5361,8 +5638,22 @@ checksum = "f9d5a6813c0759e4609cd494e8e725babae6a2ca7b62a5536a13daaec6fcb7ba"
 dependencies = [
  "log",
  "ring 0.17.8",
- "rustls-webpki",
+ "rustls-webpki 0.101.7",
  "sct",
+]
+
+[[package]]
+name = "rustls"
+version = "0.22.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e87c9956bd9807afa1f77e0f7594af32566e830e088a5576d27c5b6f30f49d41"
+dependencies = [
+ "log",
+ "ring 0.17.8",
+ "rustls-pki-types",
+ "rustls-webpki 0.102.2",
+ "subtle",
+ "zeroize",
 ]
 
 [[package]]
@@ -5373,6 +5664,19 @@ checksum = "a9aace74cb666635c918e9c12bc0d348266037aa8eb599b5cba565709a8dff00"
 dependencies = [
  "openssl-probe",
  "rustls-pemfile 1.0.4",
+ "schannel",
+ "security-framework",
+]
+
+[[package]]
+name = "rustls-native-certs"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f1fb85efa936c42c6d5fc28d2629bb51e4b2f4b8a5211e297d599cc5a093792"
+dependencies = [
+ "openssl-probe",
+ "rustls-pemfile 2.1.1",
+ "rustls-pki-types",
  "schannel",
  "security-framework",
 ]
@@ -5396,12 +5700,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustls-pemfile"
+version = "2.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f48172685e6ff52a556baa527774f61fcaa884f59daf3375c62a3f1cd2549dab"
+dependencies = [
+ "base64 0.21.7",
+ "rustls-pki-types",
+]
+
+[[package]]
+name = "rustls-pki-types"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ede67b28608b4c60685c7d54122d4400d90f62b40caee7700e700380a390fa8"
+
+[[package]]
 name = "rustls-webpki"
 version = "0.101.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b6275d1ee7a1cd780b64aca7726599a1dbc893b1e64144529e55c3c2f745765"
 dependencies = [
  "ring 0.17.8",
+ "untrusted 0.9.0",
+]
+
+[[package]]
+name = "rustls-webpki"
+version = "0.102.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "faaa0a62740bedb9b2ef5afa303da42764c012f743917351dc9a237ea1663610"
+dependencies = [
+ "ring 0.17.8",
+ "rustls-pki-types",
  "untrusted 0.9.0",
 ]
 
@@ -5554,7 +5885,7 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3a1a3341211875ef120e117ea7fd5228530ae7e7036a779fdc9117be6b3282c"
 dependencies = [
- "ordered-float",
+ "ordered-float 2.10.1",
  "serde",
 ]
 
@@ -5832,6 +6163,9 @@ name = "spin"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
+dependencies = [
+ "lock_api",
+]
 
 [[package]]
 name = "spin-app"
@@ -5843,9 +6177,25 @@ dependencies = [
  "ouroboros",
  "serde",
  "serde_json",
- "spin-core",
- "spin-locked-app",
- "spin-serde",
+ "spin-core 2.3.1",
+ "spin-locked-app 2.3.1",
+ "spin-serde 2.3.1",
+ "thiserror",
+]
+
+[[package]]
+name = "spin-app"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "ouroboros",
+ "serde",
+ "serde_json",
+ "spin-core 2.4.0",
+ "spin-locked-app 2.4.0",
+ "spin-serde 2.4.0",
  "thiserror",
 ]
 
@@ -5853,6 +6203,19 @@ dependencies = [
 name = "spin-common"
 version = "2.3.1"
 source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
+dependencies = [
+ "anyhow",
+ "dirs 4.0.0",
+ "sha2",
+ "tempfile",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "spin-common"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
 dependencies = [
  "anyhow",
  "dirs 4.0.0",
@@ -5887,6 +6250,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "spin-componentize"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "wasm-encoder 0.200.0",
+ "wasmparser 0.200.0",
+ "wit-component 0.200.0",
+ "wit-parser 0.200.0",
+]
+
+[[package]]
 name = "spin-core"
 version = "2.3.1"
 source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
@@ -5909,9 +6284,46 @@ dependencies = [
 ]
 
 [[package]]
+name = "spin-core"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "cap-primitives",
+ "cap-std",
+ "crossbeam-channel",
+ "io-extras",
+ "rustix 0.37.27",
+ "spin-telemetry",
+ "system-interface",
+ "tokio",
+ "tracing",
+ "wasi-common",
+ "wasmtime",
+ "wasmtime-wasi",
+ "wasmtime-wasi-http",
+]
+
+[[package]]
+name = "spin-expressions"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "dotenvy",
+ "once_cell",
+ "serde",
+ "spin-locked-app 2.4.0",
+ "thiserror",
+]
+
+[[package]]
 name = "spin-http"
-version = "2.3.1"
-source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
 dependencies = [
  "anyhow",
  "http 1.1.0",
@@ -5920,8 +6332,8 @@ dependencies = [
  "indexmap 1.9.3",
  "percent-encoding",
  "serde",
- "spin-app",
- "spin-locked-app",
+ "spin-app 2.4.0",
+ "spin-locked-app 2.4.0",
  "tracing",
  "wasmtime-wasi-http",
 ]
@@ -5933,10 +6345,25 @@ source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79
 dependencies = [
  "anyhow",
  "lru 0.9.0",
- "spin-app",
- "spin-core",
- "spin-world",
- "table",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-world 2.3.1",
+ "table 2.3.1",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "spin-key-value"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "lru 0.9.0",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-world 2.4.0",
+ "table 2.4.0",
  "tokio",
  "tracing",
 ]
@@ -5950,8 +6377,23 @@ dependencies = [
  "azure_data_cosmos",
  "futures",
  "serde",
- "spin-core",
- "spin-key-value",
+ "spin-core 2.3.1",
+ "spin-key-value 2.3.1",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "spin-key-value-azure"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "azure_data_cosmos",
+ "futures",
+ "serde",
+ "spin-core 2.4.0",
+ "spin-key-value 2.4.0",
  "tokio",
  "url",
 ]
@@ -5963,9 +6405,23 @@ source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79
 dependencies = [
  "anyhow",
  "redis 0.21.7",
- "spin-core",
- "spin-key-value",
- "spin-world",
+ "spin-core 2.3.1",
+ "spin-key-value 2.3.1",
+ "spin-world 2.3.1",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "spin-key-value-redis"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "redis 0.21.7",
+ "spin-core 2.4.0",
+ "spin-key-value 2.4.0",
+ "spin-world 2.4.0",
  "tokio",
  "url",
 ]
@@ -5978,9 +6434,23 @@ dependencies = [
  "anyhow",
  "once_cell",
  "rusqlite",
- "spin-core",
- "spin-key-value",
- "spin-world",
+ "spin-core 2.3.1",
+ "spin-key-value 2.3.1",
+ "spin-world 2.3.1",
+ "tokio",
+]
+
+[[package]]
+name = "spin-key-value-sqlite"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "once_cell",
+ "rusqlite",
+ "spin-core 2.4.0",
+ "spin-key-value 2.4.0",
+ "spin-world 2.4.0",
  "tokio",
 ]
 
@@ -5992,9 +6462,22 @@ dependencies = [
  "anyhow",
  "bytesize",
  "llm",
- "spin-app",
- "spin-core",
- "spin-world",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-world 2.3.1",
+]
+
+[[package]]
+name = "spin-llm"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "bytesize",
+ "llm",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-world 2.4.0",
 ]
 
 [[package]]
@@ -6008,9 +6491,27 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "spin-core",
- "spin-llm",
- "spin-world",
+ "spin-core 2.3.1",
+ "spin-llm 2.3.1",
+ "spin-world 2.3.1",
+ "tracing",
+]
+
+[[package]]
+name = "spin-llm-remote-http"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "http 0.2.12",
+ "llm",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "spin-core 2.4.0",
+ "spin-llm 2.4.0",
+ "spin-telemetry",
+ "spin-world 2.4.0",
  "tracing",
 ]
 
@@ -6029,7 +6530,7 @@ dependencies = [
  "itertools 0.10.5",
  "lazy_static",
  "mime_guess",
- "outbound-http",
+ "outbound-http 2.3.1",
  "path-absolutize",
  "regex",
  "reqwest",
@@ -6038,12 +6539,50 @@ dependencies = [
  "serde_json",
  "sha2",
  "shellexpand 3.1.0",
- "spin-common",
- "spin-locked-app",
- "spin-manifest",
- "spin-outbound-networking",
+ "spin-common 2.3.1",
+ "spin-locked-app 2.3.1",
+ "spin-manifest 2.3.1",
+ "spin-outbound-networking 2.3.1",
  "tempfile",
- "terminal",
+ "terminal 0.1.0",
+ "thiserror",
+ "tokio",
+ "tokio-util 0.6.10",
+ "toml 0.8.12",
+ "tracing",
+ "walkdir",
+]
+
+[[package]]
+name = "spin-loader"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "dirs 4.0.0",
+ "dunce",
+ "futures",
+ "glob",
+ "itertools 0.10.5",
+ "lazy_static",
+ "mime_guess",
+ "outbound-http 2.4.0",
+ "path-absolutize",
+ "regex",
+ "reqwest",
+ "semver",
+ "serde",
+ "serde_json",
+ "sha2",
+ "shellexpand 3.1.0",
+ "spin-common 2.4.0",
+ "spin-locked-app 2.4.0",
+ "spin-manifest 2.4.0",
+ "spin-outbound-networking 2.4.0",
+ "tempfile",
+ "terminal 2.4.0",
  "thiserror",
  "tokio",
  "tokio-util 0.6.10",
@@ -6062,7 +6601,21 @@ dependencies = [
  "ouroboros",
  "serde",
  "serde_json",
- "spin-serde",
+ "spin-serde 2.3.1",
+ "thiserror",
+]
+
+[[package]]
+name = "spin-locked-app"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "ouroboros",
+ "serde",
+ "serde_json",
+ "spin-serde 2.4.0",
  "thiserror",
 ]
 
@@ -6074,8 +6627,23 @@ dependencies = [
  "anyhow",
  "indexmap 1.9.3",
  "serde",
- "spin-serde",
- "terminal",
+ "spin-serde 2.3.1",
+ "terminal 0.1.0",
+ "thiserror",
+ "toml 0.8.12",
+ "url",
+]
+
+[[package]]
+name = "spin-manifest"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "indexmap 1.9.3",
+ "serde",
+ "spin-serde 2.4.0",
+ "terminal 2.4.0",
  "thiserror",
  "toml 0.8.12",
  "url",
@@ -6083,8 +6651,8 @@ dependencies = [
 
 [[package]]
 name = "spin-oci"
-version = "2.3.1"
-source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
 dependencies = [
  "anyhow",
  "async-compression",
@@ -6098,10 +6666,10 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "spin-common",
- "spin-loader",
- "spin-locked-app",
- "spin-manifest",
+ "spin-common 2.4.0",
+ "spin-loader 2.4.0",
+ "spin-locked-app 2.4.0",
+ "spin-manifest 2.4.0",
  "tempfile",
  "tokio",
  "tokio-util 0.7.10",
@@ -6116,8 +6684,23 @@ source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79
 dependencies = [
  "anyhow",
  "ipnet",
- "spin-locked-app",
- "terminal",
+ "spin-locked-app 2.3.1",
+ "terminal 0.1.0",
+ "url",
+ "urlencoding",
+]
+
+[[package]]
+name = "spin-outbound-networking"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "http 1.1.0",
+ "ipnet",
+ "spin-expressions",
+ "spin-locked-app 2.4.0",
+ "terminal 2.4.0",
  "url",
  "urlencoding",
 ]
@@ -6132,16 +6715,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "spin-serde"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "base64 0.21.7",
+ "serde",
+]
+
+[[package]]
 name = "spin-sqlite"
 version = "2.3.1"
 source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
 dependencies = [
  "anyhow",
  "async-trait",
- "spin-app",
- "spin-core",
- "spin-world",
- "table",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-world 2.3.1",
+ "table 2.3.1",
+ "tokio",
+]
+
+[[package]]
+name = "spin-sqlite"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-world 2.4.0",
+ "table 2.4.0",
  "tokio",
 ]
 
@@ -6155,8 +6761,23 @@ dependencies = [
  "once_cell",
  "rand 0.8.5",
  "rusqlite",
- "spin-sqlite",
- "spin-world",
+ "spin-sqlite 2.3.1",
+ "spin-world 2.3.1",
+ "tokio",
+]
+
+[[package]]
+name = "spin-sqlite-inproc"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "once_cell",
+ "rand 0.8.5",
+ "rusqlite",
+ "spin-sqlite 2.4.0",
+ "spin-world 2.4.0",
  "tokio",
 ]
 
@@ -6167,12 +6788,46 @@ source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79
 dependencies = [
  "anyhow",
  "async-trait",
- "libsql",
+ "libsql 0.2.0",
  "rusqlite",
- "spin-sqlite",
- "spin-world",
+ "spin-sqlite 2.3.1",
+ "spin-world 2.3.1",
  "sqlparser",
  "tokio",
+]
+
+[[package]]
+name = "spin-sqlite-libsql"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "libsql 0.3.2",
+ "rusqlite",
+ "spin-sqlite 2.4.0",
+ "spin-world 2.4.0",
+ "sqlparser",
+ "tokio",
+]
+
+[[package]]
+name = "spin-telemetry"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "http 0.2.12",
+ "http 1.1.0",
+ "opentelemetry",
+ "opentelemetry-otlp",
+ "opentelemetry-semantic-conventions",
+ "opentelemetry_sdk",
+ "tracing",
+ "tracing-appender",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+ "url",
 ]
 
 [[package]]
@@ -6188,32 +6843,82 @@ dependencies = [
  "futures",
  "indexmap 1.9.3",
  "ipnet",
- "outbound-http",
- "outbound-mysql",
- "outbound-pg",
- "outbound-redis",
+ "outbound-http 2.3.1",
+ "outbound-mysql 2.3.1",
+ "outbound-pg 2.3.1",
+ "outbound-redis 2.3.1",
  "sanitize-filename",
  "serde",
  "serde_json",
- "spin-app",
- "spin-common",
+ "spin-app 2.3.1",
+ "spin-common 2.3.1",
  "spin-componentize 2.3.1",
- "spin-core",
- "spin-key-value",
- "spin-key-value-azure",
- "spin-key-value-redis",
- "spin-key-value-sqlite",
- "spin-llm",
- "spin-llm-remote-http",
- "spin-loader",
- "spin-manifest",
- "spin-outbound-networking",
- "spin-sqlite",
- "spin-sqlite-inproc",
- "spin-sqlite-libsql",
- "spin-variables",
- "spin-world",
- "terminal",
+ "spin-core 2.3.1",
+ "spin-key-value 2.3.1",
+ "spin-key-value-azure 0.1.0",
+ "spin-key-value-redis 0.1.0",
+ "spin-key-value-sqlite 0.1.0",
+ "spin-llm 2.3.1",
+ "spin-llm-remote-http 2.3.1",
+ "spin-loader 2.3.1",
+ "spin-manifest 2.3.1",
+ "spin-outbound-networking 2.3.1",
+ "spin-sqlite 2.3.1",
+ "spin-sqlite-inproc 2.3.1",
+ "spin-sqlite-libsql 2.3.1",
+ "spin-variables 2.3.1",
+ "spin-world 2.3.1",
+ "terminal 0.1.0",
+ "tokio",
+ "toml 0.5.11",
+ "tracing",
+ "url",
+ "wasmtime",
+ "wasmtime-wasi",
+ "wasmtime-wasi-http",
+]
+
+[[package]]
+name = "spin-trigger"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap",
+ "ctrlc",
+ "dirs 4.0.0",
+ "futures",
+ "indexmap 1.9.3",
+ "ipnet",
+ "outbound-http 2.4.0",
+ "outbound-mqtt",
+ "outbound-mysql 2.4.0",
+ "outbound-pg 2.4.0",
+ "outbound-redis 2.4.0",
+ "sanitize-filename",
+ "serde",
+ "serde_json",
+ "spin-app 2.4.0",
+ "spin-common 2.4.0",
+ "spin-componentize 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-key-value 2.4.0",
+ "spin-key-value-azure 2.4.0",
+ "spin-key-value-redis 2.4.0",
+ "spin-key-value-sqlite 2.4.0",
+ "spin-llm 2.4.0",
+ "spin-llm-remote-http 2.4.0",
+ "spin-loader 2.4.0",
+ "spin-manifest 2.4.0",
+ "spin-outbound-networking 2.4.0",
+ "spin-sqlite 2.4.0",
+ "spin-sqlite-inproc 2.4.0",
+ "spin-sqlite-libsql 2.4.0",
+ "spin-variables 2.4.0",
+ "spin-world 2.4.0",
+ "terminal 2.4.0",
  "tokio",
  "toml 0.5.11",
  "tracing",
@@ -6225,8 +6930,8 @@ dependencies = [
 
 [[package]]
 name = "spin-trigger-http"
-version = "2.3.1"
-source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6238,18 +6943,19 @@ dependencies = [
  "hyper 1.2.0",
  "hyper-util",
  "indexmap 1.9.3",
- "outbound-http",
+ "outbound-http 2.4.0",
  "percent-encoding",
  "rustls-pemfile 0.3.0",
  "serde",
  "serde_json",
- "spin-app",
- "spin-core",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
  "spin-http",
- "spin-outbound-networking",
- "spin-trigger",
- "spin-world",
- "terminal",
+ "spin-outbound-networking 2.4.0",
+ "spin-telemetry",
+ "spin-trigger 2.4.0",
+ "spin-world 2.4.0",
+ "terminal 2.4.0",
  "tls-listener",
  "tokio",
  "tokio-rustls 0.23.4",
@@ -6263,18 +6969,21 @@ dependencies = [
 
 [[package]]
 name = "spin-trigger-redis"
-version = "2.3.1"
-source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
 dependencies = [
  "anyhow",
  "async-trait",
  "futures",
  "redis 0.21.7",
  "serde",
- "spin-app",
- "spin-core",
- "spin-trigger",
- "spin-world",
+ "spin-app 2.4.0",
+ "spin-common 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-trigger 2.4.0",
+ "spin-world 2.4.0",
+ "tokio",
  "tracing",
 ]
 
@@ -6288,9 +6997,28 @@ dependencies = [
  "dotenvy",
  "once_cell",
  "serde",
- "spin-app",
- "spin-core",
- "spin-world",
+ "spin-app 2.3.1",
+ "spin-core 2.3.1",
+ "spin-world 2.3.1",
+ "thiserror",
+ "tokio",
+ "vaultrs",
+]
+
+[[package]]
+name = "spin-variables"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "dotenvy",
+ "once_cell",
+ "serde",
+ "spin-app 2.4.0",
+ "spin-core 2.4.0",
+ "spin-expressions",
+ "spin-world 2.4.0",
  "thiserror",
  "tokio",
  "vaultrs",
@@ -6300,6 +7028,14 @@ dependencies = [
 name = "spin-world"
 version = "2.3.1"
 source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
+dependencies = [
+ "wasmtime",
+]
+
+[[package]]
+name = "spin-world"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
 dependencies = [
  "wasmtime",
 ]
@@ -6478,6 +7214,11 @@ version = "2.3.1"
 source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
 
 [[package]]
+name = "table"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
+
+[[package]]
 name = "tar"
 version = "0.4.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6519,6 +7260,16 @@ dependencies = [
 name = "terminal"
 version = "0.1.0"
 source = "git+https://github.com/fermyon/spin?tag=v2.3.1#22c2ac507add20f82f35e79fb798e8294a49f69a"
+dependencies = [
+ "atty",
+ "once_cell",
+ "termcolor",
+]
+
+[[package]]
+name = "terminal"
+version = "2.4.0"
+source = "git+https://github.com/fermyon/spin?tag=v2.4.0#11728244cc4737378d9b2d6f55965e4930ada425"
 dependencies = [
  "atty",
  "once_cell",
@@ -6755,6 +7506,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-rustls"
+version = "0.25.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "775e0c0f0adb3a2f22a00c4745d728b479985fc15ee7ca6a2608388c5569860f"
+dependencies = [
+ "rustls 0.22.2",
+ "rustls-pki-types",
+ "tokio",
+]
+
+[[package]]
 name = "tokio-scoped"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6967,6 +7729,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-appender"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3566e8ce28cc0a3fe42519fc80e6b4c943cc4c8cef275620eb8dac2d3d4e06cf"
+dependencies = [
+ "crossbeam-channel",
+ "thiserror",
+ "time",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "tracing-attributes"
 version = "0.1.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6999,6 +7773,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-opentelemetry"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9be14ba1bbe4ab79e9229f7f89fab8d120b865859f10527f31c033e599d2284"
+dependencies = [
+ "js-sys",
+ "once_cell",
+ "opentelemetry",
+ "opentelemetry_sdk",
+ "smallvec",
+ "tracing",
+ "tracing-core",
+ "tracing-log",
+ "tracing-subscriber",
+ "web-time",
+]
+
+[[package]]
+name = "tracing-serde"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc6b213177105856957181934e4920de57730fc69bf42c37ee5bb664d406d9e1"
+dependencies = [
+ "serde",
+ "tracing-core",
+]
+
+[[package]]
 name = "tracing-subscriber"
 version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7008,12 +7810,15 @@ dependencies = [
  "nu-ansi-term",
  "once_cell",
  "regex",
+ "serde",
+ "serde_json",
  "sharded-slab",
  "smallvec",
  "thread_local",
  "tracing",
  "tracing-core",
  "tracing-log",
+ "tracing-serde",
 ]
 
 [[package]]
@@ -7038,8 +7843,8 @@ dependencies = [
  "futures",
  "is-terminal",
  "serde",
- "spin-core",
- "spin-trigger",
+ "spin-core 2.3.1",
+ "spin-trigger 2.3.1",
  "tokio",
  "tokio-scoped",
  "tracing",
@@ -7981,6 +8786,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "web-time"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a6580f308b1fad9207618087a65c04e7a10bc77e02c8e84e9b00dd4b12fa0bb"
+dependencies = [
+ "js-sys",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "webpki"
 version = "0.22.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8004,6 +8819,15 @@ name = "webpki-roots"
 version = "0.25.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f20c57d8d7db6d3b86154206ae5d8fba62dd39573114de97c2cb0578251f8e1"
+
+[[package]]
+name = "webpki-roots"
+version = "0.26.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3de34ae270483955a94f4b21bdaaeb83d508bb84a01435f393818edb0012009"
+dependencies = [
+ "rustls-pki-types",
+]
 
 [[package]]
 name = "which"

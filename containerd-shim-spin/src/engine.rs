@@ -1,6 +1,7 @@
 use anyhow::{anyhow, ensure, Context, Result};
 use containerd_shim_wasm::container::{Engine, RuntimeContext, Stdio};
 use containerd_shim_wasm::sandbox::WasmLayer;
+use containerd_shim_wasm::version;
 use log::info;
 use oci_spec::image::MediaType;
 use spin_app::locked::LockedApp;
@@ -10,7 +11,7 @@ use spin_manifest::schema::v2::AppManifest;
 use spin_trigger::TriggerHooks;
 use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
 use spin_trigger_http::HttpTrigger;
-use spin_trigger_redis::RedisTrigger;
+// use spin_trigger_redis::RedisTrigger;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
 use std::env;
@@ -21,7 +22,7 @@ use std::net::SocketAddr;
 use std::net::ToSocketAddrs;
 use std::path::{Path, PathBuf};
 use tokio::runtime::Runtime;
-use trigger_sqs::SqsTrigger;
+// use trigger_sqs::SqsTrigger;
 use url::Url;
 
 const SPIN_ADDR: &str = "0.0.0.0:80";
@@ -58,7 +59,12 @@ impl Default for SpinEngine {
 
 struct StdioTriggerHook;
 impl TriggerHooks for StdioTriggerHook {
-    fn app_loaded(&mut self, _app: &spin_app::App, _runtime_config: &RuntimeConfig) -> Result<()> {
+    fn app_loaded(
+        &mut self,
+        _app: &spin_app::App,
+        _runtime_config: &RuntimeConfig,
+        _resolver: &std::sync::Arc<spin_expressions::PreparedResolver>,
+    ) -> Result<()> {
         Ok(())
     }
 
@@ -185,6 +191,9 @@ impl SpinEngine {
         let trigger_cmd = trigger_command_for_resolved_app_source(&resolved_app_source)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
         let locked_app = self.load_resolved_app_source(resolved_app_source).await?;
+
+        let _telemetry_guard = spin_telemetry::init(version!().to_string())?;
+
         self.run_trigger(&trigger_cmd, locked_app, app_source).await
     }
 
@@ -209,24 +218,24 @@ impl SpinEngine {
                     tls_key: None,
                 })
             }
-            RedisTrigger::TRIGGER_TYPE => {
-                let redis_trigger: RedisTrigger = self
-                    .build_spin_trigger(working_dir, app, app_source)
-                    .await
-                    .context("failed to build spin trigger")?;
+            // RedisTrigger::TRIGGER_TYPE => {
+            //     let redis_trigger: RedisTrigger = self
+            //         .build_spin_trigger(working_dir, app, app_source)
+            //         .await
+            //         .context("failed to build spin trigger")?;
 
-                info!(" >>> running spin trigger");
-                redis_trigger.run(spin_trigger::cli::NoArgs)
-            }
-            SqsTrigger::TRIGGER_TYPE => {
-                let sqs_trigger: SqsTrigger = self
-                    .build_spin_trigger(working_dir, app, app_source)
-                    .await
-                    .context("failed to build spin trigger")?;
+            //     info!(" >>> running spin trigger");
+            //     redis_trigger.run(spin_trigger::cli::NoArgs)
+            // }
+            // SqsTrigger::TRIGGER_TYPE => {
+            //     let sqs_trigger: SqsTrigger = self
+            //         .build_spin_trigger(working_dir, app, app_source)
+            //         .await
+            //         .context("failed to build spin trigger")?;
 
-                info!(" >>> running spin trigger");
-                sqs_trigger.run(spin_trigger::cli::NoArgs)
-            }
+            //     info!(" >>> running spin trigger");
+            //     sqs_trigger.run(spin_trigger::cli::NoArgs)
+            // }
             _ => {
                 todo!("Only Http, Redis and SQS triggers are currently supported.")
             }
@@ -437,9 +446,7 @@ fn trigger_command_for_resolved_app_source(resolved: &ResolvedAppSource) -> Resu
     let trigger_type = resolved.trigger_type()?;
 
     match trigger_type {
-        RedisTrigger::TRIGGER_TYPE | HttpTrigger::TRIGGER_TYPE | SqsTrigger::TRIGGER_TYPE => {
-            Ok(trigger_type.to_owned())
-        }
+        HttpTrigger::TRIGGER_TYPE => Ok(trigger_type.to_owned()),
         _ => {
             todo!("Only Http, Redis and SQS triggers are currently supported.")
         }
