@@ -167,3 +167,26 @@ spec:
                 name: spin-outbound-redis
                 port:
                   number: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-multi-trigger-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spin-multi-trigger-app
+  template:
+    metadata:
+      labels:
+        app: spin-multi-trigger-app
+    spec:
+      runtimeClassName: wasmtime-spin
+      containers:
+      - name: spin-multi-trigger-app
+        image: docker.io/library/spin-multi-trigger-app:latest
+        command: ["/"]
+        ports:
+        - containerPort: 80
