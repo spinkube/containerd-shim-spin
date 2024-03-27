@@ -43,8 +43,12 @@ pod-status-check:
 workloads:
 	./scripts/workloads.sh
 
+./PHONY: test-workloads-delete
+test-workloads-delete:
+	./scripts/workloads-delete.sh
+
 .PHONY: integration-tests
-integration-tests: check-bins move-bins up pod-status-check workloads
+integration-tests: check-bins move-bins up pod-status-check workloads test-workloads-delete
 	cargo test -p containerd-shim-spin-tests -- --nocapture
 
 .PHONY: tests/clean

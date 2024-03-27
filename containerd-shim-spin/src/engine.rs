@@ -232,22 +232,7 @@ impl SpinEngine {
             }
         };
         info!(" >>> notifying main thread we are about to start");
-        let (abortable, abort_handle) = futures::future::abortable(f);
-        ctrlc::set_handler(move || abort_handle.abort())?;
-        match abortable.await {
-            Ok(Ok(())) => {
-                info!("Trigger executor shut down: exiting");
-                Ok(())
-            }
-            Ok(Err(err)) => {
-                log::error!("ERROR >>> Trigger executor failed: {:?}", err);
-                Err(err)
-            }
-            Err(aborted) => {
-                info!("Received signal to abort: {:?}", aborted);
-                Ok(())
-            }
-        }
+        f.await
     }
 
     async fn load_resolved_app_source(
@@ -339,8 +324,24 @@ impl Engine for SpinEngine {
         stdio.redirect()?;
         info!("setting up wasi");
         let rt = Runtime::new().context("failed to create runtime")?;
-        rt.block_on(self.wasm_exec_async(ctx))?;
-        Ok(0)
+
+        let (abortable, abort_handle) = futures::future::abortable(self.wasm_exec_async(ctx));
+        ctrlc::set_handler(move || abort_handle.abort())?;
+
+        match rt.block_on(abortable) {
+            Ok(Ok(())) => {
+                info!("run_wasi shut down: exiting");
+                Ok(0)
+            }
+            Ok(Err(err)) => {
+                log::error!("run_wasi ERROR >>>  failed: {:?}", err);
+                Err(err)
+            }
+            Err(aborted) => {
+                info!("Received signal to abort: {:?}", aborted);
+                Ok(0)
+            }
+        }
     }
 
     fn can_handle(&self, _ctx: &impl RuntimeContext) -> Result<()> {
