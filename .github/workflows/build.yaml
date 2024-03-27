@@ -25,7 +25,7 @@ jobs:
     env:
       ARCH: ${{ matrix.config.arch }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
