@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod test {
-    use anyhow::Result;
+    use std::{thread, time};
+
+    use anyhow::{Context, Result};
     use redis::AsyncCommands;
     use tokio::process::Command;
 
@@ -77,6 +79,53 @@ mod test {
 
         let key: String = con.get("int-key").await?;
         assert_eq!(key, "1");
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn spin_multi_trigger_app_test() -> Result<()> {
+        let host_port = 8082;
+
+        // curl for hello
+        println!(" >>> curl http://localhost:{}/multi-trigger-app", host_port);
+        let res = retry_get(
+            &format!("http://localhost:{}/multi-trigger-app", host_port),
+            RETRY_TIMES,
+            INTERVAL_IN_SECS,
+        )
+        .await?;
+        assert_eq!(
+            String::from_utf8_lossy(&res),
+            "Hello world from multi trigger Spin!"
+        );
+
+        let forward_port = 6380;
+        let redis_port = 6379;
+
+        // Ensure kubectl is in PATH
+        if !is_kubectl_installed().await? {
+            anyhow::bail!("kubectl is not installed");
+        }
+
+        port_forward_redis(forward_port, redis_port).await?;
+
+        let client = redis::Client::open(format!("redis://localhost:{}", forward_port))
+            .context("connecting to redis")?;
+        let mut con = client.get_multiplexed_async_connection().await?;
+
+        con.publish("testchannel", "some-payload").await?;
+
+        let one_sec = time::Duration::from_secs(1);
+        thread::sleep(one_sec);
+
+        let exists: bool = con.exists("spin-multi-trigger-app-key").await?;
+        assert!(exists, "key 'spin-multi-trigger-app-key' does not exist");
+
+        let value = con
+            .get::<&str, String>("spin-multi-trigger-app-key")
+            .await?;
+        assert_eq!(value, "spin-multi-trigger-app-value");
 
         Ok(())
     }
