@@ -58,7 +58,12 @@ impl Default for SpinEngine {
 
 struct StdioTriggerHook;
 impl TriggerHooks for StdioTriggerHook {
-    fn app_loaded(&mut self, _app: &spin_app::App, _runtime_config: &RuntimeConfig) -> Result<()> {
+    fn app_loaded(
+        &mut self,
+        _app: &spin_app::App,
+        _runtime_config: &RuntimeConfig,
+        _resolver: &std::sync::Arc<spin_expressions::PreparedResolver>,
+    ) -> Result<()> {
         Ok(())
     }
 
