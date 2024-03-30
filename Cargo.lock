@@ -1342,7 +1342,8 @@ dependencies = [
 [[package]]
 name = "containerd-shim-wasm"
 version = "0.5.0"
-source = "git+https://github.com/containerd/runwasi?rev=c04170e81794b1a776c840ffa765b3491d43445a#c04170e81794b1a776c840ffa765b3491d43445a"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "65db74803141307ea49aca857c650478abef859d042738f81c630b8950676543"
 dependencies = [
  "anyhow",
  "caps",
