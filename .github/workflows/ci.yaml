@@ -58,6 +58,19 @@ jobs:
         working-directory: ./deployments/k3d
       - name: run integration tests
         run: BIN_DIR="./bin" make integration-tests
+
+      - name: run collect debug logs
+        if: failure()
+        run: make tests/collect-debug-logs
+ 
+      - name: upload debug logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: debug-logs
+          path: debug-logs/
+          retention-days: 5
+
       - name: clean up k3d
         if: always()
         run: make tests/clean
