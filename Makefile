@@ -51,6 +51,10 @@ test-workloads-delete:
 integration-tests: check-bins move-bins up pod-status-check workloads test-workloads-delete
 	cargo test -p containerd-shim-spin-tests -- --nocapture
 
+.PHONY: tests/collect-debug-logs
+tests/collect-debug-logs:
+	./scripts/collect-debug-logs.sh 2>&1
+
 .PHONY: tests/clean
 tests/clean:
 	./scripts/down.sh
