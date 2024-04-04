@@ -266,7 +266,11 @@ impl SpinEngine {
         info!(" >>> notifying main thread we are about to start");
 
         // exit as soon as any of the trigger completes/exits
-        let (result, _, rest) = future::select_all(futures_list).await;
+        let (result, index, rest) = future::select_all(futures_list).await;
+        info!(
+            " >>> trigger type '{trigger_type}' exited",
+            trigger_type = trigger_types[index]
+        );
 
         drop(rest);
 
