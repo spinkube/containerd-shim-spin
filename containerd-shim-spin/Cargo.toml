@@ -14,20 +14,19 @@ Containerd shim for running Spin workloads.
 containerd-shim-wasm = { git = "https://github.com/containerd/runwasi", rev = "c04170e81794b1a776c840ffa765b3491d43445a" }
 containerd-shim = "0.7.1"
 log = "0.4"
-spin-app = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
-spin-core = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
+spin-app = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-core = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
 spin-componentize = { git = "https://github.com/fermyon/spin-componentize", rev = "191789170abde10cd55590466c0660dd6c7d472a" }
 # Enable loading components precompiled by the shim
-spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.4.0", features = ["unsafe-aot-compilation"] }
-spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
-spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
-# TODO: change to the original repo once https://github.com/fermyon/spin-trigger-sqs/pull/19 is merged.
-trigger-sqs = { git = "https://github.com/radu-matei/spin-trigger-sqs", rev = "8e173e5c7023415cd6b29d1f0a37296d2861d5a2" }
-spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
-spin-loader = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
-spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
-spin-common = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
-spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v2.4.0" }
+spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.4.2", features = ["unsafe-aot-compilation"] }
+spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "b51f7fdc2a1bc7184dd2a3a1c1720e1ebe2adba3" }
+spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-loader = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-common = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
 wasmtime = "18.0.1"
 tokio = { version = "1.37", features = ["rt"] }
 openssl = { version = "*", features = ["vendored"] }
