@@ -21,6 +21,7 @@ use std::net::SocketAddr;
 use std::net::ToSocketAddrs;
 use std::path::{Path, PathBuf};
 use tokio::runtime::Runtime;
+use trigger_command::CommandTrigger;
 use trigger_sqs::SqsTrigger;
 use url::Url;
 
@@ -190,11 +191,13 @@ impl SpinEngine {
         let trigger_cmd = trigger_command_for_resolved_app_source(&resolved_app_source)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
         let locked_app = self.load_resolved_app_source(resolved_app_source).await?;
-        self.run_trigger(&trigger_cmd, locked_app, app_source).await
+        self.run_trigger(ctx, &trigger_cmd, locked_app, app_source)
+            .await
     }
 
     async fn run_trigger(
         &self,
+        ctx: &impl RuntimeContext,
         trigger_type: &str,
         app: LockedApp,
         app_source: AppSource,
@@ -231,6 +234,17 @@ impl SpinEngine {
 
                 info!(" >>> running spin trigger");
                 sqs_trigger.run(spin_trigger::cli::NoArgs)
+            }
+            CommandTrigger::TRIGGER_TYPE => {
+                let command_trigger: CommandTrigger = self
+                    .build_spin_trigger(working_dir, app, app_source)
+                    .await
+                    .context("failed to build spin trigger")?;
+
+                info!(" >>> running spin trigger");
+                command_trigger.run(trigger_command::CliArgs {
+                    guest_args: ctx.args().to_vec(),
+                })
             }
             _ => {
                 todo!("Only Http, Redis and SQS triggers are currently supported.")
@@ -442,11 +456,12 @@ fn trigger_command_for_resolved_app_source(resolved: &ResolvedAppSource) -> Resu
     let trigger_type = resolved.trigger_type()?;
 
     match trigger_type {
-        RedisTrigger::TRIGGER_TYPE | HttpTrigger::TRIGGER_TYPE | SqsTrigger::TRIGGER_TYPE => {
-            Ok(trigger_type.to_owned())
-        }
+        RedisTrigger::TRIGGER_TYPE
+        | HttpTrigger::TRIGGER_TYPE
+        | SqsTrigger::TRIGGER_TYPE
+        | CommandTrigger::TRIGGER_TYPE => Ok(trigger_type.to_owned()),
         _ => {
-            todo!("Only Http, Redis and SQS triggers are currently supported.")
+            todo!("Only Http, Redis, SQS, and command triggers are currently supported.")
         }
     }
 }
