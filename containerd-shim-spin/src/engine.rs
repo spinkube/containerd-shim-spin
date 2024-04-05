@@ -1,25 +1,28 @@
 use anyhow::{anyhow, ensure, Context, Result};
-use containerd_shim_wasm::container::{Engine, RuntimeContext, Stdio};
-use containerd_shim_wasm::sandbox::WasmLayer;
+use containerd_shim_wasm::{
+    container::{Engine, RuntimeContext, Source, Stdio},
+    sandbox::WasmLayer,
+};
 use log::info;
 use oci_spec::image::MediaType;
 use spin_app::locked::LockedApp;
-use spin_loader::cache::Cache;
-use spin_loader::FilesMountStrategy;
+use spin_loader::{cache::Cache, FilesMountStrategy};
 use spin_manifest::schema::v2::AppManifest;
-use spin_trigger::TriggerHooks;
-use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
+use spin_oci::OciLoader;
+use spin_trigger::{
+    loader::TriggerLoader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder, TriggerHooks,
+};
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
-use std::collections::hash_map::DefaultHasher;
-use std::collections::HashSet;
-use std::env;
-use std::fs::File;
-use std::hash::{Hash, Hasher};
-use std::io::Write;
-use std::net::SocketAddr;
-use std::net::ToSocketAddrs;
-use std::path::{Path, PathBuf};
+use std::{
+    collections::{hash_map::DefaultHasher, HashSet},
+    env,
+    fs::File,
+    hash::{Hash, Hasher},
+    io::Write,
+    net::{SocketAddr, ToSocketAddrs},
+    path::{Path, PathBuf},
+};
 use tokio::runtime::Runtime;
 use trigger_command::CommandTrigger;
 use trigger_sqs::SqsTrigger;
@@ -97,10 +100,8 @@ impl std::fmt::Debug for AppSource {
 impl SpinEngine {
     async fn app_source(&self, ctx: &impl RuntimeContext, cache: &Cache) -> Result<AppSource> {
         match ctx.entrypoint().source {
-            containerd_shim_wasm::container::Source::File(_) => {
-                Ok(AppSource::File(SPIN_MANIFEST_FILE_PATH.into()))
-            }
-            containerd_shim_wasm::container::Source::Oci(layers) => {
+            Source::File(_) => Ok(AppSource::File(SPIN_MANIFEST_FILE_PATH.into())),
+            Source::Oci(layers) => {
                 info!(" >>> configuring spin oci application {}", layers.len());
 
                 for layer in layers {
@@ -162,7 +163,7 @@ impl SpinEngine {
             },
             AppSource::Oci => {
                 let working_dir = PathBuf::from("/");
-                let loader = spin_oci::OciLoader::new(working_dir);
+                let loader = OciLoader::new(working_dir);
 
                 // TODO: what is the best way to get this info? It isn't used only saved in the locked file
                 let reference = "docker.io/library/wasmtest_spin:latest";
@@ -295,7 +296,7 @@ impl SpinEngine {
         let locked_url = self.write_locked_app(&app, &working_dir).await?;
 
         // Build trigger config
-        let mut loader = loader::TriggerLoader::new(working_dir.clone(), true);
+        let mut loader = TriggerLoader::new(working_dir.clone(), true);
         match app_source {
             AppSource::Oci => unsafe {
                 // Configure the loader to support loading AOT compiled components..
