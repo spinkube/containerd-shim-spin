@@ -1334,6 +1334,7 @@ dependencies = [
  "spin-trigger-http",
  "spin-trigger-redis",
  "tokio",
+ "trigger-command",
  "trigger-sqs",
  "url",
  "wasmtime",
@@ -7358,6 +7359,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d127780145176e2b5d16611cc25a900150e86e9fd79d3bde6ff3a37359c9cb5"
 dependencies = [
  "serde_json",
+]
+
+[[package]]
+name = "trigger-command"
+version = "0.1.0"
+source = "git+https://github.com/fermyon/spin-trigger-command?rev=af3cf1148573ab10e1e819b66cd920a04a789e50#af3cf1148573ab10e1e819b66cd920a04a789e50"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap",
+ "openssl",
+ "serde",
+ "spin-app",
+ "spin-core",
+ "spin-trigger",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "wasmtime-wasi",
 ]
 
 [[package]]
