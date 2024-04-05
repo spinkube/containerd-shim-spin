@@ -7362,7 +7362,7 @@ dependencies = [
 [[package]]
 name = "trigger-sqs"
 version = "0.6.0"
-source = "git+https://github.com/fermyon/spin-trigger-sqs?rev=b51f7fdc2a1bc7184dd2a3a1c1720e1ebe2adba3#b51f7fdc2a1bc7184dd2a3a1c1720e1ebe2adba3"
+source = "git+https://github.com/fermyon/spin-trigger-sqs?rev=dbfc599560ab54e759bfa586fe7315848f00a7f6#dbfc599560ab54e759bfa586fe7315848f00a7f6"
 dependencies = [
  "anyhow",
  "async-trait",
