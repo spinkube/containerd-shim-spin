@@ -61,16 +61,12 @@ tests/clean:
 
 .PHONY: fmt
 fmt:
-	$(foreach shim,$(SHIMS),cargo fmt --all --manifest-path=containerd-shim-$(shim)/Cargo.toml -- --check;)
-	$(foreach shim,$(SHIMS),cargo clippy --all-targets --all-features --workspace --manifest-path=containerd-shim-$(shim)/Cargo.toml -- -D warnings;)	
-	cargo fmt --all -- --check
+	cargo +nightly fmt --all -- --check
 	cargo clippy --all-targets --all-features --workspace -- --deny=warnings
 
 .PHONY: fix
 fix:
-	$(foreach shim,$(SHIMS),cargo fmt --all --manifest-path=containerd-shim-$(shim)/Cargo.toml;)
-	$(foreach shim,$(SHIMS),cargo clippy --all-targets --all-features --workspace --manifest-path=containerd-shim-$(shim)/Cargo.toml --fix -- -D warnings;)	
-	cargo fmt --all
+	cargo +nightly fmt --all
 	cargo clippy --all-targets --all-features --workspace --fix -- --deny=warnings
 
 .PHONY: build
