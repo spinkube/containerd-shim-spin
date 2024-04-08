@@ -19,4 +19,4 @@ tokio = { version = "1", features = ["rt", "macros", "process"] }
 http = "1.1"
 tower = "0.4"
 hyper = "0.14"
-redis = { version = "0.23", features = ["tokio-comp"] }
+redis = { version = "0.25", features = ["tokio-comp"] }
