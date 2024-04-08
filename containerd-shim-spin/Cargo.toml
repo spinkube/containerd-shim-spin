@@ -1,44 +1,43 @@
 [package]
 name = "containerd-shim-spin-v2"
-version = "0.13.1"
-authors = ["SpinKube Engineering Team"]
-edition = "2021"
-repository = 'https://github.com/spinkube/containerd-shim-spin'
-license = "Apache-2.0"
-homepage = 'https://github.com/spinkube/containerd-shim-spin'
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+homepage.workspace = true
 description = """
 Containerd shim for running Spin workloads.
 """
 
 [dependencies]
-containerd-shim-wasm = "0.5.0"
-containerd-shim = "0.7.1"
-log = "0.4"
-spin-app = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-spin-core = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-spin-componentize = { git = "https://github.com/fermyon/spin-componentize", rev = "191789170abde10cd55590466c0660dd6c7d472a" }
-# Enable loading components precompiled by the shim
-spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.4.2", features = ["unsafe-aot-compilation"] }
-spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "dbfc599560ab54e759bfa586fe7315848f00a7f6" }
-trigger-command = { git = "https://github.com/fermyon/spin-trigger-command" , rev = "af3cf1148573ab10e1e819b66cd920a04a789e50" }
-spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-spin-loader = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-spin-common = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
-wasmtime = "18.0.1"
-tokio = { version = "1.37", features = ["rt"] }
-openssl = { version = "*", features = ["vendored"] }
-serde = "1.0"
-serde_json = "1.0"
-url = "2.3"
-anyhow = "1.0"
-oci-spec = { version = "0.6.3" }
-futures = "0.3"
-ctrlc = { version = "3.2", features = ["termination"] }
+containerd-shim-wasm = { workspace = true }
+containerd-shim = { workspace = true }
+log = { workspace = true }
+spin-app = { workspace = true }
+spin-core = { workspace = true }
+spin-componentize = { workspace = true }
+spin-trigger = { workspace = true }
+spin-trigger-http = { workspace = true }
+spin-trigger-redis = { workspace = true }
+trigger-sqs = { workspace = true }
+trigger-command = { workspace = true }
+spin-manifest = { workspace = true }
+spin-loader = { workspace = true }
+spin-oci = { workspace = true }
+spin-common = { workspace = true }
+spin-expressions = { workspace = true }
+wasmtime = { workspace = true }
+tokio = { workspace = true }
+openssl = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+url = { workspace = true }
+anyhow = { workspace = true }
+oci-spec = { workspace = true }
+futures = { workspace = true }
+ctrlc = { workspace = true }
 
 
 [dev-dependencies]
-wat = "1"
+wat = { workspace = true }

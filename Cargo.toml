@@ -4,7 +4,8 @@ edition = "2021"
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/spinkube/containerd-shim-spin"
-homepage = "https://github.com/spinkube/containerd-shim-spin"
+homepage = "https://spinkube.dev/docs/containerd-shim-spin/"
+authors = ["SpinKube Engineering Team"]
 
 
 [workspace]
@@ -13,3 +14,41 @@ members = [
     "tests",
     "containerd-shim-spin"
 ]
+
+[workspace.dependencies]
+containerd-shim-wasm = "0.5.0"
+containerd-shim = "0.7.1"
+log = "0.4"
+spin-app = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-core = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-componentize = { git = "https://github.com/fermyon/spin-componentize", rev = "191789170abde10cd55590466c0660dd6c7d472a" }
+# Enable loading components precompiled by the shim
+spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.4.2", features = ["unsafe-aot-compilation"] }
+spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "dbfc599560ab54e759bfa586fe7315848f00a7f6" }
+trigger-command = { git = "https://github.com/fermyon/spin-trigger-command" , rev = "af3cf1148573ab10e1e819b66cd920a04a789e50" }
+spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-loader = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-common = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v2.4.2" }
+wasmtime = "18.0.1"
+tokio = { version = "1.37", features = ["rt", "macros", "process"] }
+openssl = { version = "*", features = ["vendored"] }
+serde = "1.0"
+serde_json = "1.0"
+url = "2.3"
+anyhow = "1.0"
+oci-spec = { version = "0.6.3" }
+futures = "0.3"
+ctrlc = { version = "3.2", features = ["termination"] }
+kube = { version = "0.87", features = ["runtime", "derive", "ws"] }
+k8s-openapi = { version = "0.20", features = ["v1_25"] }
+curl = { version = "0.4", features = ["static-curl"]}
+rand = "0.8"
+wat = "1.0"
+http = "0.2"
+tower = "0.4"
+hyper = "0.14"
+redis = { version = "0.23", features = ["tokio-comp"] }
