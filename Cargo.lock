@@ -1304,7 +1304,7 @@ version = "0.13.1"
 dependencies = [
  "anyhow",
  "curl",
- "http 0.2.12",
+ "http 1.1.0",
  "hyper 0.14.28",
  "k8s-openapi",
  "kube",
