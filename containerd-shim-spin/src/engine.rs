@@ -1,25 +1,26 @@
+use std::{
+    collections::{hash_map::DefaultHasher, HashSet},
+    env,
+    fs::File,
+    hash::{Hash, Hasher},
+    io::Write,
+    net::{SocketAddr, ToSocketAddrs},
+    path::{Path, PathBuf},
+};
+
 use anyhow::{anyhow, ensure, Context, Result};
-use containerd_shim_wasm::container::{Engine, RuntimeContext, Stdio};
-use containerd_shim_wasm::sandbox::WasmLayer;
+use containerd_shim_wasm::{
+    container::{Engine, RuntimeContext, Stdio},
+    sandbox::WasmLayer,
+};
 use log::info;
 use oci_spec::image::MediaType;
 use spin_app::locked::LockedApp;
-use spin_loader::cache::Cache;
-use spin_loader::FilesMountStrategy;
+use spin_loader::{cache::Cache, FilesMountStrategy};
 use spin_manifest::schema::v2::AppManifest;
-use spin_trigger::TriggerHooks;
-use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
+use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder, TriggerHooks};
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
-use std::collections::hash_map::DefaultHasher;
-use std::collections::HashSet;
-use std::env;
-use std::fs::File;
-use std::hash::{Hash, Hasher};
-use std::io::Write;
-use std::net::SocketAddr;
-use std::net::ToSocketAddrs;
-use std::path::{Path, PathBuf};
 use tokio::runtime::Runtime;
 use trigger_command::CommandTrigger;
 use trigger_sqs::SqsTrigger;

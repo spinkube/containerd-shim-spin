@@ -1,10 +1,10 @@
 #[cfg(test)]
 mod test {
+    use anyhow::Result;
     use redis::AsyncCommands;
     use tokio::process::Command;
 
     use crate::retry_get;
-    use anyhow::Result;
 
     const RETRY_TIMES: u32 = 5;
     const INTERVAL_IN_SECS: u64 = 10;

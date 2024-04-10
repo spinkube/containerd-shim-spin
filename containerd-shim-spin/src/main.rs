@@ -1,6 +1,8 @@
 use containerd_shim::Config;
-use containerd_shim_wasm::container::Instance;
-use containerd_shim_wasm::sandbox::cli::{revision, shim_main, version};
+use containerd_shim_wasm::{
+    container::Instance,
+    sandbox::cli::{revision, shim_main, version},
+};
 
 mod engine;
 

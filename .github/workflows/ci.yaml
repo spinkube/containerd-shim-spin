@@ -13,10 +13,11 @@ jobs:
         with:
           workspaces: |
             "containerd-shim-* -> target"
-      - name: "Install dependencies"
+      - run: 
+          rustup toolchain install nightly --component rustfmt
+      - name: Setup build env
         run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler libseccomp-dev
+          ./scripts/setup-linux.sh
       - name: fmt
         run: |
           make fmt
@@ -43,10 +44,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
       - uses: azure/setup-kubectl@v4
-      - name: "Install dependencies"
+      - name: Setup build env
         run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler libseccomp-dev
+          ./scripts/setup-linux.sh
       - name: Extract containerd-shim-spin-linux-${{ env.ARCH }}
         run: |
           mkdir -p ./bin
