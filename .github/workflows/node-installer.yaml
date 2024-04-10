@@ -27,7 +27,7 @@ jobs:
             echo "RELEASE_VERSION=$(date +%Y%m%d-%H%M%S)-g$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           fi
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: _artifacts
 
