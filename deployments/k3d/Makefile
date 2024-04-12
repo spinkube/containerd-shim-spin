@@ -1,4 +1,3 @@
-SHIMS = spin
 SPIN_VERSION = v2
 IMAGE_NAME ?= k3swithshims
 CLUSTER_NAME ?= k3s-default
@@ -10,7 +9,7 @@ TEST_IMG_NAME_spin ?= wasmtest_spin:latest
 compile-musl-%:
 	make build-$*-cross-$(TARGET) -C ../..
 
-move-musl-to-tmp: $(addprefix compile-musl-,$(SHIMS))
+move-musl-to-tmp: compile-musl-spin
 	mkdir -p ./.tmp
 	cp ../../containerd-shim-spin/target/$(TARGET)/release/containerd-shim-spin-$(SPIN_VERSION) ./.tmp/
 
@@ -24,17 +23,17 @@ create-k3d: build-dev-k3d-image
 	k3d cluster create $(CLUSTER_NAME) --image $(IMAGE_NAME) --api-port 6550 -p "8081:80@loadbalancer" --agents 1
 
 build-workload-images:
-	$(foreach shim,$(SHIMS),docker buildx build --platform=wasi/wasm --load -t $(TEST_IMG_NAME_$(shim)) ../../images/$(shim);)
+	docker buildx build --platform=wasi/wasm --load -t $(TEST_IMG_NAME_spin) ../../images/spin
 
 load-workload-images: build-workload-images
-	$(foreach shim,$(SHIMS),k3d image load $(TEST_IMG_NAME_$(shim));)
+	k3d image load $(TEST_IMG_NAME_spin)
 
 up: create-k3d load-workload-images
 	kubectl label nodes k3d-k3s-default-agent-0 spin-enabled=true
 	kubectl apply -f ./workload
 
 test:
-	$(foreach shim,$(SHIMS),curl localhost:8081/$(shim)/hello;)
+	curl localhost:8081/spin/hello
 
 integration: move-musl-to-tmp
 	cd ../.. && cargo test -- --nocapture
