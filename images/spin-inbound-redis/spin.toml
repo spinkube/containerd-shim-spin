@@ -10,7 +10,7 @@ redis_address = { required = true }
 redis_channel = { required = true }
 
 [[trigger.redis]]
-address = "redis://redis-service.default.svc.cluster.local:6379"
+address = "{{ redis_address }}"
 component = "hello"
 
 [component.hello]
