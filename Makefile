@@ -1,5 +1,4 @@
-SHIMS := spin
-BUILD_TARGETS = $(foreach shim,$(SHIMS),build-$(shim)-cross-$(TARGET))
+BUILD_TARGETS = build-spin-cross-$(TARGET)
 
 PREFIX ?= /usr/local
 INSTALL ?= install
@@ -21,7 +20,7 @@ test: unit-tests integration-tests
 
 .PHONY: unit-tests
 unit-tests: build
-	$(foreach shim,$(SHIMS),cross test --release --manifest-path=containerd-shim-$(shim)/Cargo.toml --target $(TARGET);)
+	cross test --release --manifest-path=containerd-shim-spin/Cargo.toml --target $(TARGET)
 
 .PHONY: check-bins
 check-bins:
@@ -70,7 +69,7 @@ fix:
 	cargo clippy --all-targets --all-features --workspace --fix -- --deny=warnings
 
 .PHONY: build
-build: $(foreach shim,$(SHIMS),build-$(shim)-cross-$(TARGET))
+build: build-spin-cross-$(TARGET)
 	echo "Build complete"
 
 # pin cross to a specific commit to avoid breaking changes
@@ -89,8 +88,8 @@ build-%:
 	cargo build --release --manifest-path=containerd-shim-$*/Cargo.toml
 
 .PHONY: install
-install: $(foreach shim,$(SHIMS),build-$(shim))
-	sudo $(INSTALL) containerd-shim-*/target/release/containerd-shim-* $(PREFIX)/bin
+install: build-spin
+	sudo $(INSTALL) ./target/release/containerd-shim-* $(PREFIX)/bin
 
 .PHONY: update-deps
 update-deps:
@@ -105,16 +104,16 @@ test/out_%/img.tar: images/%/Dockerfile
 	docker buildx build --provenance=false --platform=wasi/wasm --load -t $(TEST_IMG_NAME_$*) ./images/$*
 	docker save -o $@ $(TEST_IMG_NAME_$*)
 
-load: $(foreach shim,$(SHIMS),test/out_$(shim)/img.tar)
-	$(foreach shim,$(SHIMS),sudo ctr -n $(CONTAINERD_NAMESPACE) image import test/out_$(shim)/img.tar;)
+load: test/out_spin/img.tar
+	sudo ctr -n $(CONTAINERD_NAMESPACE) image import test/out_spin/img.tar
 
 .PHONY: run_%
 run_%: install load
 	sudo ctr run --net-host --rm --runtime=io.containerd.$*.v1 docker.io/library/$(TEST_IMG_NAME_$*) test$*
 
 .PHONY: clean
-clean: $(addprefix clean-,$(SHIMS))
-	$(foreach shim,$(SHIMS),test -f $(PREFIX)/bin/containerd-shim-$(shim)-* && sudo rm -rf $(PREFIX)/bin/containerd-shim-$(proj)-* || true;)
+clean: clean-spin
+	test -f $(PREFIX)/bin/containerd-shim-spin-* && sudo rm -rf $(PREFIX)/bin/containerd-shim-$(proj)-* || true;
 	test -d ./test && sudo rm -rf ./test || true
 
 .PHONY: clean-%
