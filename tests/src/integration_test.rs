@@ -57,7 +57,7 @@ mod test {
         port_forward_redis(forward_port, redis_port).await?;
 
         let client = redis::Client::open(format!("redis://localhost:{}", forward_port))?;
-        let mut con = client.get_async_connection().await?;
+        let mut con = client.get_multiplexed_async_connection().await?;
 
         // curl for hello
         println!(
