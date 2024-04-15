@@ -1305,11 +1305,11 @@ dependencies = [
  "anyhow",
  "curl",
  "http 1.1.0",
- "hyper 0.14.28",
+ "hyper 1.2.0",
  "k8s-openapi",
  "kube",
  "rand 0.8.5",
- "redis 0.23.3",
+ "redis 0.25.3",
  "tokio",
  "tower",
 ]
@@ -5207,9 +5207,9 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.23.3"
+version = "0.25.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f49cdc0bb3f412bf8e7d1bd90fe1d9eb10bc5c399ba90973c14662a27b3f8ba"
+checksum = "6472825949c09872e8f2c50bde59fcefc17748b6be5c90fd67cd8b4daca73bfd"
 dependencies = [
  "async-trait",
  "bytes",
@@ -5220,7 +5220,7 @@ dependencies = [
  "pin-project-lite",
  "ryu",
  "sha1_smol",
- "socket2 0.4.10",
+ "socket2 0.5.6",
  "tokio",
  "tokio-util 0.7.10",
  "url",
