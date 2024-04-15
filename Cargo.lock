@@ -1309,7 +1309,7 @@ dependencies = [
  "k8s-openapi",
  "kube",
  "rand 0.8.5",
- "redis 0.23.3",
+ "redis 0.25.3",
  "tokio",
  "tower",
 ]
@@ -5207,9 +5207,9 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.23.3"
+version = "0.25.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f49cdc0bb3f412bf8e7d1bd90fe1d9eb10bc5c399ba90973c14662a27b3f8ba"
+checksum = "6472825949c09872e8f2c50bde59fcefc17748b6be5c90fd67cd8b4daca73bfd"
 dependencies = [
  "async-trait",
  "bytes",
@@ -5220,7 +5220,7 @@ dependencies = [
  "pin-project-lite",
  "ryu",
  "sha1_smol",
- "socket2 0.4.10",
+ "socket2 0.5.6",
  "tokio",
  "tokio-util 0.7.10",
  "url",
@@ -7844,9 +7844,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-encoder"
-version = "0.202.0"
+version = "0.203.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfd106365a7f5f7aa3c1916a98cbb3ad477f5ff96ddb130285a91c6e7429e67a"
+checksum = "87e3b46a0d9d9143d57aa926c42e2af284b5cb8f0c7b71079afc7a6fca42db50"
 dependencies = [
  "leb128",
 ]
@@ -8314,24 +8314,24 @@ dependencies = [
 
 [[package]]
 name = "wast"
-version = "202.0.0"
+version = "203.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fbcb11204515c953c9b42ede0a46a1c5e17f82af05c4fae201a8efff1b0f4fe"
+checksum = "872020f79fa7a09aeaec308d0ba60816e2f808d9b402e2f89d2a9c76eda482cd"
 dependencies = [
  "bumpalo",
  "leb128",
  "memchr",
  "unicode-width",
- "wasm-encoder 0.202.0",
+ "wasm-encoder 0.203.0",
 ]
 
 [[package]]
 name = "wat"
-version = "1.202.0"
+version = "1.203.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4de4b15a47135c56a3573406e9977b9518787a6154459b4842a9b9d3d1684848"
+checksum = "e2913b554125048798744fce03832d5330d87624782f8ec6ad8c9716a1ef7a37"
 dependencies = [
- "wast 202.0.0",
+ "wast 203.0.0",
 ]
 
 [[package]]
