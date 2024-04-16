@@ -1306,7 +1306,7 @@ dependencies = [
  "curl",
  "http 1.1.0",
  "hyper 1.2.0",
- "k8s-openapi",
+ "k8s-openapi 0.21.1",
  "kube",
  "rand 0.8.5",
  "redis 0.25.3",
@@ -3169,6 +3169,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "k8s-openapi"
+version = "0.21.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "550f99d93aa4c2b25de527bce492d772caf5e21d7ac9bd4b508ba781c8d91e30"
+dependencies = [
+ "base64 0.21.7",
+ "chrono",
+ "serde",
+ "serde-value",
+ "serde_json",
+]
+
+[[package]]
 name = "keyed_priority_queue"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3183,7 +3196,7 @@ version = "0.87.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3499c8d60c763246c7a213f51caac1e9033f46026904cb89bc8951ae8601f26e"
 dependencies = [
- "k8s-openapi",
+ "k8s-openapi 0.20.0",
  "kube-client",
  "kube-core",
  "kube-derive",
@@ -3208,7 +3221,7 @@ dependencies = [
  "hyper-rustls 0.24.2",
  "hyper-timeout",
  "jsonpath-rust",
- "k8s-openapi",
+ "k8s-openapi 0.20.0",
  "kube-core",
  "pem",
  "pin-project",
@@ -3238,7 +3251,7 @@ dependencies = [
  "form_urlencoded",
  "http 0.2.12",
  "json-patch",
- "k8s-openapi",
+ "k8s-openapi 0.20.0",
  "once_cell",
  "schemars",
  "serde",
@@ -3272,7 +3285,7 @@ dependencies = [
  "futures",
  "hashbrown 0.14.3",
  "json-patch",
- "k8s-openapi",
+ "k8s-openapi 0.20.0",
  "kube-client",
  "parking_lot",
  "pin-project",
