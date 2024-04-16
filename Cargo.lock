@@ -1305,7 +1305,7 @@ dependencies = [
  "anyhow",
  "curl",
  "http 1.1.0",
- "hyper 0.14.28",
+ "hyper 1.2.0",
  "k8s-openapi",
  "kube",
  "rand 0.8.5",
