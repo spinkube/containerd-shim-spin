@@ -257,15 +257,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "redis-trigger"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "bytes",
- "spin-sdk",
-]
-
-[[package]]
 name = "routefinder"
 version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -374,6 +365,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "spin-redis-trigger"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "spin-sdk",
 ]
 
 [[package]]

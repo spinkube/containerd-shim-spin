@@ -16,7 +16,14 @@ route = "/go-hello"
 component = "go-hello"
 
 [component.hello]
-source = "spin_rust_hello.wasm"
+source = "target/wasm32-wasi/release/spin_rust_hello.wasm"
+
+[component.hello.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]
 
 [component.go-hello]
-source = "spin_go_hello.wasm"
+source = "go-hello/spin_go_hello.wasm"
+
+[component.go-hello.build]
+command = "cd go-hello && tinygo build -target=wasi -o spin_go_hello.wasm main.go && cd -"

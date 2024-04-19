@@ -11,10 +11,10 @@ route = "/..."
 component = "spin-http-trigger"
 
 [component.spin-http-trigger]
-source = "spin_http_trigger.wasm"
+source = "spin-http-trigger/target/wasm32-wasi/release/spin_http_trigger.wasm"
 allowed_outbound_hosts = []
 [component.spin-http-trigger.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cd spin-http-trigger && cargo build --target wasm32-wasi --release && cd -"
 watch = ["src/**/*.rs", "Cargo.toml"]
 
 [application.trigger.redis]
@@ -25,7 +25,7 @@ channel = "testchannel"
 component = "spin-redis-trigger"
 
 [component.spin-redis-trigger]
-source = "spin_redis_trigger.wasm"
+source = "spin-redis-trigger/target/wasm32-wasi/release/spin_redis_trigger.wasm"
 allowed_outbound_hosts = ["redis://redis-service.default.svc.cluster.local:6379"]
 [component.spin-redis-trigger.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cd spin-redis-trigger && cargo build --target wasm32-wasi --release && cd -"

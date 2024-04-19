@@ -12,7 +12,8 @@ IMAGES=("spin-hello-world" "spin-keyvalue" "spin-outbound-redis" "spin-multi-tri
 # build the Docker image for the k3d cluster
 docker build -t k3d-shim-test "$dockerfile_path"
 
-k3d cluster create "$cluster_name" --image k3d-shim-test --api-port 6551 -p '8082:80@loadbalancer' --agents 2
+k3d cluster create "$cluster_name" \
+  --image k3d-shim-test --api-port 6551 -p '8082:80@loadbalancer' --agents 2
 
 kubectl wait --for=condition=ready node --all --timeout=120s
 
