@@ -12,7 +12,7 @@ fi
 # apply the workloads
 echo ">>> apply workloads"
 kubectl apply -f tests/workloads-common
-kubectl apply -f tests/workloads-docker-build-push
+kubectl apply -f tests/workloads-spin-registry-push
 
 
 # wait for all the pods to be ready

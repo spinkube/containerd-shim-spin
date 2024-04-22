@@ -42,14 +42,33 @@ pod-status-check:
 workloads:
 	./scripts/workloads.sh
 
+./PHONY: workloads-spin-registry-push
+workloads-spin-registry-push:
+	./scripts/workloads-spin-registry-push.sh
+
 ./PHONY: test-workloads-delete
 test-workloads-delete:
 	./scripts/workloads-delete.sh
 
 .PHONY: integration-tests
-integration-tests: check-bins move-bins up pod-status-check workloads test-workloads-delete
-	cargo test -p containerd-shim-spin-tests -- --nocapture
+integration-tests: prepare-cluster-and-images integration-docker-build-push-tests integration-spin-registry-push-tests
 
+.PHONY: integration-docker-build-push-tests
+integration-docker-build-push-tests: workloads test-workloads-delete
+	cargo test -p containerd-shim-spin-tests -- --nocapture
+	kubectl delete -f tests/workloads-common --wait --timeout 60s --ignore-not-found=true
+	kubectl delete -f tests/workloads-docker-build-push --wait --timeout 60s --ignore-not-found=true
+	kubectl wait pod --for=delete -l app=wasm-spin -l app=spin-keyvalue -l app=spin-outbound-redis -l app=spin-multi-trigger-app --timeout 60s
+
+.PHONY: integration-spin-registry-push-tests test-workloads-delete
+integration-spin-registry-push-tests: workloads-spin-registry-push
+	cargo test -p containerd-shim-spin-tests -- --nocapture
+	kubectl delete -f tests/workloads-common --wait --timeout 60s
+	kubectl delete -f tests/workloads-spin-registry-push --wait --timeout 60s
+	kubectl wait pod --for=delete -l app=wasm-spin -l app=spin-keyvalue -l app=spin-outbound-redis -l app=spin-multi-trigger-app --timeout 60s
+
+.PHONY: prepare-cluster-and-images
+prepare-cluster-and-images: check-bins move-bins up pod-status-check
 .PHONY: tests/collect-debug-logs
 tests/collect-debug-logs:
 	./scripts/collect-debug-logs.sh 2>&1
