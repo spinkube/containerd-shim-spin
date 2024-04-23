@@ -48,7 +48,6 @@ mod test {
     #[tokio::test]
     async fn spin_inbound_redis_outbound_redis_test() -> Result<()> {
         let host_port = 8082;
-        let forward_port = 6380;
         let redis_port = 6379;
 
         // Ensure kubectl is in PATH
@@ -56,7 +55,7 @@ mod test {
             anyhow::bail!("kubectl is not installed");
         }
 
-        port_forward_redis(forward_port, redis_port).await?;
+        let forward_port = port_forward_redis(redis_port).await?;
 
         let client = redis::Client::open(format!("redis://localhost:{}", forward_port))?;
         let mut con = client.get_multiplexed_async_connection().await?;
@@ -100,7 +99,6 @@ mod test {
             "Hello world from multi trigger Spin!"
         );
 
-        let forward_port = 6380;
         let redis_port = 6379;
 
         // Ensure kubectl is in PATH
@@ -108,7 +106,7 @@ mod test {
             anyhow::bail!("kubectl is not installed");
         }
 
-        port_forward_redis(forward_port, redis_port).await?;
+        let forward_port = port_forward_redis(redis_port).await?;
 
         let client = redis::Client::open(format!("redis://localhost:{}", forward_port))
             .context("connecting to redis")?;
@@ -143,17 +141,24 @@ mod test {
         }
     }
 
-    async fn port_forward_redis(forward_port: u16, redis_port: u16) -> Result<()> {
-        println!(
-            " >>> kubectl portforward redis {}:{} ",
-            forward_port, redis_port
-        );
+    async fn port_forward_redis(redis_port: u16) -> Result<u16> {
+        let port = get_random_port()?;
+
+        println!(" >>> kubectl portforward redis {}:{} ", port, redis_port);
+
         Command::new("kubectl")
             .arg("port-forward")
             .arg("redis")
-            .arg(format!("{}:{}", forward_port, redis_port))
+            .arg(format!("{}:{}", port, redis_port))
             .spawn()?;
         tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
-        Ok(())
+        Ok(port)
+    }
+
+    /// Uses a track to get a random unused port
+    fn get_random_port() -> anyhow::Result<u16> {
+        Ok(std::net::TcpListener::bind("localhost:0")?
+            .local_addr()?
+            .port())
     }
 }
