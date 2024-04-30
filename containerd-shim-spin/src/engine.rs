@@ -20,8 +20,8 @@ use spin_trigger::{
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
 use tokio::runtime::Runtime;
-// use trigger_command::CommandTrigger;
-// use trigger_sqs::SqsTrigger;
+use trigger_command::CommandTrigger;
+use trigger_sqs::SqsTrigger;
 use url::Url;
 
 use crate::loader::ContainerdLoader;
@@ -145,11 +145,12 @@ impl Default for SpinEngine {
 impl SpinEngine {
     async fn wasm_exec_async(&self, ctx: &impl RuntimeContext) -> Result<()> {
         let app = self.load(ctx.entrypoint().source).await?;
-        self.run(app, ctx.entrypoint().source).await
+        self.run(app, ctx).await
     }
 
-    async fn run<'a>(&self, app: LockedApp, source: Source<'a>) -> Result<()> {
+    async fn run<'a>(&self, app: LockedApp, ctx: &impl RuntimeContext) -> Result<()> {
         let trigger = Self::trigger_command(&app)?;
+        let source = ctx.entrypoint().source;
 
         let f = match trigger.as_str() {
             HttpTrigger::TRIGGER_TYPE => {
@@ -174,26 +175,26 @@ impl SpinEngine {
                 info!(" >>> running spin trigger");
                 redis_trigger.run(spin_trigger::cli::NoArgs)
             }
-            // SqsTrigger::TRIGGER_TYPE => {
-            //     let sqs_trigger: SqsTrigger = self
-            //         .build_spin_trigger(working_dir, app, app_source)
-            //         .await
-            //         .context("failed to build spin trigger")?;
-            //
-            //     info!(" >>> running spin trigger");
-            //     sqs_trigger.run(spin_trigger::cli::NoArgs)
-            // }
-            // CommandTrigger::TRIGGER_TYPE => {
-            //     let command_trigger: CommandTrigger = self
-            //         .build_spin_trigger(working_dir, app, app_source)
-            //         .await
-            //         .context("failed to build spin trigger")?;
-            //
-            //     info!(" >>> running spin trigger");
-            //     command_trigger.run(trigger_command::CliArgs {
-            //         guest_args: ctx.args().to_vec(),
-            //     })
-            // }
+            SqsTrigger::TRIGGER_TYPE => {
+                let sqs_trigger: SqsTrigger = self
+                    .build_trigger(app, source)
+                    .await
+                    .context("failed to build spin trigger")?;
+
+                info!(" >>> running spin trigger");
+                sqs_trigger.run(spin_trigger::cli::NoArgs)
+            }
+            CommandTrigger::TRIGGER_TYPE => {
+                let command_trigger: CommandTrigger = self
+                    .build_trigger(app, source)
+                    .await
+                    .context("failed to build spin trigger")?;
+
+                info!(" >>> running spin trigger");
+                command_trigger.run(trigger_command::CliArgs {
+                    guest_args: ctx.args().to_vec(),
+                })
+            }
             _ => {
                 todo!("Only Http, Redis and SQS triggers are currently supported.")
             }
@@ -326,5 +327,91 @@ impl TriggerHooks for StdioTriggerHook {
         builder.inherit_stdout();
         builder.inherit_stderr();
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_parse_spin_address() {
+        let parsed = SpinEngine::parse_listen_addr(SPIN_ADDR).unwrap();
+
+        assert_eq!(parsed.clone().port(), 80);
+        assert_eq!(parsed.ip().to_string(), "0.0.0.0");
+    }
+
+    #[test]
+    fn is_wasm_content() {
+        let wasm_content = WasmLayer {
+            layer: vec![],
+            config: oci_spec::image::Descriptor::new(
+                MediaType::Other(OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
+                1024,
+                "sha256:1234",
+            ),
+        };
+        // Should be ignored
+        let data_content = WasmLayer {
+            layer: vec![],
+            config: oci_spec::image::Descriptor::new(
+                MediaType::Other(OCI_LAYER_MEDIA_TYPE_DATA.to_string()),
+                1024,
+                "sha256:1234",
+            ),
+        };
+        assert!(SpinEngine::is_wasm_content(&wasm_content).is_some());
+        assert!(SpinEngine::is_wasm_content(&data_content).is_none());
+    }
+
+    #[test]
+    fn precompile() {
+        let module = wat::parse_str("(module)").unwrap();
+        let wasmtime_engine = wasmtime::Engine::default();
+        let component = wasmtime::component::Component::new(&wasmtime_engine, "(component)")
+            .unwrap()
+            .serialize()
+            .unwrap();
+        let wasm_layers: Vec<WasmLayer> = vec![
+            // Needs to be precompiled
+            WasmLayer {
+                layer: module.clone(),
+                config: oci_spec::image::Descriptor::new(
+                    MediaType::Other(OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
+                    1024,
+                    "sha256:1234",
+                ),
+            },
+            // Precompiled
+            WasmLayer {
+                layer: component.to_owned(),
+                config: oci_spec::image::Descriptor::new(
+                    MediaType::Other(OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
+                    1024,
+                    "sha256:1234",
+                ),
+            },
+            // Content that should be skipped
+            WasmLayer {
+                layer: vec![],
+                config: oci_spec::image::Descriptor::new(
+                    MediaType::Other(OCI_LAYER_MEDIA_TYPE_DATA.to_string()),
+                    1024,
+                    "sha256:1234",
+                ),
+            },
+        ];
+        let spin_engine = SpinEngine::default();
+        let precompiled = spin_engine
+            .precompile(&wasm_layers)
+            .expect("precompile failed");
+        assert_eq!(precompiled.len(), 3);
+        assert_ne!(precompiled[0].as_deref().expect("no first entry"), module);
+        assert_eq!(
+            precompiled[1].as_deref().expect("no second entry"),
+            component
+        );
+        assert!(precompiled[2].is_none());
     }
 }
