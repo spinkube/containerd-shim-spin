@@ -38,13 +38,13 @@ up:
 pod-status-check:
 	./scripts/pod-status-check.sh
 
-./PHONY: workloads
-workloads:
-	./scripts/workloads.sh
+./PHONY: deploy-workloads-pushed-using-docker-build-push
+deploy-workloads-pushed-using-docker-build-push:
+	./scripts/deploy-workloads.sh "workloads-pushed-using-docker-build-push"
 
-./PHONY: workloads-spin-registry-push
-workloads-spin-registry-push:
-	./scripts/workloads-spin-registry-push.sh
+./PHONY: deploy-workloads-pushed-using-spin-registry-push
+deploy-workloads-pushed-using-spin-registry-push:
+	./scripts/deploy-workloads.sh "workloads-pushed-using-spin-registry-push"
 
 ./PHONY: pod-terminates-test
 pod-terminates-test:
@@ -54,18 +54,12 @@ pod-terminates-test:
 integration-tests: prepare-cluster-and-images integration-docker-build-push-tests integration-spin-registry-push-tests
 
 .PHONY: integration-docker-build-push-tests
-integration-docker-build-push-tests: workloads pod-terminates-test
-	cargo test -p containerd-shim-spin-tests -- --nocapture
-	kubectl delete -f tests/workloads-common --wait --timeout 60s --ignore-not-found=true
-	kubectl delete -f tests/workloads-docker-build-push --wait --timeout 60s --ignore-not-found=true
-	kubectl wait pod --for=delete -l app=wasm-spin -l app=spin-keyvalue -l app=spin-outbound-redis -l app=spin-multi-trigger-app --timeout 60s
+integration-docker-build-push-tests:
+	./scripts/run-integration-tests.sh "workloads-pushed-using-docker-build-push"
 
 .PHONY: integration-spin-registry-push-tests pod-terminates-test
-integration-spin-registry-push-tests: workloads-spin-registry-push
-	cargo test -p containerd-shim-spin-tests -- --nocapture
-	kubectl delete -f tests/workloads-common --wait --timeout 60s
-	kubectl delete -f tests/workloads-spin-registry-push --wait --timeout 60s
-	kubectl wait pod --for=delete -l app=wasm-spin -l app=spin-keyvalue -l app=spin-outbound-redis -l app=spin-multi-trigger-app --timeout 60s
+integration-spin-registry-push-tests:
+	./scripts/run-integration-tests.sh "workloads-pushed-using-spin-registry-push"
 
 .PHONY: prepare-cluster-and-images
 prepare-cluster-and-images: check-bins move-bins up pod-status-check
