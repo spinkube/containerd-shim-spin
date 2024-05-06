@@ -46,21 +46,21 @@ workloads:
 workloads-spin-registry-push:
 	./scripts/workloads-spin-registry-push.sh
 
-./PHONY: test-workloads-delete
-test-workloads-delete:
-	./scripts/workloads-delete.sh
+./PHONY: pod-terminates-test
+pod-terminates-test:
+	./scripts/pod-terminates-test.sh
 
 .PHONY: integration-tests
 integration-tests: prepare-cluster-and-images integration-docker-build-push-tests integration-spin-registry-push-tests
 
 .PHONY: integration-docker-build-push-tests
-integration-docker-build-push-tests: workloads test-workloads-delete
+integration-docker-build-push-tests: workloads pod-terminates-test
 	cargo test -p containerd-shim-spin-tests -- --nocapture
 	kubectl delete -f tests/workloads-common --wait --timeout 60s --ignore-not-found=true
 	kubectl delete -f tests/workloads-docker-build-push --wait --timeout 60s --ignore-not-found=true
 	kubectl wait pod --for=delete -l app=wasm-spin -l app=spin-keyvalue -l app=spin-outbound-redis -l app=spin-multi-trigger-app --timeout 60s
 
-.PHONY: integration-spin-registry-push-tests test-workloads-delete
+.PHONY: integration-spin-registry-push-tests pod-terminates-test
 integration-spin-registry-push-tests: workloads-spin-registry-push
 	cargo test -p containerd-shim-spin-tests -- --nocapture
 	kubectl delete -f tests/workloads-common --wait --timeout 60s
