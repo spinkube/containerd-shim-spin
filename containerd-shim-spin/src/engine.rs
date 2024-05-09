@@ -12,6 +12,7 @@ use anyhow::{anyhow, ensure, Context, Result};
 use containerd_shim_wasm::{
     container::{Engine, RuntimeContext, Stdio},
     sandbox::WasmLayer,
+    version,
 };
 use futures::future;
 use log::info;
@@ -193,6 +194,9 @@ impl SpinEngine {
         let trigger_cmds = trigger_command_for_resolved_app_source(&resolved_app_source)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
         let locked_app = self.load_resolved_app_source(resolved_app_source).await?;
+
+        let _telemetry_guard = spin_telemetry::init(version!().to_string())?;
+
         self.run_trigger(
             ctx,
             trigger_cmds.iter().map(|s| s.as_ref()).collect(),
