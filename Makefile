@@ -34,6 +34,10 @@ move-bins:
 up:
 	./scripts/up.sh
 
+./PHONY: teardown-workloads
+teardown-workloads:
+	./scripts/teardown-workloads.sh
+
 ./PHONY: pod-status-check
 pod-status-check:
 	./scripts/pod-status-check.sh
