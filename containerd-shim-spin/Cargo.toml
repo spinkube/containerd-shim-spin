@@ -20,7 +20,7 @@ spin-componentize = { git = "https://github.com/fermyon/spin", tag = "v2.4.3" }
 # Enable loading components precompiled by the shim
 spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.4.3", features = ["unsafe-aot-compilation"] }
 spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.4.3" }
-spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.4.3" }
+spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.5.0" }
 trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "ee1195ad76b78c41f9d8291e3470bcb0e8c01e66" }
 trigger-command = { git = "https://github.com/fermyon/spin-trigger-command" , rev = "cc09ed61c5cd04de507b62a6f4912d8ae026bff6" }
 spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.4.3" }
