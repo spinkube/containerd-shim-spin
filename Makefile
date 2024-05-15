@@ -34,22 +34,39 @@ move-bins:
 up:
 	./scripts/up.sh
 
+./PHONY: teardown-workloads
+teardown-workloads:
+	./scripts/teardown-workloads.sh
+
 ./PHONY: pod-status-check
 pod-status-check:
 	./scripts/pod-status-check.sh
 
-./PHONY: workloads
-workloads:
-	./scripts/workloads.sh
+./PHONY: deploy-workloads-pushed-using-docker-build-push
+deploy-workloads-pushed-using-docker-build-push:
+	./scripts/deploy-workloads.sh "workloads-pushed-using-docker-build-push"
 
-./PHONY: test-workloads-delete
-test-workloads-delete:
-	./scripts/workloads-delete.sh
+./PHONY: deploy-workloads-pushed-using-spin-registry-push
+deploy-workloads-pushed-using-spin-registry-push:
+	./scripts/deploy-workloads.sh "workloads-pushed-using-spin-registry-push"
+
+./PHONY: pod-terminates-test
+pod-terminates-test:
+	./scripts/pod-terminates-test.sh
 
 .PHONY: integration-tests
-integration-tests: check-bins move-bins up pod-status-check workloads test-workloads-delete
-	cargo test -p containerd-shim-spin-tests -- --nocapture
+integration-tests: prepare-cluster-and-images integration-docker-build-push-tests integration-spin-registry-push-tests
 
+.PHONY: integration-docker-build-push-tests
+integration-docker-build-push-tests:
+	./scripts/run-integration-tests.sh "workloads-pushed-using-docker-build-push"
+
+.PHONY: integration-spin-registry-push-tests pod-terminates-test
+integration-spin-registry-push-tests:
+	./scripts/run-integration-tests.sh "workloads-pushed-using-spin-registry-push"
+
+.PHONY: prepare-cluster-and-images
+prepare-cluster-and-images: check-bins move-bins up pod-status-check
 .PHONY: tests/collect-debug-logs
 tests/collect-debug-logs:
 	./scripts/collect-debug-logs.sh 2>&1

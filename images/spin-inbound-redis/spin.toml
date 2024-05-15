@@ -14,8 +14,11 @@ address = "{{ redis_address }}"
 component = "hello"
 
 [component.hello]
-source = "spin_inbound_redis.wasm"
+source = "target/wasm32-wasi/release/spin_inbound_redis.wasm"
 allowed_outbound_hosts = ["redis://*:*"]
+
+[component.hello.build]
+command = "cargo build --target wasm32-wasi --release"
 
 [component.hello.variables]
 redis_address = "{{ redis_address }}"

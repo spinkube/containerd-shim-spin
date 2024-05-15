@@ -12,7 +12,9 @@ IMAGES=("spin-hello-world" "spin-keyvalue" "spin-outbound-redis" "spin-multi-tri
 # build the Docker image for the k3d cluster
 docker build -t k3d-shim-test "$dockerfile_path"
 
-k3d cluster create "$cluster_name" --image k3d-shim-test --api-port 6551 -p '8082:80@loadbalancer' --agents 2
+k3d cluster create "$cluster_name" \
+  --image k3d-shim-test --api-port 6551 -p '8082:80@loadbalancer' --agents 2 \
+  --registry-create test-registry:0.0.0.0:5000
 
 kubectl wait --for=condition=ready node --all --timeout=120s
 
@@ -22,6 +24,12 @@ for i in "${!DOCKER_IMAGES[@]}"; do
   mkdir -p "${OUT_DIRS[$i]}"
   docker save -o "${OUT_DIRS[$i]}/img.tar" "${IMAGES[$i]}:latest"
   k3d image import "${OUT_DIRS[$i]}/img.tar" -c "$cluster_name"
+
+  ## also do spin builds and spin registry push
+  ## images pushed as localhost:5000/<namespace>/<app>:<version>
+  ## can be pulled as registry:5000/<namespace>/<app>:<version> from within k3d cluster
+  spin build -f "./images/${DOCKER_IMAGES[$i]}/spin.toml"
+  spin registry push "localhost:5000/spin-registry-push/${IMAGES[$i]}:latest" -f "./images/${DOCKER_IMAGES[$i]}/spin.toml" -k
 done
 
 sleep 5

@@ -14,7 +14,7 @@ route = "hello"
 component = "hello"
 
 [component.hello]
-source = "spin_outbound_redis.wasm"
+source = "target/wasm32-wasi/release/spin_outbound_redis.wasm"
 allowed_outbound_hosts = ["redis://*:*"]
 
 [component.hello.variables]

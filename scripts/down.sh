@@ -14,7 +14,7 @@ teardown_test() {
   docker rmi k3d-shim-test
 
   # remote test folder
-  rm -r ./test
+  rm -r ./test || echo "test folder already deleted"
 
   # delete binaries
   rm -r "$bin_path"

@@ -355,7 +355,7 @@ dependencies = [
 
 [[package]]
 name = "spin-inbound-redis"
-version = "0.1.0"
+version = "0.13.1"
 dependencies = [
  "anyhow",
  "bytes",
@@ -366,7 +366,7 @@ dependencies = [
 [[package]]
 name = "spin-macro"
 version = "0.1.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.0.0#e4bb2357067d29f053b2d039476180ffa31222b2"
+source = "git+https://github.com/fermyon/spin?tag=v2.0.1#1d72f1c4244ecd8f7e0f150836565b18ef897e64"
 dependencies = [
  "anyhow",
  "bytes",
@@ -378,8 +378,8 @@ dependencies = [
 
 [[package]]
 name = "spin-sdk"
-version = "2.0.0"
-source = "git+https://github.com/fermyon/spin?tag=v2.0.0#e4bb2357067d29f053b2d039476180ffa31222b2"
+version = "2.0.1"
+source = "git+https://github.com/fermyon/spin?tag=v2.0.1#1d72f1c4244ecd8f7e0f150836565b18ef897e64"
 dependencies = [
  "anyhow",
  "async-trait",
