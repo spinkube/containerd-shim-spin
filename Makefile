@@ -93,6 +93,7 @@ build: build-spin-cross-$(TARGET)
 .PHONY: install-cross
 install-cross:
 	@if [ -z $$(which cross) ]; then cargo install cross --git https://github.com/cross-rs/cross --rev 5896ed1359642510855ca9ee50ce7fdf75c50e3c; fi
+	@cross -V 2>/dev/null | grep 5896ed1 || echo "WARN: unsupported version of cross found. Building containerd-shim-spin requires specific version of cross.\n\nPlease uninstall and run make install-cross to install the supported version."
 
 # build-cross can be be used to build any cross supported target (make build-cross-x86_64-unknown-linux-musl)
 .PHONY: $(BUILD_TARGETS)
