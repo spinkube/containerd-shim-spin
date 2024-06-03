@@ -30,7 +30,7 @@ spin-common = { git = "https://github.com/fermyon/spin", tag = "v2.5.1" }
 spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v2.5.1" }
 spin-telemetry = { git = "https://github.com/fermyon/spin", tag = "v2.5.1" }
 wasmtime = "18.0.4"
-tokio = { version = "1.37", features = ["rt"] }
+tokio = { version = "1.38", features = ["rt"] }
 openssl = { version = "*", features = ["vendored"] }
 serde = "1.0"
 serde_json = "1.0"
