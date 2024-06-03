@@ -9,8 +9,6 @@ else
     make deploy-workloads-pushed-using-docker-build-push
 fi
 
-
-
 ## Verify pods can be terminated successfully
 make pod-terminates-test
 	
