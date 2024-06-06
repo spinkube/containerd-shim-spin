@@ -1262,6 +1262,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cargo_toml"
+version = "0.17.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a969e13a7589e9e3e4207e153bae624ade2b5622fb4684a4923b23ec3d57719"
+dependencies = [
+ "serde 1.0.203",
+ "toml 0.8.12",
+]
+
+[[package]]
 name = "cbc"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1506,6 +1516,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "conformance-tests"
+version = "0.1.0"
+source = "git+https://github.com/fermyon/conformance-tests#c19e5cf54b7586829e923bd2091314e4d473f4f5"
+dependencies = [
+ "anyhow",
+ "flate2",
+ "json5",
+ "libtest-mimic",
+ "reqwest 0.12.4",
+ "serde 1.0.203",
+ "tar",
+ "test-environment",
+]
+
+[[package]]
+name = "conformance-tests"
+version = "0.14.1"
+dependencies = [
+ "anyhow",
+ "conformance-tests 0.1.0",
+ "testing-framework",
+]
+
+[[package]]
 name = "console"
 version = "0.15.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1618,17 +1652,17 @@ dependencies = [
  "openssl",
  "serde 1.0.203",
  "serde_json",
- "spin-app",
- "spin-common",
- "spin-componentize",
- "spin-core",
- "spin-expressions",
- "spin-loader",
- "spin-manifest",
+ "spin-app 2.6.0",
+ "spin-common 2.6.0",
+ "spin-componentize 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-loader 2.6.0",
+ "spin-manifest 2.6.0",
  "spin-oci",
- "spin-telemetry",
- "spin-trigger",
- "spin-trigger-http",
+ "spin-telemetry 2.6.0",
+ "spin-trigger 2.6.0",
+ "spin-trigger-http 2.6.0",
  "spin-trigger-redis",
  "tokio",
  "trigger-command",
@@ -2439,6 +2473,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d817e038c30374a4bcb22f94d0a8a0e216958d4c3dcde369b1439fec4bdda6e6"
 
 [[package]]
+name = "escape8259"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5692dd7b5a1978a5aeb0ce83b7655c58ca8efdcb79d21036ea249da95afec2c6"
+
+[[package]]
 name = "event-listener"
 version = "2.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2654,6 +2694,16 @@ name = "fs2"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9564fc758e15025b46aa6643b1b77d047d1a56a1aea6e01002ac0c7026876213"
+dependencies = [
+ "libc",
+ "winapi",
+]
+
+[[package]]
+name = "fslock"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04412b8935272e3a9bae6f48c7bfff74c2911f60525404edfdd28e49884c3bfb"
 dependencies = [
  "libc",
  "winapi",
@@ -3603,6 +3653,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "json5"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96b0db21af676c1ce64250b5f40f3ce2cf27e4e47cb91ed91eb6fe9350b430c1"
+dependencies = [
+ "pest",
+ "pest_derive",
+ "serde 1.0.203",
+]
+
+[[package]]
 name = "jsonpath-rust"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4013,6 +4074,18 @@ dependencies = [
  "cc",
  "pkg-config",
  "vcpkg",
+]
+
+[[package]]
+name = "libtest-mimic"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc0bda45ed5b3a2904262c1bb91e526127aa70e7ef3758aba2ef93cf896b9b58"
+dependencies = [
+ "clap 4.5.7",
+ "escape8259",
+ "termcolor",
+ "threadpool",
 ]
 
 [[package]]
@@ -5079,22 +5152,59 @@ dependencies = [
 
 [[package]]
 name = "outbound-http"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "http 0.2.12",
+ "reqwest 0.11.27",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-expressions 2.6.0-pre0",
+ "spin-locked-app 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "spin-telemetry 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "terminal 2.6.0-pre0",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "outbound-http"
 version = "2.6.0"
 source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d694774858408e918f3e5cec60"
 dependencies = [
  "anyhow",
  "http 0.2.12",
  "reqwest 0.11.27",
- "spin-app",
- "spin-core",
- "spin-expressions",
- "spin-locked-app",
- "spin-outbound-networking",
- "spin-telemetry",
- "spin-world",
- "terminal",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-locked-app 2.6.0",
+ "spin-outbound-networking 2.6.0",
+ "spin-telemetry 2.6.0",
+ "spin-world 2.6.0",
+ "terminal 2.6.0",
  "tracing",
  "url",
+]
+
+[[package]]
+name = "outbound-mqtt"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "rumqttc",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-expressions 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "table 2.6.0-pre0",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -5104,14 +5214,34 @@ source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d69477485
 dependencies = [
  "anyhow",
  "rumqttc",
- "spin-app",
- "spin-core",
- "spin-expressions",
- "spin-outbound-networking",
- "spin-world",
- "table",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-outbound-networking 2.6.0",
+ "spin-world 2.6.0",
+ "table 2.6.0",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "outbound-mysql"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "flate2",
+ "mysql_async",
+ "mysql_common",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-expressions 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "table 2.6.0-pre0",
+ "tokio",
+ "tracing",
+ "url",
 ]
 
 [[package]]
@@ -5123,15 +5253,34 @@ dependencies = [
  "flate2",
  "mysql_async",
  "mysql_common",
- "spin-app",
- "spin-core",
- "spin-expressions",
- "spin-outbound-networking",
- "spin-world",
- "table",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-outbound-networking 2.6.0",
+ "spin-world 2.6.0",
+ "table 2.6.0",
  "tokio",
  "tracing",
  "url",
+]
+
+[[package]]
+name = "outbound-pg"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "native-tls",
+ "postgres-native-tls",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-expressions 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "table 2.6.0-pre0",
+ "tokio",
+ "tokio-postgres",
+ "tracing",
 ]
 
 [[package]]
@@ -5142,14 +5291,31 @@ dependencies = [
  "anyhow",
  "native-tls",
  "postgres-native-tls",
- "spin-app",
- "spin-core",
- "spin-expressions",
- "spin-outbound-networking",
- "spin-world",
- "table",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-outbound-networking 2.6.0",
+ "spin-world 2.6.0",
+ "table 2.6.0",
  "tokio",
  "tokio-postgres",
+ "tracing",
+]
+
+[[package]]
+name = "outbound-redis"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "redis 0.21.7",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-expressions 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "table 2.6.0-pre0",
+ "tokio",
  "tracing",
 ]
 
@@ -5160,12 +5326,12 @@ source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d69477485
 dependencies = [
  "anyhow",
  "redis 0.21.7",
- "spin-app",
- "spin-core",
- "spin-expressions",
- "spin-outbound-networking",
- "spin-world",
- "table",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-outbound-networking 2.6.0",
+ "spin-world 2.6.0",
+ "table 2.6.0",
  "tokio",
  "tracing",
 ]
@@ -6270,6 +6436,7 @@ dependencies = [
  "base64 0.22.0",
  "bytes",
  "encoding_rs",
+ "futures-channel",
  "futures-core",
  "futures-util",
  "h2 0.4.4",
@@ -7202,6 +7369,22 @@ dependencies = [
 
 [[package]]
 name = "spin-app"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "ouroboros",
+ "serde 1.0.203",
+ "serde_json",
+ "spin-core 2.6.0-pre0",
+ "spin-locked-app 2.6.0-pre0",
+ "spin-serde 2.6.0-pre0",
+ "thiserror",
+]
+
+[[package]]
+name = "spin-app"
 version = "2.6.0"
 source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d694774858408e918f3e5cec60"
 dependencies = [
@@ -7210,10 +7393,23 @@ dependencies = [
  "ouroboros",
  "serde 1.0.203",
  "serde_json",
- "spin-core",
- "spin-locked-app",
- "spin-serde",
+ "spin-core 2.6.0",
+ "spin-locked-app 2.6.0",
+ "spin-serde 2.6.0",
  "thiserror",
+]
+
+[[package]]
+name = "spin-common"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "dirs 4.0.0",
+ "sha2",
+ "tempfile",
+ "tokio",
+ "url",
 ]
 
 [[package]]
@@ -7231,16 +7427,52 @@ dependencies = [
 
 [[package]]
 name = "spin-componentize"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "wasm-encoder 0.200.0",
+ "wasmparser 0.200.0",
+ "wit-component 0.200.0",
+ "wit-parser 0.200.0",
+]
+
+[[package]]
+name = "spin-componentize"
 version = "2.6.0"
 source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d694774858408e918f3e5cec60"
 dependencies = [
  "anyhow",
  "tracing",
  "wasm-encoder 0.200.0",
- "wasm-metadata",
+ "wasm-metadata 0.200.0",
  "wasmparser 0.200.0",
- "wit-component",
+ "wit-component 0.200.0",
  "wit-parser 0.200.0",
+]
+
+[[package]]
+name = "spin-core"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "cap-primitives",
+ "cap-std",
+ "crossbeam-channel",
+ "http 1.1.0",
+ "io-extras",
+ "rustix 0.37.27",
+ "spin-telemetry 2.6.0-pre0",
+ "system-interface",
+ "tokio",
+ "tracing",
+ "wasi-common",
+ "wasmtime",
+ "wasmtime-wasi",
+ "wasmtime-wasi-http",
 ]
 
 [[package]]
@@ -7257,7 +7489,7 @@ dependencies = [
  "http 1.1.0",
  "io-extras",
  "rustix 0.37.27",
- "spin-telemetry",
+ "spin-telemetry 2.6.0",
  "system-interface",
  "tokio",
  "tracing",
@@ -7265,6 +7497,20 @@ dependencies = [
  "wasmtime",
  "wasmtime-wasi",
  "wasmtime-wasi-http",
+]
+
+[[package]]
+name = "spin-expressions"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "dotenvy",
+ "once_cell",
+ "serde 1.0.203",
+ "spin-locked-app 2.6.0-pre0",
+ "thiserror",
 ]
 
 [[package]]
@@ -7277,8 +7523,27 @@ dependencies = [
  "dotenvy",
  "once_cell",
  "serde 1.0.203",
- "spin-locked-app",
+ "spin-locked-app 2.6.0",
  "thiserror",
+]
+
+[[package]]
+name = "spin-http"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "http 1.1.0",
+ "http-body-util",
+ "hyper 1.3.1",
+ "indexmap 1.9.3",
+ "percent-encoding",
+ "routefinder",
+ "serde 1.0.203",
+ "spin-app 2.6.0-pre0",
+ "spin-locked-app 2.6.0-pre0",
+ "tracing",
+ "wasmtime-wasi-http",
 ]
 
 [[package]]
@@ -7294,10 +7559,25 @@ dependencies = [
  "percent-encoding",
  "routefinder",
  "serde 1.0.203",
- "spin-app",
- "spin-locked-app",
+ "spin-app 2.6.0",
+ "spin-locked-app 2.6.0",
  "tracing",
  "wasmtime-wasi-http",
+]
+
+[[package]]
+name = "spin-key-value"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "lru 0.9.0",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "table 2.6.0-pre0",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -7307,12 +7587,28 @@ source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d69477485
 dependencies = [
  "anyhow",
  "lru 0.9.0",
- "spin-app",
- "spin-core",
- "spin-world",
- "table",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-world 2.6.0",
+ "table 2.6.0",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "spin-key-value-azure"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "azure_data_cosmos",
+ "futures",
+ "serde 1.0.203",
+ "spin-core 2.6.0-pre0",
+ "spin-key-value 2.6.0-pre0",
+ "tokio",
+ "tracing",
+ "url",
 ]
 
 [[package]]
@@ -7324,8 +7620,23 @@ dependencies = [
  "azure_data_cosmos",
  "futures",
  "serde 1.0.203",
- "spin-core",
- "spin-key-value",
+ "spin-core 2.6.0",
+ "spin-key-value 2.6.0",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "spin-key-value-redis"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "redis 0.21.7",
+ "spin-core 2.6.0-pre0",
+ "spin-key-value 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
  "tokio",
  "tracing",
  "url",
@@ -7338,12 +7649,27 @@ source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d69477485
 dependencies = [
  "anyhow",
  "redis 0.21.7",
- "spin-core",
- "spin-key-value",
- "spin-world",
+ "spin-core 2.6.0",
+ "spin-key-value 2.6.0",
+ "spin-world 2.6.0",
  "tokio",
  "tracing",
  "url",
+]
+
+[[package]]
+name = "spin-key-value-sqlite"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "once_cell",
+ "rusqlite",
+ "spin-core 2.6.0-pre0",
+ "spin-key-value 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -7354,11 +7680,24 @@ dependencies = [
  "anyhow",
  "once_cell",
  "rusqlite",
- "spin-core",
- "spin-key-value",
- "spin-world",
+ "spin-core 2.6.0",
+ "spin-key-value 2.6.0",
+ "spin-world 2.6.0",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "spin-llm"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "bytesize",
+ "llm",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
 ]
 
 [[package]]
@@ -7369,9 +7708,27 @@ dependencies = [
  "anyhow",
  "bytesize",
  "llm",
- "spin-app",
- "spin-core",
- "spin-world",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-world 2.6.0",
+]
+
+[[package]]
+name = "spin-llm-remote-http"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "http 0.2.12",
+ "llm",
+ "reqwest 0.11.27",
+ "serde 1.0.203",
+ "serde_json",
+ "spin-core 2.6.0-pre0",
+ "spin-llm 2.6.0-pre0",
+ "spin-telemetry 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "tracing",
 ]
 
 [[package]]
@@ -7385,11 +7742,51 @@ dependencies = [
  "reqwest 0.11.27",
  "serde 1.0.203",
  "serde_json",
- "spin-core",
- "spin-llm",
- "spin-telemetry",
- "spin-world",
+ "spin-core 2.6.0",
+ "spin-llm 2.6.0",
+ "spin-telemetry 2.6.0",
+ "spin-world 2.6.0",
  "tracing",
+]
+
+[[package]]
+name = "spin-loader"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "dirs 4.0.0",
+ "dunce",
+ "futures",
+ "glob",
+ "indexmap 1.9.3",
+ "itertools 0.10.5",
+ "lazy_static 1.4.0",
+ "mime_guess",
+ "outbound-http 2.6.0-pre0",
+ "path-absolutize",
+ "regex",
+ "reqwest 0.11.27",
+ "semver",
+ "serde 1.0.203",
+ "serde_json",
+ "sha2",
+ "shellexpand 3.1.0",
+ "spin-common 2.6.0-pre0",
+ "spin-locked-app 2.6.0-pre0",
+ "spin-manifest 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "tempfile",
+ "terminal 2.6.0-pre0",
+ "thiserror",
+ "tokio",
+ "tokio-util 0.6.10",
+ "toml 0.8.12",
+ "tracing",
+ "walkdir",
+ "wasm-pkg-loader",
 ]
 
 [[package]]
@@ -7408,7 +7805,7 @@ dependencies = [
  "itertools 0.10.5",
  "lazy_static 1.4.0",
  "mime_guess",
- "outbound-http",
+ "outbound-http 2.6.0",
  "path-absolutize",
  "regex",
  "reqwest 0.11.27",
@@ -7417,12 +7814,12 @@ dependencies = [
  "serde_json",
  "sha2",
  "shellexpand 3.1.0",
- "spin-common",
- "spin-locked-app",
- "spin-manifest",
- "spin-outbound-networking",
+ "spin-common 2.6.0",
+ "spin-locked-app 2.6.0",
+ "spin-manifest 2.6.0",
+ "spin-outbound-networking 2.6.0",
  "tempfile",
- "terminal",
+ "terminal 2.6.0",
  "thiserror",
  "tokio",
  "tokio-util 0.6.10",
@@ -7430,6 +7827,20 @@ dependencies = [
  "tracing",
  "walkdir",
  "wasm-pkg-loader",
+]
+
+[[package]]
+name = "spin-locked-app"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "ouroboros",
+ "serde 1.0.203",
+ "serde_json",
+ "spin-serde 2.6.0-pre0",
+ "thiserror",
 ]
 
 [[package]]
@@ -7442,8 +7853,24 @@ dependencies = [
  "ouroboros",
  "serde 1.0.203",
  "serde_json",
- "spin-serde",
+ "spin-serde 2.6.0",
  "thiserror",
+]
+
+[[package]]
+name = "spin-manifest"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "indexmap 1.9.3",
+ "semver",
+ "serde 1.0.203",
+ "spin-serde 2.6.0-pre0",
+ "terminal 2.6.0-pre0",
+ "thiserror",
+ "toml 0.8.12",
+ "url",
 ]
 
 [[package]]
@@ -7455,8 +7882,8 @@ dependencies = [
  "indexmap 1.9.3",
  "semver",
  "serde 1.0.203",
- "spin-serde",
- "terminal",
+ "spin-serde 2.6.0",
+ "terminal 2.6.0",
  "thiserror",
  "toml 0.8.12",
  "url",
@@ -7480,15 +7907,30 @@ dependencies = [
  "reqwest 0.11.27",
  "serde 1.0.203",
  "serde_json",
- "spin-common",
- "spin-loader",
- "spin-locked-app",
- "spin-manifest",
+ "spin-common 2.6.0",
+ "spin-loader 2.6.0",
+ "spin-locked-app 2.6.0",
+ "spin-manifest 2.6.0",
  "tempfile",
  "tokio",
  "tokio-util 0.7.10",
  "tracing",
  "walkdir",
+]
+
+[[package]]
+name = "spin-outbound-networking"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "http 1.1.0",
+ "ipnet",
+ "spin-expressions 2.6.0-pre0",
+ "spin-locked-app 2.6.0-pre0",
+ "terminal 2.6.0-pre0",
+ "url",
+ "urlencoding",
 ]
 
 [[package]]
@@ -7499,11 +7941,20 @@ dependencies = [
  "anyhow",
  "http 1.1.0",
  "ipnet",
- "spin-expressions",
- "spin-locked-app",
- "terminal",
+ "spin-expressions 2.6.0",
+ "spin-locked-app 2.6.0",
+ "terminal 2.6.0",
  "url",
  "urlencoding",
+]
+
+[[package]]
+name = "spin-serde"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "base64 0.21.7",
+ "serde 1.0.203",
 ]
 
 [[package]]
@@ -7517,15 +7968,46 @@ dependencies = [
 
 [[package]]
 name = "spin-sqlite"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "table 2.6.0-pre0",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "spin-sqlite"
 version = "2.6.0"
 source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d694774858408e918f3e5cec60"
 dependencies = [
  "anyhow",
  "async-trait",
- "spin-app",
- "spin-core",
- "spin-world",
- "table",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-world 2.6.0",
+ "table 2.6.0",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "spin-sqlite-inproc"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "once_cell",
+ "rand 0.8.5",
+ "rusqlite",
+ "spin-sqlite 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
  "tokio",
  "tracing",
 ]
@@ -7540,8 +8022,24 @@ dependencies = [
  "once_cell",
  "rand 0.8.5",
  "rusqlite",
- "spin-sqlite",
- "spin-world",
+ "spin-sqlite 2.6.0",
+ "spin-world 2.6.0",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "spin-sqlite-libsql"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "libsql",
+ "rusqlite",
+ "spin-sqlite 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "sqlparser",
  "tokio",
  "tracing",
 ]
@@ -7555,11 +8053,31 @@ dependencies = [
  "async-trait",
  "libsql",
  "rusqlite",
- "spin-sqlite",
- "spin-world",
+ "spin-sqlite 2.6.0",
+ "spin-world 2.6.0",
  "sqlparser",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "spin-telemetry"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "http 0.2.12",
+ "http 1.1.0",
+ "opentelemetry",
+ "opentelemetry-otlp",
+ "opentelemetry-semantic-conventions",
+ "opentelemetry_sdk",
+ "terminal 2.6.0-pre0",
+ "tracing",
+ "tracing-appender",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+ "url",
 ]
 
 [[package]]
@@ -7574,12 +8092,63 @@ dependencies = [
  "opentelemetry-otlp",
  "opentelemetry-semantic-conventions",
  "opentelemetry_sdk",
- "terminal",
+ "terminal 2.6.0",
  "tracing",
  "tracing-appender",
  "tracing-opentelemetry",
  "tracing-subscriber",
  "url",
+]
+
+[[package]]
+name = "spin-trigger"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap 3.2.25",
+ "ctrlc",
+ "dirs 4.0.0",
+ "futures",
+ "indexmap 1.9.3",
+ "ipnet",
+ "outbound-http 2.6.0-pre0",
+ "outbound-mqtt 2.6.0-pre0",
+ "outbound-mysql 2.6.0-pre0",
+ "outbound-pg 2.6.0-pre0",
+ "outbound-redis 2.6.0-pre0",
+ "sanitize-filename",
+ "serde 1.0.203",
+ "serde_json",
+ "spin-app 2.6.0-pre0",
+ "spin-common 2.6.0-pre0",
+ "spin-componentize 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-expressions 2.6.0-pre0",
+ "spin-key-value 2.6.0-pre0",
+ "spin-key-value-azure 2.6.0-pre0",
+ "spin-key-value-redis 2.6.0-pre0",
+ "spin-key-value-sqlite 2.6.0-pre0",
+ "spin-llm 2.6.0-pre0",
+ "spin-llm-remote-http 2.6.0-pre0",
+ "spin-loader 2.6.0-pre0",
+ "spin-manifest 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "spin-sqlite 2.6.0-pre0",
+ "spin-sqlite-inproc 2.6.0-pre0",
+ "spin-sqlite-libsql 2.6.0-pre0",
+ "spin-telemetry 2.6.0-pre0",
+ "spin-variables 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "terminal 2.6.0-pre0",
+ "tokio",
+ "toml 0.5.11",
+ "tracing",
+ "url",
+ "wasmtime",
+ "wasmtime-wasi",
+ "wasmtime-wasi-http",
 ]
 
 [[package]]
@@ -7595,39 +8164,78 @@ dependencies = [
  "futures",
  "indexmap 1.9.3",
  "ipnet",
- "outbound-http",
- "outbound-mqtt",
- "outbound-mysql",
- "outbound-pg",
- "outbound-redis",
+ "outbound-http 2.6.0",
+ "outbound-mqtt 2.6.0",
+ "outbound-mysql 2.6.0",
+ "outbound-pg 2.6.0",
+ "outbound-redis 2.6.0",
  "sanitize-filename",
  "serde 1.0.203",
  "serde_json",
- "spin-app",
- "spin-common",
- "spin-componentize",
- "spin-core",
- "spin-expressions",
- "spin-key-value",
- "spin-key-value-azure",
- "spin-key-value-redis",
- "spin-key-value-sqlite",
- "spin-llm",
- "spin-llm-remote-http",
- "spin-loader",
- "spin-manifest",
- "spin-outbound-networking",
- "spin-sqlite",
- "spin-sqlite-inproc",
- "spin-sqlite-libsql",
- "spin-telemetry",
- "spin-variables",
- "spin-world",
- "terminal",
+ "spin-app 2.6.0",
+ "spin-common 2.6.0",
+ "spin-componentize 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-key-value 2.6.0",
+ "spin-key-value-azure 2.6.0",
+ "spin-key-value-redis 2.6.0",
+ "spin-key-value-sqlite 2.6.0",
+ "spin-llm 2.6.0",
+ "spin-llm-remote-http 2.6.0",
+ "spin-loader 2.6.0",
+ "spin-manifest 2.6.0",
+ "spin-outbound-networking 2.6.0",
+ "spin-sqlite 2.6.0",
+ "spin-sqlite-inproc 2.6.0",
+ "spin-sqlite-libsql 2.6.0",
+ "spin-telemetry 2.6.0",
+ "spin-variables 2.6.0",
+ "spin-world 2.6.0",
+ "terminal 2.6.0",
  "tokio",
  "toml 0.5.11",
  "tracing",
  "url",
+ "wasmtime",
+ "wasmtime-wasi",
+ "wasmtime-wasi-http",
+]
+
+[[package]]
+name = "spin-trigger-http"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap 3.2.25",
+ "futures",
+ "futures-util",
+ "http 1.1.0",
+ "http-body-util",
+ "hyper 1.3.1",
+ "hyper-util",
+ "indexmap 1.9.3",
+ "outbound-http 2.6.0-pre0",
+ "percent-encoding",
+ "rustls-pemfile 0.3.0",
+ "serde 1.0.203",
+ "serde_json",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-http 2.6.0-pre0",
+ "spin-outbound-networking 2.6.0-pre0",
+ "spin-telemetry 2.6.0-pre0",
+ "spin-trigger 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "terminal 2.6.0-pre0",
+ "tls-listener",
+ "tokio",
+ "tokio-rustls 0.23.4",
+ "tracing",
+ "url",
+ "wasi-common",
  "wasmtime",
  "wasmtime-wasi",
  "wasmtime-wasi-http",
@@ -7648,19 +8256,19 @@ dependencies = [
  "hyper 1.3.1",
  "hyper-util",
  "indexmap 1.9.3",
- "outbound-http",
+ "outbound-http 2.6.0",
  "percent-encoding",
  "rustls-pemfile 0.3.0",
  "serde 1.0.203",
  "serde_json",
- "spin-app",
- "spin-core",
- "spin-http",
- "spin-outbound-networking",
- "spin-telemetry",
- "spin-trigger",
- "spin-world",
- "terminal",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-http 2.6.0",
+ "spin-outbound-networking 2.6.0",
+ "spin-telemetry 2.6.0",
+ "spin-trigger 2.6.0",
+ "spin-world 2.6.0",
+ "terminal 2.6.0",
  "tls-listener",
  "tokio",
  "tokio-rustls 0.23.4",
@@ -7682,15 +8290,38 @@ dependencies = [
  "futures",
  "redis 0.21.7",
  "serde 1.0.203",
- "spin-app",
- "spin-common",
- "spin-core",
- "spin-expressions",
- "spin-telemetry",
- "spin-trigger",
- "spin-world",
+ "spin-app 2.6.0",
+ "spin-common 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-telemetry 2.6.0",
+ "spin-trigger 2.6.0",
+ "spin-world 2.6.0",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "spin-variables"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "azure_core 0.20.0",
+ "azure_identity",
+ "azure_security_keyvault",
+ "dotenvy",
+ "once_cell",
+ "serde 1.0.203",
+ "spin-app 2.6.0-pre0",
+ "spin-core 2.6.0-pre0",
+ "spin-expressions 2.6.0-pre0",
+ "spin-world 2.6.0-pre0",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "vaultrs",
 ]
 
 [[package]]
@@ -7706,14 +8337,22 @@ dependencies = [
  "dotenvy",
  "once_cell",
  "serde 1.0.203",
- "spin-app",
- "spin-core",
- "spin-expressions",
- "spin-world",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-expressions 2.6.0",
+ "spin-world 2.6.0",
  "thiserror",
  "tokio",
  "tracing",
  "vaultrs",
+]
+
+[[package]]
+name = "spin-world"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "wasmtime",
 ]
 
 [[package]]
@@ -7910,6 +8549,11 @@ dependencies = [
 
 [[package]]
 name = "table"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+
+[[package]]
+name = "table"
 version = "2.6.0"
 source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d694774858408e918f3e5cec60"
 
@@ -7929,6 +8573,12 @@ name = "target-lexicon"
 version = "0.12.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e1fc403891a21bcfb7c37834ba66a547a8f402146eba7265b5a6d88059c9ff2f"
+
+[[package]]
+name = "temp-dir"
+version = "0.1.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f227968ec00f0e5322f9b8173c7a0cbcff6181a0a5b28e9892491c286277231"
 
 [[package]]
 name = "tempfile"
@@ -7953,12 +8603,68 @@ dependencies = [
 
 [[package]]
 name = "terminal"
+version = "2.6.0-pre0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "atty",
+ "once_cell",
+ "termcolor",
+]
+
+[[package]]
+name = "terminal"
 version = "2.6.0"
 source = "git+https://github.com/fermyon/spin?tag=v2.6.0#a4ddd3921d9ea3d694774858408e918f3e5cec60"
 dependencies = [
  "atty",
  "once_cell",
  "termcolor",
+]
+
+[[package]]
+name = "test-components"
+version = "0.1.0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "cargo_toml",
+ "wit-component 0.19.1",
+]
+
+[[package]]
+name = "test-environment"
+version = "0.1.0"
+source = "git+https://github.com/fermyon/conformance-tests#c19e5cf54b7586829e923bd2091314e4d473f4f5"
+dependencies = [
+ "anyhow",
+ "fslock",
+ "regex",
+ "reqwest 0.12.4",
+ "temp-dir",
+ "tokio",
+]
+
+[[package]]
+name = "testing-framework"
+version = "0.1.0"
+source = "git+https://github.com/kate-goldenring/spin?branch=shim-test-environment#c5045631ec52b019f36e1988fe05c8bef4002199"
+dependencies = [
+ "anyhow",
+ "fslock",
+ "http 1.1.0",
+ "http-body-util",
+ "log",
+ "nix 0.26.4",
+ "regex",
+ "reqwest 0.11.27",
+ "spin-http 2.6.0-pre0",
+ "spin-loader 2.6.0-pre0",
+ "spin-trigger 2.6.0-pre0",
+ "spin-trigger-http 2.6.0-pre0",
+ "temp-dir",
+ "test-components",
+ "tokio",
+ "toml 0.8.12",
+ "wasmtime-wasi-http",
 ]
 
 [[package]]
@@ -7995,6 +8701,15 @@ checksum = "8b9ef9bad013ada3808854ceac7b46812a6465ba368859a37e2100283d2d719c"
 dependencies = [
  "cfg-if 1.0.0",
  "once_cell",
+]
+
+[[package]]
+name = "threadpool"
+version = "1.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d050e60b33d41c19108b32cea32164033a9013fe3b46cbd4457559bfbf77afaa"
+dependencies = [
+ "num_cpus",
 ]
 
 [[package]]
@@ -8544,10 +9259,10 @@ dependencies = [
  "clap 3.2.25",
  "openssl",
  "serde 1.0.203",
- "spin-app",
- "spin-core",
- "spin-telemetry",
- "spin-trigger",
+ "spin-app 2.6.0",
+ "spin-core 2.6.0",
+ "spin-telemetry 2.6.0",
+ "spin-trigger 2.6.0",
  "tokio",
  "tracing",
  "wasmtime-wasi",
@@ -8566,9 +9281,9 @@ dependencies = [
  "futures",
  "openssl",
  "serde 1.0.203",
- "spin-core",
- "spin-telemetry",
- "spin-trigger",
+ "spin-core 2.6.0",
+ "spin-telemetry 2.6.0",
+ "spin-trigger 2.6.0",
  "tokio",
  "tokio-scoped",
  "tracing",
@@ -9157,6 +9872,15 @@ dependencies = [
 
 [[package]]
 name = "wasm-encoder"
+version = "0.39.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "111495d6204760238512f57a9af162f45086504da332af210f2f75dd80b34f1d"
+dependencies = [
+ "leb128",
+]
+
+[[package]]
+name = "wasm-encoder"
 version = "0.41.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "972f97a5d8318f908dded23594188a90bcd09365986b1163e66d70170e5287ae"
@@ -9190,6 +9914,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e7d931a1120ef357f32b74547646b6fa68ea25e377772b72874b131a9ed70d4"
 dependencies = [
  "leb128",
+]
+
+[[package]]
+name = "wasm-metadata"
+version = "0.10.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "18ebaa7bd0f9e7a5e5dd29b9a998acf21c4abed74265524dd7e85934597bfb10"
+dependencies = [
+ "anyhow",
+ "indexmap 2.2.6",
+ "serde 1.0.203",
+ "serde_derive",
+ "serde_json",
+ "spdx",
+ "wasm-encoder 0.41.2",
+ "wasmparser 0.121.2",
 ]
 
 [[package]]
@@ -9249,6 +9989,17 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
+]
+
+[[package]]
+name = "wasmparser"
+version = "0.119.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c35daf77afb4f9b14016625144a391085ec2ca99ca9cc53ed291bb53ab5278d"
+dependencies = [
+ "bitflags 2.5.0",
+ "indexmap 2.2.6",
+ "semver",
 ]
 
 [[package]]
@@ -10016,6 +10767,25 @@ dependencies = [
 
 [[package]]
 name = "wit-component"
+version = "0.19.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "429e3c06fba3a7566aab724ae3ffff3152ede5399d44789e7dd11f5421292859"
+dependencies = [
+ "anyhow",
+ "bitflags 2.5.0",
+ "indexmap 2.2.6",
+ "log",
+ "serde 1.0.203",
+ "serde_derive",
+ "serde_json",
+ "wasm-encoder 0.39.0",
+ "wasm-metadata 0.10.20",
+ "wasmparser 0.119.0",
+ "wit-parser 0.13.2",
+]
+
+[[package]]
+name = "wit-component"
 version = "0.200.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39979723340baea490b87b11b2abae05f149d86f2b55c18d41d78a2a2b284c16"
@@ -10028,9 +10798,26 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "wasm-encoder 0.200.0",
- "wasm-metadata",
+ "wasm-metadata 0.200.0",
  "wasmparser 0.200.0",
  "wit-parser 0.200.0",
+]
+
+[[package]]
+name = "wit-parser"
+version = "0.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "316b36a9f0005f5aa4b03c39bc3728d045df136f8c13a73b7db4510dec725e08"
+dependencies = [
+ "anyhow",
+ "id-arena",
+ "indexmap 2.2.6",
+ "log",
+ "semver",
+ "serde 1.0.203",
+ "serde_derive",
+ "serde_json",
+ "unicode-xid",
 ]
 
 [[package]]

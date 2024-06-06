@@ -1,0 +1,13 @@
+[package]
+name = "conformance-tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+anyhow = "1.0"
+testing-framework = { git = "https://github.com/kate-goldenring/spin", branch = "shim-test-environment" }
+conformance-tests = { git = "https://github.com/fermyon/conformance-tests" }
