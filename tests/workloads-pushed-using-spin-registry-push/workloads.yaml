@@ -254,3 +254,43 @@ spec:
       targetPort: 80
   selector:
     app: spin-static-assets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-mqtt-message-logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spin-mqtt-message-logger
+  template:
+    metadata:
+      labels:
+        app: spin-mqtt-message-logger
+    spec:
+      runtimeClassName: wasmtime-spin
+      containers:
+        - name: spin-mqtt-message-logger
+          image: test-registry:5000/spin-registry-push/spin-mqtt-message-logger:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/"]
+          ports:
+          - containerPort: 80
+          env:
+          - name: SPIN_VARIABLE_MQTT_TOPIC
+            value: hello
+          - name: SPIN_VARIABLE_MQTT_BROKER_URI
+            value: "mqtt://emqx.default.svc.cluster.local:1883"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spin-mqtt-message-logger
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: spin-mqtt-message-logger
