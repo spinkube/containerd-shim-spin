@@ -18,7 +18,7 @@ Containerd must be configured to access the `containerd-shim-spin`:
 2. Configure containerd to add the Spin shim as a runtime by adding the following to `/etc/containerd/config.toml`:
     ```toml
     [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
-        runtime_type = "io.containerd.spin.v2"
+        runtime_type = "/usr/bin/containerd-shim-spin-v2"
     ```
 3. Restart containerd if it is running as a service
     ```sh

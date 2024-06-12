@@ -9,5 +9,7 @@ homepage.workspace = true
 
 [dependencies]
 anyhow = "1.0"
-testing-framework = { git = "https://github.com/kate-goldenring/spin", branch = "shim-test-environment" }
-conformance-tests = { git = "https://github.com/fermyon/conformance-tests" }
+conformance-tests = { git = "https://github.com/fermyon/conformance-tests", branch = "testing-environment" }
+log = "0.4"
+nix = "0.26"
+test-environment = { git = "https://github.com/fermyon/conformance-tests", branch = "testing-environment" }
