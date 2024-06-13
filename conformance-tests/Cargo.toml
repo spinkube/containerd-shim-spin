@@ -9,7 +9,7 @@ homepage.workspace = true
 
 [dependencies]
 anyhow = "1.0"
-conformance-tests = { git = "https://github.com/fermyon/conformance-tests", branch = "testing-environment" }
+conformance-tests = { git = "https://github.com/fermyon/conformance-tests" }
 log = "0.4"
 nix = "0.26"
-test-environment = { git = "https://github.com/fermyon/conformance-tests", branch = "testing-environment" }
+test-environment = { git = "https://github.com/fermyon/conformance-tests" }

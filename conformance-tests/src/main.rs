@@ -14,37 +14,33 @@ use test_environment::{
 fn main() {
     let tests_dir = conformance_tests::download_tests().unwrap();
     let mut args = std::env::args().skip(1);
-    let spin_binary = args
+    let spin_binary = &args
         .next()
         .expect("expected first arg to be path to Spin binary");
-    let ctr_binary = args
+    let ctr_binary = &args
         .next()
         .expect("expected second arg to be path to ctr binary");
-    let ctr_binary = Path::new(&ctr_binary);
 
     for test in conformance_tests::tests(&tests_dir).unwrap() {
-        let spin_binary = PathBuf::from(spin_binary.clone());
         // Just using TTL.sh until we decide where to host these (local registry, ghcr, etc)
         let oci_image = format!("ttl.sh/{}:72h", test.name);
         let env_config = SpinShim::config(
             ctr_binary.into(),
+            spin_binary.into(),
             oci_image.clone(),
-            move |e| {
-                // TODO: consider doing this outside the test environment since it is not a part of the runtime execution
-                e.copy_into(&test.manifest, "spin.toml")?;
-                e.copy_into(&test.component, test.component.file_name().unwrap())?;
-                SpinShim::regisry_push(&spin_binary, &oci_image, e).unwrap();
-                Ok(())
-            },
             test_environment::services::ServicesConfig::none(),
         );
-        let mut env = TestEnvironment::up(env_config, |_| Ok(())).unwrap();
-        let spin = env.runtime_mut();
+        let mut env = TestEnvironment::up(env_config, move |e| {
+            e.copy_into(&test.manifest, "spin.toml")?;
+            e.copy_into(&test.component, test.component.file_name().unwrap())?;
+            Ok(())
+        })
+        .unwrap();
+        let shim = env.runtime_mut();
         for invocation in test.config.invocations {
             let conformance_tests::config::Invocation::Http(invocation) = invocation;
             invocation
-                .request
-                .send(|request| spin.make_http_request(request))
+                .run(|request| shim.make_http_request(request))
                 .unwrap();
         }
         println!("test passed: {}", test.name);
@@ -66,14 +62,14 @@ const CTR_RUN_ID: &str = "run-id";
 impl SpinShim {
     pub fn config(
         ctr_binary: PathBuf,
+        spin_binary: PathBuf,
         oci_image: String,
-        preboot: impl FnOnce(&mut TestEnvironment<SpinShim>) -> anyhow::Result<()> + 'static,
         services_config: ServicesConfig,
     ) -> TestEnvironmentConfig<SpinShim> {
         TestEnvironmentConfig {
             services_config,
             create_runtime: Box::new(move |env| {
-                preboot(env)?;
+                SpinShim::regisry_push(&spin_binary, &oci_image, env)?;
                 SpinShim::image_pull(&ctr_binary, &oci_image)?;
                 SpinShim::start(&ctr_binary, env, &oci_image, CTR_RUN_ID)
             }),
@@ -86,13 +82,10 @@ impl SpinShim {
         env: &mut TestEnvironment<R>,
     ) -> anyhow::Result<()> {
         // TODO: consider enabling configuring a port
-        Command::new(spin_binary_path)
-            .args(["registry", "push"])
-            .arg(image)
-            .current_dir(env.path())
-            .output()
+        let mut cmd = Command::new(spin_binary_path);
+        cmd.args(["registry", "push"]).arg(image);
+        env.run_in(&mut cmd)
             .context("failed to push spin app to registry with 'spin'")?;
-        // TODO: assess output
         Ok(())
     }
 
@@ -119,14 +112,7 @@ impl SpinShim {
         let mut ctr_cmd = std::process::Command::new(ctr_binary_path);
         let child = ctr_cmd
             .arg("run")
-            .args([
-                "--memory-limit",
-                "10000",
-                "--rm",
-                "--net-host",
-                "--runtime",
-                "io.containerd.spin.v2",
-            ])
+            .args(["--rm", "--net-host", "--runtime", "io.containerd.spin.v2"])
             .arg(image)
             .arg(ctr_run_id)
             .arg("bogus-arg")
@@ -154,7 +140,7 @@ impl SpinShim {
                 }
                 Err(e) => {
                     let stderr = spin.stderr.output_as_str().unwrap_or("<non-utf8>");
-                    log::trace!("Checking that the Spin server started returned an error: {e}");
+                    log::trace!("Checking that the shim server started returned an error: {e}");
                     log::trace!("Current spin stderr = '{stderr}'");
                 }
             }
@@ -190,7 +176,7 @@ impl SpinShim {
             );
         }
         log::debug!("Connecting to HTTP server on port {port}...");
-        let response = request.send("localhost", port).unwrap();
+        let response = request.send("localhost", port)?;
         log::debug!("Awaiting response from server");
         if let Some(status) = self.try_wait()? {
             anyhow::bail!("Spin exited early with status code {:?}", status.code());
