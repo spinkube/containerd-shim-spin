@@ -21,29 +21,41 @@ fn main() {
         .next()
         .expect("expected second arg to be path to ctr binary");
 
-    for test in conformance_tests::tests(&tests_dir).unwrap() {
+    'test: for test in conformance_tests::tests(&tests_dir).unwrap() {
+        println!("running test: {}", test.name);
         // Just using TTL.sh until we decide where to host these (local registry, ghcr, etc)
         let oci_image = format!("ttl.sh/{}:72h", test.name);
         let env_config = SpinShim::config(
             ctr_binary.into(),
             spin_binary.into(),
             oci_image.clone(),
-            test_environment::services::ServicesConfig::none(),
+            test_environment::services::ServicesConfig::new(test.config.services).unwrap(),
         );
         let mut env = TestEnvironment::up(env_config, move |e| {
-            e.copy_into(&test.manifest, "spin.toml")?;
+            let mut manifest =
+                test_environment::manifest_template::EnvTemplate::from_file(&test.manifest)
+                    .unwrap();
+            manifest.substitute(e, |_| None).unwrap();
+            e.write_file("spin.toml", manifest.contents())?;
             e.copy_into(&test.component, test.component.file_name().unwrap())?;
             Ok(())
         })
         .unwrap();
-        let shim = env.runtime_mut();
         for invocation in test.config.invocations {
-            let conformance_tests::config::Invocation::Http(invocation) = invocation;
-            invocation
-                .run(|request| shim.make_http_request(request))
-                .unwrap();
+            let conformance_tests::config::Invocation::Http(mut invocation) = invocation;
+            invocation.request.substitute_from_env(&mut env).unwrap();
+            let shim = env.runtime_mut();
+            if let Err(e) = invocation.run(|request| shim.make_http_request(request)) {
+                println!("❌ test failed: {}", test.name);
+                println!("error: {}", e);
+                for e in e.chain() {
+                    println!("\t{}", e);
+                }
+
+                continue 'test;
+            }
         }
-        println!("test passed: {}", test.name);
+        println!("✅ test passed: {}", test.name);
     }
 }
 
@@ -181,7 +193,6 @@ impl SpinShim {
         if let Some(status) = self.try_wait()? {
             anyhow::bail!("Spin exited early with status code {:?}", status.code());
         }
-        println!("Response: {}", response.status());
         Ok(response)
     }
 
