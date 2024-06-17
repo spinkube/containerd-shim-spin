@@ -10,6 +10,7 @@ CONTAINERD_CONF=/etc/containerd/config.toml
 IS_MICROK8S=false
 IS_K3S=false
 IS_RKE2_AGENT=false
+IS_K0S_WORKER=false
 if ps aux | grep kubelet | grep -q snap/microk8s; then
     CONTAINERD_CONF=/var/snap/microk8s/current/args/containerd-template.toml
     IS_MICROK8S=true
@@ -27,6 +28,10 @@ elif ls $NODE_ROOT/var/lib/rancher/k3s/agent/etc/containerd/config.toml > /dev/n
     IS_K3S=true
     cp $NODE_ROOT/var/lib/rancher/k3s/agent/etc/containerd/config.toml $NODE_ROOT/var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
     CONTAINERD_CONF=/var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
+elif ps aux | grep kubelet | grep -q /var/lib/k0s/bin/kubelet; then
+    IS_K0S_WORKER=true
+    CONTAINERD_CONF=/etc/k0s/containerd.d/spin.toml
+    touch $NODE_ROOT$CONTAINERD_CONF
 fi
 
 mkdir -p $NODE_ROOT$KWASM_DIR/bin/
@@ -49,6 +54,8 @@ if [ ! -f $NODE_ROOT$KWASM_DIR/active ]; then
         nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart k3s
     elif $IS_RKE2_AGENT; then
         nsenter --target 1 --mount --uts --ipc --net -- systemctl restart rke2-agent
+    elif $IS_K0S_WORKER; then
+        nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart k0sworker
     elif ls $NODE_ROOT/etc/init.d/containerd > /dev/null 2>&1 ; then
         nsenter --target 1 --mount --uts --ipc --net -- /etc/init.d/containerd restart
     else
