@@ -23,7 +23,7 @@ fn main() {
 
     'test: for test in conformance_tests::tests(&tests_dir).unwrap() {
         println!("running test: {}", test.name);
-        let mut services = Vec::new();
+        let mut services = vec!["registry".into()];
         for precondition in &test.config.preconditions {
             match precondition {
                 conformance_tests::config::Precondition::HttpEcho => {
@@ -36,12 +36,10 @@ fn main() {
                 }
             }
         }
-        // Just using TTL.sh until we decide where to host these (local registry, ghcr, etc)
-        let oci_image = format!("ttl.sh/{}:72h", test.name);
         let env_config = SpinShim::config(
             ctr_binary.into(),
             spin_binary.into(),
-            oci_image.clone(),
+            test.name.clone(),
             test_environment::services::ServicesConfig::new(services).unwrap(),
         );
         let mut env = TestEnvironment::up(env_config, move |e| {
@@ -94,6 +92,12 @@ impl SpinShim {
         TestEnvironmentConfig {
             services_config,
             create_runtime: Box::new(move |env| {
+                let oci_image = format!(
+                    "localhost:{port}/{oci_image}:latest",
+                    port = env
+                        .get_port(5000)?
+                        .context("environment doesn't expose port for OCI registry")?
+                );
                 SpinShim::regisry_push(&spin_binary, &oci_image, env)?;
                 SpinShim::image_pull(&ctr_binary, &oci_image)?;
                 SpinShim::start(&ctr_binary, env, &oci_image, CTR_RUN_ID)
@@ -108,7 +112,7 @@ impl SpinShim {
     ) -> anyhow::Result<()> {
         // TODO: consider enabling configuring a port
         let mut cmd = Command::new(spin_binary_path);
-        cmd.args(["registry", "push"]).arg(image);
+        cmd.args(["registry", "push", "-k"]).arg(image);
         env.run_in(&mut cmd)
             .context("failed to push spin app to registry with 'spin'")?;
         Ok(())
@@ -126,7 +130,6 @@ impl SpinShim {
     }
 
     /// Start the Spin app using `ctr run`
-    /// Equivalent of `sudo ctr run --rm --net-host --runtime io.containerd.spin.v2 ttl.sh/myapp:48h ctr-run-id bogus-arg` for image `ttl.sh/myapp:48h` and run id `ctr-run-id`
     pub fn start<R>(
         ctr_binary_path: &Path,
         env: &mut TestEnvironment<R>,
