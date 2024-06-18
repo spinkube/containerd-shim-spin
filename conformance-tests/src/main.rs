@@ -23,13 +23,26 @@ fn main() {
 
     'test: for test in conformance_tests::tests(&tests_dir).unwrap() {
         println!("running test: {}", test.name);
+        let mut services = Vec::new();
+        for precondition in &test.config.preconditions {
+            match precondition {
+                conformance_tests::config::Precondition::HttpEcho => {
+                    services.push("http-echo".into());
+                }
+                conformance_tests::config::Precondition::KeyValueStore(k) => {
+                    if k.label != "default" {
+                        panic!("unsupported label: {}", k.label);
+                    }
+                }
+            }
+        }
         // Just using TTL.sh until we decide where to host these (local registry, ghcr, etc)
         let oci_image = format!("ttl.sh/{}:72h", test.name);
         let env_config = SpinShim::config(
             ctr_binary.into(),
             spin_binary.into(),
             oci_image.clone(),
-            test_environment::services::ServicesConfig::new(test.config.services).unwrap(),
+            test_environment::services::ServicesConfig::new(services).unwrap(),
         );
         let mut env = TestEnvironment::up(env_config, move |e| {
             let mut manifest =
