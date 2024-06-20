@@ -28,7 +28,12 @@ use trigger_command::CommandTrigger;
 use trigger_sqs::SqsTrigger;
 use url::Url;
 
-const SPIN_ADDR: &str = "0.0.0.0:80";
+/// SPIN_ADDR_DEFAULT is the default address and port that the Spin HTTP trigger
+/// listens on.
+const SPIN_ADDR_DEFAULT: &str = "0.0.0.0:80";
+/// SPIN_HTTP_LISTEN_ADDR_ENV is the environment variable that can be used to
+/// override the default address and port that the Spin HTTP trigger listens on.
+const SPIN_HTTP_LISTEN_ADDR_ENV: &str = "SPIN_HTTP_LISTEN_ADDR";
 /// RUNTIME_CONFIG_PATH specifies the expected location and name of the runtime
 /// config for a Spin application. The runtime config should be loaded into the
 /// root `/` of the container.
@@ -224,8 +229,11 @@ impl SpinEngine {
                         .context("failed to build spin trigger")?;
 
                     info!(" >>> running spin http trigger");
+                    let address_str = env::var(SPIN_HTTP_LISTEN_ADDR_ENV)
+                        .unwrap_or_else(|_| SPIN_ADDR_DEFAULT.to_string());
+                    let address = parse_addr(&address_str)?;
                     http_trigger.run(spin_trigger_http::CliArgs {
-                        address: parse_addr(SPIN_ADDR).unwrap(),
+                        address,
                         tls_cert: None,
                         tls_key: None,
                     })
@@ -502,7 +510,7 @@ mod tests {
 
     #[test]
     fn can_parse_spin_address() {
-        let parsed = parse_addr(SPIN_ADDR).unwrap();
+        let parsed = parse_addr(SPIN_ADDR_DEFAULT).unwrap();
         assert_eq!(parsed.clone().port(), 80);
         assert_eq!(parsed.ip().to_string(), "0.0.0.0");
     }
