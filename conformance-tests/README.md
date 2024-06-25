@@ -26,14 +26,14 @@ Containerd must be configured to access the `containerd-shim-spin`:
     ```
 
 ## Running tests
-Containerd can only be executed as a root user. Choose one of the following options
+Containerd can only be executed as a root user. Choose one of the following option, being sure to pass the path to the Spin and `ctr` binaries as arguments.
 1. Build the `conformance-tests` bin and excute it as sudo user:
     ```sh
     cargo build 
-    sudo ../target/debug/conformance-tests
+    sudo ../target/debug/conformance-tests /path/to/spin /path/to/ctr
     ```
 2. Run cargo as root by passing in the environment from the user's context and full path to cargo:
     ```sh
-    sudo -E $HOME/.cargo/bin/cargo run
+    sudo -E $HOME/.cargo/bin/cargo run /path/to/spin /path/to/ctr
     ```
 3. Follow the [containerd instructions](https://github.com/containerd/containerd/blob/main/docs/rootless.md) to configure it to be runnable as a non-root user

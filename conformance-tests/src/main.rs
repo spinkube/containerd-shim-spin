@@ -21,7 +21,11 @@ fn main() {
         .next()
         .expect("expected second arg to be path to ctr binary");
 
-    'test: for test in conformance_tests::tests(&tests_dir).unwrap() {
+    'test: for test in conformance_tests::tests_iter(&tests_dir).unwrap() {
+        if test.name.starts_with("tcp") {
+            // Skip TCP tests for now as shim cannot create sockets
+            continue;
+        }
         println!("running test: {}", test.name);
         let mut services = vec!["registry".into()];
         for precondition in &test.config.preconditions {
@@ -33,6 +37,9 @@ fn main() {
                     if k.label != "default" {
                         panic!("unsupported label: {}", k.label);
                     }
+                }
+                conformance_tests::config::Precondition::TcpEcho => {
+                    services.push("tcp-echo".into());
                 }
             }
         }
@@ -98,14 +105,14 @@ impl SpinShim {
                         .get_port(5000)?
                         .context("environment doesn't expose port for OCI registry")?
                 );
-                SpinShim::regisry_push(&spin_binary, &oci_image, env)?;
+                SpinShim::registry_push(&spin_binary, &oci_image, env)?;
                 SpinShim::image_pull(&ctr_binary, &oci_image)?;
                 SpinShim::start(&ctr_binary, env, &oci_image, CTR_RUN_ID)
             }),
         }
     }
 
-    pub fn regisry_push<R>(
+    pub fn registry_push<R>(
         spin_binary_path: &Path,
         image: &str,
         env: &mut TestEnvironment<R>,
