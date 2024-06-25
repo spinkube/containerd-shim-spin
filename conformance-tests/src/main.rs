@@ -110,7 +110,6 @@ impl SpinShim {
         image: &str,
         env: &mut TestEnvironment<R>,
     ) -> anyhow::Result<()> {
-        // TODO: consider enabling configuring a port
         let mut cmd = Command::new(spin_binary_path);
         cmd.args(["registry", "push", "-k"]).arg(image);
         env.run_in(&mut cmd)
@@ -119,7 +118,6 @@ impl SpinShim {
     }
 
     pub fn image_pull(ctr_binary_path: &Path, image: &str) -> anyhow::Result<()> {
-        // TODO: consider enabling configuring a port
         Command::new(ctr_binary_path)
             .args(["image", "pull"])
             .arg(image)
@@ -136,6 +134,7 @@ impl SpinShim {
         image: &str,
         ctr_run_id: &str,
     ) -> anyhow::Result<Self> {
+        // TODO: consider enabling configuring a port
         let port = 80;
         let mut ctr_cmd = std::process::Command::new(ctr_binary_path);
         let child = ctr_cmd
@@ -143,6 +142,7 @@ impl SpinShim {
             .args(["--rm", "--net-host", "--runtime", "io.containerd.spin.v2"])
             .arg(image)
             .arg(ctr_run_id)
+            // The container runtime expects at least one argument to the container
             .arg("bogus-arg")
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
