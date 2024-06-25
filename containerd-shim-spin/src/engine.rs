@@ -43,6 +43,18 @@ const OCI_LAYER_MEDIA_TYPE_WASM: &str = "application/vnd.wasm.content.layer.v1+w
 /// Expected location of the Spin manifest when loading from a file rather than
 /// an OCI image
 const SPIN_MANIFEST_FILE_PATH: &str = "/spin.toml";
+/// Prefix for Spin runtime environment variables This prefix indicates that the
+/// environment variable should not be set in a component's environment and
+/// should instead be reinjected into the shim's environment without the prefix.
+/// The environment variable with the prefix will be retained in the shim's
+/// environment.
+const SPIN_RUNTIME_ENV_VAR_PREFIX: &str = "SPIN_";
+/// Known prefix for the Spin application variables environment variables
+/// provider.
+const SPIN_APPLICATION_VARIABLE_PREFIX: &str = "SPIN_VARIABLE";
+/// When set, ensures that the shim does not set any container environment
+/// variables in the Spin application.
+const SPIN_DISABLE_CONTAINER_ENV_INJECTION_ENV: &str = "SPIN_NO_CONTAINER_ENV_INJECTION";
 
 #[derive(Clone)]
 pub struct SpinEngine {
@@ -194,6 +206,7 @@ impl SpinEngine {
     }
 
     async fn wasm_exec_async(&self, ctx: &impl RuntimeContext) -> Result<()> {
+        let app_env_vars = get_app_env_vars();
         // create a cache directory at /.cache
         // this is needed for the spin LocalLoader to work
         // TODO: spin should provide a more flexible `loader::from_file` that
@@ -207,7 +220,10 @@ impl SpinEngine {
         let resolved_app_source = self.resolve_app_source(app_source.clone(), &cache).await?;
         let trigger_cmds = trigger_command_for_resolved_app_source(&resolved_app_source)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
-        let locked_app = self.load_resolved_app_source(resolved_app_source).await?;
+        let mut locked_app = self.load_resolved_app_source(resolved_app_source).await?;
+        if env::var(SPIN_DISABLE_CONTAINER_ENV_INJECTION_ENV).is_err() {
+            set_env_vars_in_locked_app(&mut locked_app, app_env_vars);
+        }
 
         let _telemetry_guard = spin_telemetry::init(version!().to_string())?;
 
@@ -394,6 +410,57 @@ impl SpinEngine {
         }
 
         spin_oci::client::unpack_archive_layer(cache, bytes, digest).await
+    }
+}
+
+// Parses the container environment variables to filter out the Spin runtime
+// environment variables. The Spin runtime environment variables are then reset
+// in the environment without their prefix to ensure they can be used by
+// triggers and telemetry sources.
+//
+// Note: Environment variables with both the Spin runtime prefix and a known K8s
+// container env suffix will be retained in the app environment variable list.
+// This is to account for the scenario where a cluster service name starts with
+// "spin".
+//
+// Returns the Spin application environment variables.
+fn get_app_env_vars() -> Vec<(String, String)> {
+    let (runtime_envs, app_envs): (_, Vec<_>) = std::env::vars().partition(|(var, _)| {
+        var.starts_with(SPIN_RUNTIME_ENV_VAR_PREFIX)
+            && !known_k8s_env_var_suffixes()
+                .iter()
+                .any(|suffix| var.ends_with(suffix))
+    });
+    // Reset Spin runtime envionment variables without the runtime prefix
+    runtime_envs
+        .iter()
+        .filter(|(var, _)| !var.starts_with(SPIN_APPLICATION_VARIABLE_PREFIX))
+        .for_each(|(var, val)| {
+            std::env::set_var(&var[5..], val);
+        });
+    app_envs
+}
+
+// Returns a list of known K8s environment variable suffixes that are used to
+// identify environment variables that should be retained in the app environment
+// variable list.
+// See https://kubernetes.io/docs/concepts/containers/container-environment/#container-environment
+fn known_k8s_env_var_suffixes() -> Vec<&'static str> {
+    vec![
+        "SERVICE_PORT",
+        "SERVICE_HOST",
+        "PORT",
+        "HOST",
+        "TCP_ADDR",
+        "TCP",
+        "PROTO",
+    ]
+}
+
+// Sets environment variables in every component of a Spin application
+fn set_env_vars_in_locked_app(locked_app: &mut LockedApp, envs: Vec<(String, String)>) {
+    for component in locked_app.components.iter_mut() {
+        component.env.extend(envs.iter().cloned());
     }
 }
 
