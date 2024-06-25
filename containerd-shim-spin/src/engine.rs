@@ -40,10 +40,6 @@ const SPIN_HTTP_LISTEN_ADDR_ENV: &str = "SPIN_HTTP_LISTEN_ADDR";
 const RUNTIME_CONFIG_PATH: &str = "/runtime-config.toml";
 /// Describes an OCI layer with Wasm content
 const OCI_LAYER_MEDIA_TYPE_WASM: &str = "application/vnd.wasm.content.layer.v1+wasm";
-/// Describes an OCI layer with data content
-const OCI_LAYER_MEDIA_TYPE_DATA: &str = "application/vnd.wasm.content.layer.v1+data";
-/// Describes an OCI layer containing a Spin application config
-const OCI_LAYER_MEDIA_TYPE_SPIN_CONFIG: &str = "application/vnd.fermyon.spin.application.v1+config";
 /// Expected location of the Spin manifest when loading from a file rather than
 /// an OCI image
 const SPIN_MANIFEST_FILE_PATH: &str = "/spin.toml";
@@ -136,7 +132,7 @@ impl SpinEngine {
                                 .write_wasm(&artifact.layer, &artifact.config.digest())
                                 .await?;
                         }
-                        MediaType::Other(name) if name == OCI_LAYER_MEDIA_TYPE_DATA => {
+                        MediaType::Other(name) if name == spin_oci::client::DATA_MEDIATYPE => {
                             log::debug!(
                                 "<<< writing data layer to cache, near {:?}",
                                 cache.manifests_dir()
@@ -144,6 +140,19 @@ impl SpinEngine {
                             cache
                                 .write_data(&artifact.layer, &artifact.config.digest())
                                 .await?;
+                        }
+                        MediaType::Other(name) if name == spin_oci::client::ARCHIVE_MEDIATYPE => {
+                            log::debug!(
+                                "<<< writing archive layer and unpacking contents to cache, near {:?}",
+                                cache.manifests_dir()
+                            );
+                            self.handle_archive_layer(
+                                cache,
+                                &artifact.layer,
+                                &artifact.config.digest(),
+                            )
+                            .await
+                            .context("unable to unpack archive layer")?;
                         }
                         _ => {
                             log::debug!(
@@ -367,6 +376,25 @@ impl SpinEngine {
         }
         None
     }
+
+    async fn handle_archive_layer(
+        &self,
+        cache: &Cache,
+        bytes: impl AsRef<[u8]>,
+        digest: impl AsRef<str>,
+    ) -> Result<()> {
+        // spin_oci::client::unpack_archive_layer attempts to create a tempdir via tempfile::tempdir()
+        // which will fall back to /tmp if TMPDIR is not set. /tmp is either not found or not accessible
+        // in the shim environment, hence setting to current working directory.
+        if env::var("TMPDIR").is_err() {
+            log::debug!(
+                "<<< TMPDIR is not set; setting to current working directory for unpacking archive layer"
+            );
+            env::set_var("TMPDIR", env::current_dir().unwrap_or(".".into()));
+        }
+
+        spin_oci::client::unpack_archive_layer(cache, bytes, digest).await
+    }
 }
 
 impl Engine for SpinEngine {
@@ -405,8 +433,9 @@ impl Engine for SpinEngine {
     fn supported_layers_types() -> &'static [&'static str] {
         &[
             OCI_LAYER_MEDIA_TYPE_WASM,
-            OCI_LAYER_MEDIA_TYPE_DATA,
-            OCI_LAYER_MEDIA_TYPE_SPIN_CONFIG,
+            spin_oci::client::ARCHIVE_MEDIATYPE,
+            spin_oci::client::DATA_MEDIATYPE,
+            spin_oci::client::SPIN_APPLICATION_MEDIA_TYPE,
         ]
     }
 
@@ -529,7 +558,7 @@ mod tests {
         let data_content = WasmLayer {
             layer: vec![],
             config: oci_spec::image::Descriptor::new(
-                MediaType::Other(OCI_LAYER_MEDIA_TYPE_DATA.to_string()),
+                MediaType::Other(spin_oci::client::DATA_MEDIATYPE.to_string()),
                 1024,
                 "sha256:1234",
             ),
@@ -569,7 +598,7 @@ mod tests {
             WasmLayer {
                 layer: vec![],
                 config: oci_spec::image::Descriptor::new(
-                    MediaType::Other(OCI_LAYER_MEDIA_TYPE_DATA.to_string()),
+                    MediaType::Other(spin_oci::client::DATA_MEDIATYPE.to_string()),
                     1024,
                     "sha256:1234",
                 ),

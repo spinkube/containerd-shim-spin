@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "spin-static-assets"
+version = "0.1.0"
+authors = ["SpinKube Engineering Team"]
+
+[application.trigger.http]
+base = "/"
+
+[[trigger.http]]
+id = "trigger-static-fileserver"
+component = "static-fileserver"
+route = "/..."
+
+[component.static-fileserver]
+source = { url = "https://github.com/fermyon/spin-fileserver/releases/download/v0.3.0/spin_static_fs.wasm", digest = "sha256:ef88708817e107bf49985c7cefe4dd1f199bf26f6727819183d5c996baa3d148" }
+files = [{ source = "assets", destination = "/" }]

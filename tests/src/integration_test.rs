@@ -128,6 +128,29 @@ mod test {
         Ok(())
     }
 
+    #[tokio::test]
+    async fn spin_static_assets_test() -> Result<()> {
+        let host_port = 8082;
+
+        // curl for static asset
+        println!(
+            " >>> curl http://localhost:{}/static-assets/jabberwocky.txt",
+            host_port
+        );
+        let res = retry_get(
+            &format!(
+                "http://localhost:{}/static-assets/jabberwocky.txt",
+                host_port
+            ),
+            RETRY_TIMES,
+            INTERVAL_IN_SECS,
+        )
+        .await?;
+        assert!(String::from_utf8_lossy(&res).contains("'Twas brillig, and the slithy toves"));
+
+        Ok(())
+    }
+
     async fn is_kubectl_installed() -> anyhow::Result<bool> {
         let output: Result<std::process::Output, std::io::Error> = Command::new("kubectl")
             .arg("version")
