@@ -8537,7 +8537,7 @@ dependencies = [
 [[package]]
 name = "trigger-command"
 version = "0.1.0"
-source = "git+https://github.com/fermyon/spin-trigger-command?rev=87a514e38b2d4bb131ee6145cc3d730549e26f99#87a514e38b2d4bb131ee6145cc3d730549e26f99"
+source = "git+https://github.com/fermyon/spin-trigger-command?tag=v0.1.0#1cf0866b057e3012dc751eed3fa0f9a2972676d3"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8555,8 +8555,8 @@ dependencies = [
 
 [[package]]
 name = "trigger-sqs"
-version = "0.6.0"
-source = "git+https://github.com/fermyon/spin-trigger-sqs?rev=d01af1ed065e6562be3b00513b4c88f3526d677b#d01af1ed065e6562be3b00513b4c88f3526d677b"
+version = "0.7.0"
+source = "git+https://github.com/fermyon/spin-trigger-sqs?rev=v0.7.0#2249e35dc08ceb9195cafbd347e276f90ceca5e8"
 dependencies = [
  "anyhow",
  "async-trait",
