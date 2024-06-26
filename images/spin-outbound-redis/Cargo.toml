@@ -1,6 +1,6 @@
 [package]
 name = "spin-outbound-redis"
-version = "0.14.1"
+version = "0.15.0"
 authors = ["SpinKube Engineering Team"]
 edition = "2021"
 
