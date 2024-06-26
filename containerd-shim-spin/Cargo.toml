@@ -21,8 +21,8 @@ spin-componentize = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.6.0", features = ["unsafe-aot-compilation"] }
 spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "d01af1ed065e6562be3b00513b4c88f3526d677b" }
-trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", rev = "87a514e38b2d4bb131ee6145cc3d730549e26f99" }
+trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "v0.7.0" }
+trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", tag = "v0.1.0" }
 spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-loader = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
