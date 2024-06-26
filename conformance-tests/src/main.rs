@@ -1,4 +1,5 @@
 use std::{
+    hash::{DefaultHasher, Hash, Hasher},
     path::{Path, PathBuf},
     process::{Command, Stdio},
 };
@@ -12,69 +13,67 @@ use test_environment::{
 };
 
 fn main() {
-    let tests_dir = conformance_tests::download_tests().unwrap();
     let mut args = std::env::args().skip(1);
-    let spin_binary = &args
+    let spin_binary: std::path::PathBuf = args
         .next()
-        .expect("expected first arg to be path to Spin binary");
-    let ctr_binary = &args
+        .expect("expected first arg to be path to Spin binary")
+        .into();
+    let ctr_binary: std::path::PathBuf = args
         .next()
-        .expect("expected second arg to be path to ctr binary");
+        .expect("expected second arg to be path to ctr binary")
+        .into();
+    conformance_tests::run_tests(move |test| run_test(test, &spin_binary, &ctr_binary)).unwrap();
+}
 
-    'test: for test in conformance_tests::tests_iter(&tests_dir).unwrap() {
-        if test.name.starts_with("tcp") {
-            // Skip TCP tests for now as shim cannot create sockets
-            continue;
-        }
-        println!("running test: {}", test.name);
-        let mut services = vec!["registry".into()];
-        for precondition in &test.config.preconditions {
-            match precondition {
-                conformance_tests::config::Precondition::HttpEcho => {
-                    services.push("http-echo".into());
-                }
-                conformance_tests::config::Precondition::KeyValueStore(k) => {
-                    if k.label != "default" {
-                        panic!("unsupported label: {}", k.label);
-                    }
-                }
-                conformance_tests::config::Precondition::TcpEcho => {
-                    services.push("tcp-echo".into());
+fn run_test(
+    test: conformance_tests::Test,
+    spin_binary: &std::path::Path,
+    ctr_binary: &std::path::Path,
+) -> anyhow::Result<()> {
+    println!("running test: {}", test.name);
+    let mut services = vec!["registry".into()];
+    for precondition in &test.config.preconditions {
+        match precondition {
+            conformance_tests::config::Precondition::HttpEcho => {
+                services.push("http-echo".into());
+            }
+            conformance_tests::config::Precondition::KeyValueStore(k) => {
+                if k.label != "default" {
+                    panic!("unsupported label: {}", k.label);
                 }
             }
-        }
-        let env_config = SpinShim::config(
-            ctr_binary.into(),
-            spin_binary.into(),
-            test.name.clone(),
-            test_environment::services::ServicesConfig::new(services).unwrap(),
-        );
-        let mut env = TestEnvironment::up(env_config, move |e| {
-            let mut manifest =
-                test_environment::manifest_template::EnvTemplate::from_file(&test.manifest)
-                    .unwrap();
-            manifest.substitute(e, |_| None).unwrap();
-            e.write_file("spin.toml", manifest.contents())?;
-            e.copy_into(&test.component, test.component.file_name().unwrap())?;
-            Ok(())
-        })
-        .unwrap();
-        for invocation in test.config.invocations {
-            let conformance_tests::config::Invocation::Http(mut invocation) = invocation;
-            invocation.request.substitute_from_env(&mut env).unwrap();
-            let shim = env.runtime_mut();
-            if let Err(e) = invocation.run(|request| shim.make_http_request(request)) {
-                println!("❌ test failed: {}", test.name);
-                println!("error: {}", e);
-                for e in e.chain() {
-                    println!("\t{}", e);
-                }
-
-                continue 'test;
+            conformance_tests::config::Precondition::TcpEcho => {
+                services.push("tcp-echo".into());
+            }
+            conformance_tests::config::Precondition::Sqlite => {}
+            conformance_tests::config::Precondition::Redis => {
+                services.push("redis".into());
             }
         }
-        println!("✅ test passed: {}", test.name);
     }
+    let env_config = SpinShim::config(
+        ctr_binary.into(),
+        spin_binary.into(),
+        test.name.clone(),
+        test_environment::services::ServicesConfig::new(services).unwrap(),
+        &test.name,
+    );
+    let mut env = TestEnvironment::up(env_config, move |e| {
+        let mut manifest =
+            test_environment::manifest_template::EnvTemplate::from_file(&test.manifest).unwrap();
+        manifest.substitute(e, |_| None).unwrap();
+        e.write_file("spin.toml", manifest.contents())?;
+        e.copy_into(&test.component, test.component.file_name().unwrap())?;
+        Ok(())
+    })
+    .unwrap();
+    for invocation in test.config.invocations {
+        let conformance_tests::config::Invocation::Http(mut invocation) = invocation;
+        invocation.request.substitute_from_env(&mut env).unwrap();
+        let shim = env.runtime_mut();
+        invocation.run(|request| shim.make_http_request(request))?;
+    }
+    Ok(())
 }
 
 struct SpinShim {
@@ -85,9 +84,21 @@ struct SpinShim {
     io_mode: IoMode,
 }
 
-/// `ctr run` invocations require an ID that is unique to all currently running instances. Since
-/// only one test runs at a time, we can reuse a constant ID.
-const CTR_RUN_ID: &str = "run-id";
+fn hash<T>(obj: T) -> u64
+where
+    T: Hash,
+{
+    let mut hasher = DefaultHasher::new();
+    obj.hash(&mut hasher);
+    hasher.finish()
+}
+
+/// Uses a track to get a random unused port
+fn get_available_port() -> anyhow::Result<u16> {
+    Ok(std::net::TcpListener::bind("localhost:0")?
+        .local_addr()?
+        .port())
+}
 
 impl SpinShim {
     pub fn config(
@@ -95,7 +106,9 @@ impl SpinShim {
         spin_binary: PathBuf,
         oci_image: String,
         services_config: ServicesConfig,
+        test_id: &str,
     ) -> TestEnvironmentConfig<SpinShim> {
+        let ctr_run_id = hash(test_id).to_string();
         TestEnvironmentConfig {
             services_config,
             create_runtime: Box::new(move |env| {
@@ -107,7 +120,7 @@ impl SpinShim {
                 );
                 SpinShim::registry_push(&spin_binary, &oci_image, env)?;
                 SpinShim::image_pull(&ctr_binary, &oci_image)?;
-                SpinShim::start(&ctr_binary, env, &oci_image, CTR_RUN_ID)
+                SpinShim::start(&ctr_binary, env, &oci_image, &ctr_run_id)
             }),
         }
     }
@@ -125,12 +138,12 @@ impl SpinShim {
     }
 
     pub fn image_pull(ctr_binary_path: &Path, image: &str) -> anyhow::Result<()> {
-        Command::new(ctr_binary_path)
+        let output = Command::new(ctr_binary_path)
             .args(["image", "pull"])
             .arg(image)
             .output()
             .context("failed to pull spin app with 'ctr'")?;
-        // TODO: assess output
+        anyhow::ensure!(output.status.success(), "pulling image failed");
         Ok(())
     }
 
@@ -141,13 +154,21 @@ impl SpinShim {
         image: &str,
         ctr_run_id: &str,
     ) -> anyhow::Result<Self> {
-        // TODO: consider enabling configuring a port
-        let port = 80;
+        let port = get_available_port().context("no available port")?;
+        let listen_adress_env = format!("SPIN_HTTP_LISTEN_ADDR=0.0.0.0:{}", port);
         let mut ctr_cmd = std::process::Command::new(ctr_binary_path);
         let child = ctr_cmd
             .arg("run")
-            .args(["--rm", "--net-host", "--runtime", "io.containerd.spin.v2"])
+            .args([
+                "--rm",
+                "--net-host",
+                "--runtime",
+                "io.containerd.spin.v2",
+                "--env",
+            ])
+            .arg(listen_adress_env)
             .arg(image)
+            // `ctr run` invocations require an ID that is unique to all currently running instances
             .arg(ctr_run_id)
             // The container runtime expects at least one argument to the container
             .arg("bogus-arg")
@@ -199,9 +220,9 @@ impl SpinShim {
         )
     }
 
-    /// Make an HTTP request against Spin
+    /// Make an HTTP request against the shim.
     ///
-    /// Will fail if Spin has already exited or if the io mode is not HTTP
+    /// Will fail if the shim has already exited.
     pub fn make_http_request(&mut self, request: Request<'_, String>) -> anyhow::Result<Response> {
         let IoMode::Http(port) = self.io_mode;
         if let Some(status) = self.try_wait()? {
