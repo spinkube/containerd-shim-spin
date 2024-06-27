@@ -1,0 +1,15 @@
+[package]
+name = "conformance-tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+[dependencies]
+anyhow = "1.0"
+conformance-tests = { git = "https://github.com/fermyon/conformance-tests", ref = "db0ee32a825561d35f884a246e1d390134d78823"  }
+log = "0.4"
+nix = "0.26"
+test-environment = { git = "https://github.com/fermyon/conformance-tests", ref = "db0ee32a825561d35f884a246e1d390134d78823" }

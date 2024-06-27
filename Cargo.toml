@@ -11,5 +11,6 @@ homepage = "https://github.com/spinkube/containerd-shim-spin"
 resolver = "2"
 members = [
     "tests",
-    "containerd-shim-spin"
+    "containerd-shim-spin",
+    "conformance-tests"
 ]
