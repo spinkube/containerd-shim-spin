@@ -11,7 +11,7 @@ IS_MICROK8S=false
 IS_K3S=false
 IS_RKE2_AGENT=false
 IS_K0S_WORKER=false
-if ps aux | grep kubelet | grep -q snap/microk8s; then
+if pgrep -f snap/microk8s > /dev/null; then
     CONTAINERD_CONF=/var/snap/microk8s/current/args/containerd-template.toml
     IS_MICROK8S=true
     if nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- ls /var/snap/microk8s/current/args/containerd-template.toml > /dev/null 2>&1 ;then
@@ -28,7 +28,7 @@ elif ls $NODE_ROOT/var/lib/rancher/k3s/agent/etc/containerd/config.toml > /dev/n
     IS_K3S=true
     cp $NODE_ROOT/var/lib/rancher/k3s/agent/etc/containerd/config.toml $NODE_ROOT/var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
     CONTAINERD_CONF=/var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
-elif ps aux | grep kubelet | grep -q /var/lib/k0s/bin/kubelet; then
+elif pgrep -f /var/lib/k0s/bin/kubelet > /dev/null; then
     IS_K0S_WORKER=true
     CONTAINERD_CONF=/etc/k0s/containerd.d/spin.toml
     touch $NODE_ROOT$CONTAINERD_CONF
