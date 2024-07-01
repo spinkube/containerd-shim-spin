@@ -43,6 +43,9 @@ const OCI_LAYER_MEDIA_TYPE_WASM: &str = "application/vnd.wasm.content.layer.v1+w
 /// Expected location of the Spin manifest when loading from a file rather than
 /// an OCI image
 const SPIN_MANIFEST_FILE_PATH: &str = "/spin.toml";
+/// Known prefix for the Spin application variables environment variables
+/// provider.
+const SPIN_APPLICATION_VARIABLE_PREFIX: &str = "SPIN_VARIABLE";
 
 #[derive(Clone)]
 pub struct SpinEngine {
@@ -194,6 +197,11 @@ impl SpinEngine {
     }
 
     async fn wasm_exec_async(&self, ctx: &impl RuntimeContext) -> Result<()> {
+        // Create a duplicate of the environment variables with the application
+        // variables environment variable provider default prefix. This makes
+        // container environment variables accessible to Spin application
+        // components that explicitly allow them in the Spin manifest.
+        prefix_env_vars(SPIN_APPLICATION_VARIABLE_PREFIX);
         // create a cache directory at /.cache
         // this is needed for the spin LocalLoader to work
         // TODO: spin should provide a more flexible `loader::from_file` that
@@ -395,6 +403,15 @@ impl SpinEngine {
 
         spin_oci::client::unpack_archive_layer(cache, bytes, digest).await
     }
+}
+
+// For each container environment variable, duplicates it in the environment
+// with a given prefix
+fn prefix_env_vars(prefix: &str) {
+    std::env::vars().for_each(|(var, val)| {
+        let prefixed = format!("{}{}", prefix, var);
+        std::env::set_var(prefixed, val);
+    });
 }
 
 impl Engine for SpinEngine {
