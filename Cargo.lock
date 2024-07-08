@@ -1522,7 +1522,7 @@ dependencies = [
 
 [[package]]
 name = "conformance-tests"
-version = "0.15.0"
+version = "0.15.1"
 dependencies = [
  "anyhow",
  "conformance-tests 0.1.0",
@@ -1616,7 +1616,7 @@ dependencies = [
 
 [[package]]
 name = "containerd-shim-spin-tests"
-version = "0.15.0"
+version = "0.15.1"
 dependencies = [
  "anyhow",
  "curl",
@@ -1632,7 +1632,7 @@ dependencies = [
 
 [[package]]
 name = "containerd-shim-spin-v2"
-version = "0.15.0"
+version = "0.15.1"
 dependencies = [
  "anyhow",
  "containerd-shim",
