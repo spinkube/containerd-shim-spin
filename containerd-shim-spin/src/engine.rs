@@ -43,8 +43,8 @@ const OCI_LAYER_MEDIA_TYPE_WASM: &str = "application/vnd.wasm.content.layer.v1+w
 /// Expected location of the Spin manifest when loading from a file rather than
 /// an OCI image
 const SPIN_MANIFEST_FILE_PATH: &str = "/spin.toml";
-/// Known prefix for the Spin application variables environment variables
-/// provider.
+/// Known prefix for the Spin application variables environment variable
+/// provider: https://github.com/fermyon/spin/blob/436ad589237c02f7aa4693e984132808fd80b863/crates/variables/src/provider/env.rs#L9
 const SPIN_APPLICATION_VARIABLE_PREFIX: &str = "SPIN_VARIABLE";
 
 #[derive(Clone)]
@@ -406,12 +406,14 @@ impl SpinEngine {
 }
 
 // For each container environment variable, duplicates it in the environment
-// with a given prefix
+// with a given prefix unless already prefixed
 fn prefix_env_vars(prefix: &str) {
-    std::env::vars().for_each(|(var, val)| {
-        let prefixed = format!("{}{}", prefix, var);
-        std::env::set_var(prefixed, val);
-    });
+    std::env::vars()
+        .filter(|(var, _)| !var.starts_with(prefix))
+        .for_each(|(var, val)| {
+            let prefixed = format!("{}_{}", prefix, var);
+            std::env::set_var(prefixed, val);
+        });
 }
 
 impl Engine for SpinEngine {
@@ -552,7 +554,21 @@ fn trigger_command_for_resolved_app_source(resolved: &ResolvedAppSource) -> Resu
 
 #[cfg(test)]
 mod tests {
+    use std::env;
+
     use super::*;
+
+    #[test]
+    fn test_prefix_env_vars() {
+        let prefix = "FOO";
+        env::set_var("FOO_DO_NOT_RESET", "val1");
+        env::set_var("SHOULD_BE_PREFIXED", "val2");
+        prefix_env_vars(prefix);
+        assert_eq!(env::var("FOO_DO_NOT_RESET").unwrap(), "val1");
+        assert_eq!(env::var("FOO_SHOULD_BE_PREFIXED").unwrap(), "val2");
+        // Original env vars are still retained but not set in variable provider
+        assert!(env::var("SHOULD_BE_PREFIXED").is_ok());
+    }
 
     #[test]
     fn can_parse_spin_address() {
