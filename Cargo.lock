@@ -1656,6 +1656,7 @@ dependencies = [
  "spin-trigger",
  "spin-trigger-http",
  "spin-trigger-redis",
+ "temp-env",
  "tokio",
  "trigger-command",
  "trigger-sqs",
@@ -8001,6 +8002,15 @@ name = "temp-dir"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f227968ec00f0e5322f9b8173c7a0cbcff6181a0a5b28e9892491c286277231"
+
+[[package]]
+name = "temp-env"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96374855068f47402c3121c6eed88d29cb1de8f3ab27090e273e420bdabcf050"
+dependencies = [
+ "parking_lot",
+]
 
 [[package]]
 name = "tempfile"

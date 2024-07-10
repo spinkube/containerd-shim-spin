@@ -42,3 +42,4 @@ ctrlc = { version = "3.2", features = ["termination"] }
 
 [dev-dependencies]
 wat = "1"
+temp-env = "0.3.6"

@@ -197,11 +197,6 @@ impl SpinEngine {
     }
 
     async fn wasm_exec_async(&self, ctx: &impl RuntimeContext) -> Result<()> {
-        // Create a duplicate of the environment variables with the application
-        // variables environment variable provider default prefix. This makes
-        // container environment variables accessible to Spin application
-        // components that explicitly allow them in the Spin manifest.
-        prefix_env_vars(SPIN_APPLICATION_VARIABLE_PREFIX);
         // create a cache directory at /.cache
         // this is needed for the spin LocalLoader to work
         // TODO: spin should provide a more flexible `loader::from_file` that
@@ -213,6 +208,7 @@ impl SpinEngine {
         env::set_var("XDG_CACHE_HOME", &cache_dir);
         let app_source = self.app_source(ctx, &cache).await?;
         let resolved_app_source = self.resolve_app_source(app_source.clone(), &cache).await?;
+        configure_application_variables_from_environment_variables(&resolved_app_source)?;
         let trigger_cmds = trigger_command_for_resolved_app_source(&resolved_app_source)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
         let locked_app = self.load_resolved_app_source(resolved_app_source).await?;
@@ -405,17 +401,6 @@ impl SpinEngine {
     }
 }
 
-// For each container environment variable, duplicates it in the environment
-// with a given prefix unless already prefixed
-fn prefix_env_vars(prefix: &str) {
-    std::env::vars()
-        .filter(|(var, _)| !var.starts_with(prefix))
-        .for_each(|(var, val)| {
-            let prefixed = format!("{}_{}", prefix, var);
-            std::env::set_var(prefixed, val);
-        });
-}
-
 impl Engine for SpinEngine {
     fn name() -> &'static str {
         "spin"
@@ -532,6 +517,21 @@ impl ResolvedAppSource {
         ensure!(!types.is_empty(), "no triggers in app");
         Ok(types.into_iter().map(|t| t.as_str()).collect())
     }
+
+    pub fn variables(&self) -> Vec<&str> {
+        match self {
+            ResolvedAppSource::File { manifest, .. } => manifest
+                .variables
+                .keys()
+                .map(|k| k.as_ref())
+                .collect::<Vec<_>>(),
+            ResolvedAppSource::OciRegistry { locked_app } => locked_app
+                .variables
+                .keys()
+                .map(|k| k.as_ref())
+                .collect::<Vec<_>>(),
+        }
+    }
 }
 
 fn trigger_command_for_resolved_app_source(resolved: &ResolvedAppSource) -> Result<Vec<String>> {
@@ -552,6 +552,27 @@ fn trigger_command_for_resolved_app_source(resolved: &ResolvedAppSource) -> Resu
     Ok(trigger_types.iter().map(|x| x.to_string()).collect())
 }
 
+// For each Spin app variable, checks if a container environment variable with
+// the same name exists and duplicates it in the environment with the
+// application variable prefix
+fn configure_application_variables_from_environment_variables(
+    resolved: &ResolvedAppSource,
+) -> Result<()> {
+    resolved
+        .variables()
+        .into_iter()
+        .map(str::to_ascii_uppercase)
+        .for_each(|variable| {
+            env::var(&variable)
+                .map(|val| {
+                    let prefixed = format!("{}_{}", SPIN_APPLICATION_VARIABLE_PREFIX, variable);
+                    env::set_var(prefixed, val);
+                })
+                .ok();
+        });
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use std::env;
@@ -559,15 +580,37 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_prefix_env_vars() {
-        let prefix = "FOO";
-        env::set_var("FOO_DO_NOT_RESET", "val1");
-        env::set_var("SHOULD_BE_PREFIXED", "val2");
-        prefix_env_vars(prefix);
-        assert_eq!(env::var("FOO_DO_NOT_RESET").unwrap(), "val1");
-        assert_eq!(env::var("FOO_SHOULD_BE_PREFIXED").unwrap(), "val2");
-        // Original env vars are still retained but not set in variable provider
-        assert!(env::var("SHOULD_BE_PREFIXED").is_ok());
+    fn test_configure_application_variables_from_environment_variables() {
+        temp_env::with_vars(
+            [
+                ("SPIN_VARIABLE_DO_NOT_RESET", Some("val1")),
+                ("SHOULD_BE_PREFIXED", Some("val2")),
+                ("ignored_if_not_uppercased_env", Some("val3")),
+            ],
+            || {
+                let app_json = r#"
+                {
+                    "spin_lock_version": 1,
+                    "entrypoint": "test",
+                    "components": [],
+                    "variables": {"should_be_prefixed": { "required": "true"},  "do_not_reset" : { "required": "true"}, "not_set_as_container_env": { "required": "true"}, "ignored_if_not_uppercased_env": { "required": "true"}},
+                    "triggers": []
+                }"#;
+                let locked_app = LockedApp::from_json(app_json.as_bytes()).unwrap();
+                let resolved = ResolvedAppSource::OciRegistry { locked_app };
+
+                configure_application_variables_from_environment_variables(&resolved).unwrap();
+                assert_eq!(env::var("SPIN_VARIABLE_DO_NOT_RESET").unwrap(), "val1");
+                assert_eq!(
+                    env::var("SPIN_VARIABLE_SHOULD_BE_PREFIXED").unwrap(),
+                    "val2"
+                );
+                assert!(env::var("SPIN_VARIABLE_NOT_SET_AS_CONTAINER_ENV").is_err());
+                assert!(env::var("SPIN_VARIABLE_IGNORED_IF_NOT_UPPERCASED_ENV").is_err());
+                // Original env vars are still retained but not set in variable provider
+                assert!(env::var("SHOULD_BE_PREFIXED").is_ok());
+            },
+        );
     }
 
     #[test]
