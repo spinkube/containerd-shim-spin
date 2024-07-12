@@ -10,3 +10,7 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "wasmtime"
+    groups:
+      patch:
+        update-types:
+        - "patch"
