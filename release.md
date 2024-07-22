@@ -45,6 +45,6 @@ following:
   
 1. Update [SpinKube documentation](https://github.com/spinkube/documentation) as
    necessary. Ensure the latest [node installer
-   image](https://www.spinkube.dev/docs/spin-operator/installation/installing-with-helm/#prepare-the-cluster)
+   image](https://www.spinkube.dev/docs/install/installing-with-helm/#prepare-the-cluster)
    is used and update the [Shim and Spin version
-   map](https://www.spinkube.dev/docs/containerd-shim-spin/).
+   map](https://www.spinkube.dev/docs/reference/shim-spin-version-map/).
