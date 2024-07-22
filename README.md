@@ -14,7 +14,7 @@ Below is a table for referencing the version of the Spin runtime used in each `c
 
 ## Documentation
 
-To learn more about the Containerd Shim Spin, please visit [the official Containerd Shim Spin documentation](https://www.spinkube.dev/docs/containerd-shim-spin/).
+To learn more about the Containerd Shim Spin, please visit [the official Containerd Shim Spin documentation](https://www.spinkube.dev/docs/topics/architecture/#containerd-shim-spin).
 
 ## Installing the `containerd-shim-spin` on Kubernetes Nodes
 
@@ -24,7 +24,7 @@ In order to run Spin applications on your cluster, you must complete the followi
 2. Update the containerd configuration to recognize the shim
 3. Apply the Kubernetes `RuntimeClass` for the shim
 
-Repeating steps 1 and 2 for each node on a cluster can be a time-consuming and manual process. For this reason, SpinKube provides a [`runtime-class-manager`](https://www.spinkube.dev/docs/runtime-class-manager/) (previously the `kwasm` operator) that enables you to skip over step 1 and 2. See the [SpinKube installation guide](https://www.spinkube.dev/docs/spin-operator/installation/installing-with-helm/) for more information on installing with Helm.
+Repeating steps 1 and 2 for each node on a cluster can be a time-consuming and manual process. For this reason, SpinKube provides a [`runtime-class-manager`](https://www.spinkube.dev/docs/topics/architecture/#runtime-class-manager) (previously the `kwasm` operator) that enables you to skip over step 1 and 2. See the [SpinKube installation guide](https://www.spinkube.dev/docs/install/installing-with-helm/) for more information on installing with Helm.
 
 To carry out the installation step-by-step, do the following:
 
@@ -39,7 +39,7 @@ To carry out the installation step-by-step, do the following:
     runtime_type = "io.containerd.spin.v2"
     ```
 
-    The [Node Installer script](./node-installer/script/installer.sh) that is used by the [`runtime-class-manager`](https://www.spinkube.dev/docs/runtime-class-manager/) does this for you and is a good reference to understand the common paths to the containerd configuration file for popular Kubernetes distributions.
+    The [Node Installer script](./node-installer/script/installer.sh) that is used by the [`runtime-class-manager`](https://www.spinkube.dev/docs/topics/architecture/#runtime-class-manager) does this for you and is a good reference to understand the common paths to the containerd configuration file for popular Kubernetes distributions.
 
 3. Apply a runtime class that contains a handler that matches the "spin" config runtime name from step 2.
 
@@ -86,4 +86,4 @@ For questions or support, please visit our [Slack channel](https://cloud-native.
 
 ## Contributing
 
-If you would like to contribute, please visit this [contributing](https://www.spinkube.dev/docs/containerd-shim-spin/contributing/) page.
+If you would like to contribute, please visit this [contributing](https://www.spinkube.dev/docs/contrib/) page.
