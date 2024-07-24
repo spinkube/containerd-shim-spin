@@ -16,6 +16,24 @@ Below is a table for referencing the version of the Spin runtime used in each `c
 
 To learn more about the Containerd Shim Spin, please visit [the official Containerd Shim Spin documentation](https://www.spinkube.dev/docs/topics/architecture/#containerd-shim-spin).
 
+## Building and running the `containerd-shim-spin` on host
+
+Make sure you have installed dependencies:
+```bash
+make setup # setup linux environment
+```
+
+Build, install, and run the shim binary:
+
+```bash
+make run-spin # run the shim binary
+```
+
+You may open another terminal and run the following command to test the shim:
+```bash
+curl 0.0.0.0:80/hello
+```
+
 ## Installing the `containerd-shim-spin` on Kubernetes Nodes
 
 In order to run Spin applications on your cluster, you must complete the following three steps:

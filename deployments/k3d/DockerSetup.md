@@ -50,8 +50,7 @@ Otherwise, please append the above content to the file.
 Now you have Docker 24.0.0-beta.2 installed on your machine, you can build wasm images using the following command.
 
 ```shell
-cd deployments/k3d
-docker buildx build --platform=wasi/wasm --load -t wasmtest_spin:latest ../../images/spin
+docker buildx build --platform=wasi/wasm --load -t wasmtest_spin:latest ./images/spin
 ```
 
 The `wasi/wasm` platform specifies that the image is a wasm image. The major benefit of using this platform is that you don't need to build each image for a different computer architecture. 
