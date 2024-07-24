@@ -17,7 +17,7 @@ jobs:
           rustup toolchain install nightly --component rustfmt
       - name: Setup build env
         run: |
-          ./scripts/setup-linux.sh
+          make setup
       - name: fmt
         run: |
           make fmt
@@ -50,16 +50,18 @@ jobs:
 
       - name: Setup build env
         run: |
-          ./scripts/setup-linux.sh
+          make setup
+
       - name: Extract containerd-shim-spin-linux-${{ env.ARCH }}
         run: |
           mkdir -p ./bin
           for f in containerd-shim-spin-*-linux-${{ env.ARCH }}/containerd-shim-spin-*-linux-${{ env.ARCH }}.tar.gz
             do tar -xzf "$f" -C ./bin
           done
+
       - name: install k3d
         run: make install-k3d
-        working-directory: ./deployments/k3d
+
       - name: run integration tests
         run: BIN_DIR="./bin" make integration-tests
 

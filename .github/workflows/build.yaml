@@ -17,11 +17,6 @@ jobs:
               os: "ubuntu-latest",
               arch: "aarch64"
             }
-        shims: 
-          - {
-              name: "spin",
-              version: "v2", 
-            }
     env:
       ARCH: ${{ matrix.config.arch }}
     steps:
@@ -30,16 +25,15 @@ jobs:
         with:
           workspaces: |
             "containerd-shim-* -> target"
-      - name: "Install dependencies"
+      - name: Setup build env
         run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler libseccomp-dev
-      - name: build ${{ matrix.shims.name }}
+          make setup
+      - name: build spin shim
         run: |
-          VERBOSE=1 make build SHIMS=${{ matrix.shims.name }}
-      - name: unit tests ${{ matrix.shims.name }}
+          VERBOSE=1 make build
+      - name: unit tests spin shim
         run: |
-          VERBOSE=1 make unit-tests  SHIMS=${{ matrix.shims.name }}
+          VERBOSE=1 make unit-tests
       - name: lowercase the runner OS name
         shell: bash
         run: |
@@ -48,12 +42,12 @@ jobs:
       - name: package release assets
         run: |
           mkdir _dist
-          cp target/${{ matrix.config.arch }}-unknown-linux-musl/release/containerd-shim-spin-${{ matrix.shims.version }} _dist/
+          cp target/${{ matrix.config.arch }}-unknown-linux-musl/release/containerd-shim-spin-v2 _dist/
           cd _dist
-          tar czf containerd-shim-spin-${{ matrix.shims.version }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz containerd-shim-spin-${{ matrix.shims.version }}
+          tar czf containerd-shim-spin-v2-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz containerd-shim-spin-v2
       - name: upload shim artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: containerd-shim-spin-${{ matrix.shims.version }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}
-          path: _dist/containerd-shim-spin-${{ matrix.shims.version }}-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz
+          name: containerd-shim-spin-v2-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}
+          path: _dist/containerd-shim-spin-v2-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz
           retention-days: 5

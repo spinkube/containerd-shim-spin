@@ -22,10 +22,7 @@ kubectl apply -f https://github.com/spinkube/containerd-shim-spin/raw/main/deplo
 kubectl apply -f https://github.com/spinkube/containerd-shim-spin/raw/main/deployments/workloads/workload.yaml
 echo "waiting 5 seconds for workload to be ready"
 sleep 15
-curl -v http://127.0.0.1:8081/spin/hello
-curl -v http://127.0.0.1:8081/slight/hello
-curl -v http://127.0.0.1:8081/wws/hello
-curl -v http://127.0.0.1:8081/lunatic/hello
+curl -v http://127.0.0.1:8081/hello
 ```
 
 To tear down the cluster, run the following.
@@ -34,16 +31,7 @@ k3d cluster delete wasm-cluster
 ```
 
 ## How build get started from source
-- `make install-k3d`: will install k3d
-- `make up`: will build the shim and the k3d kubernetes cluster
-- `make test`: will make a curl call to our deployed service
-- `make clean`: will tear down the cluster
-
-## Trouble shooting
-
-If `make up` fails on this step:
+Go to the root of the repository and run the following commands.
 ```shell
-build-workload-images
+make up
 ```
-
-It might be because you have not setup Docker+Wasm integration correctly. Please refer to this document to setup Docker+Wasm integration: [Docker Setup](./DockerSetup.md)
