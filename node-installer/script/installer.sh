@@ -55,7 +55,12 @@ if [ ! -f $NODE_ROOT$KWASM_DIR/active ]; then
     elif $IS_RKE2_AGENT; then
         nsenter --target 1 --mount --uts --ipc --net -- systemctl restart rke2-agent
     elif $IS_K0S_WORKER; then
-        nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart k0sworker
+        svc_name=k0sworker
+        if ! systemctl list-units | grep -q $svc_name; then
+            svc_name=k0scontroller
+        fi
+
+        nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart $svc_name
     elif ls $NODE_ROOT/etc/init.d/containerd > /dev/null 2>&1 ; then
         nsenter --target 1 --mount --uts --ipc --net -- /etc/init.d/containerd restart
     else
