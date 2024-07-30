@@ -117,13 +117,8 @@ mod test {
         let one_sec = time::Duration::from_secs(1);
         thread::sleep(one_sec);
 
-        let exists: bool = con.exists("spin-multi-trigger-app-key").await?;
-        assert!(exists, "key 'spin-multi-trigger-app-key' does not exist");
-
-        let value = con
-            .get::<&str, String>("spin-multi-trigger-app-key")
-            .await?;
-        assert_eq!(value, "spin-multi-trigger-app-value");
+        let value = con.get::<&str, String>("redis-trigger-app-key").await?;
+        assert_eq!(value, "redis-trigger-app-value");
 
         Ok(())
     }

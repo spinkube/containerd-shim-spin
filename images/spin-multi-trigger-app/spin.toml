@@ -6,6 +6,10 @@ version = "0.1.0"
 authors = ["Rajat Jindal <rajatjindal83@gmail.com>"]
 description = ""
 
+[variables]
+redis_address = { required = true }
+redis_channel = { required = true }
+
 [[trigger.http]]
 route = "/..."
 component = "spin-http-trigger"
@@ -17,15 +21,17 @@ allowed_outbound_hosts = []
 command = "cargo build --target wasm32-wasi --release --manifest-path spin-http-trigger/Cargo.toml"
 watch = ["src/**/*.rs", "Cargo.toml"]
 
-[application.trigger.redis]
-address = "redis://redis-service.default.svc.cluster.local:6379"
-
 [[trigger.redis]]
-channel = "testchannel"
+channel = "{{ redis_channel }}"
+address = "{{ redis_address }}"
 component = "spin-redis-trigger"
 
 [component.spin-redis-trigger]
 source = "spin-redis-trigger/target/wasm32-wasi/release/spin_redis_trigger.wasm"
-allowed_outbound_hosts = ["redis://redis-service.default.svc.cluster.local:6379"]
+allowed_outbound_hosts = ["redis://*:*"]
+
+[component.spin-redis-trigger.variables]
+redis_address = "{{ redis_address }}"
+
 [component.spin-redis-trigger.build]
 command = "cargo build --target wasm32-wasi --release --manifest-path spin-redis-trigger/Cargo.toml"
