@@ -21,6 +21,8 @@ jobs:
             context: images/spin_dotnet
           - imageName: examples/spin-outbound-redis
             context: images/spin-outbound-redis
+          - imageName: examples/spin-multi-trigger-app
+            context: images/spin-multi-trigger-app
     steps:
       - uses: actions/checkout@v4
       - name: Set RELEASE_VERSION ENV var

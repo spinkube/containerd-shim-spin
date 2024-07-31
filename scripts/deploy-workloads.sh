@@ -22,7 +22,7 @@ else
 fi
 
 # wait for all the pods to be ready
-kubectl wait --for=condition=ready --timeout=50s pod --all
+kubectl wait --for=condition=ready --timeout=120s pod --all
 
 # get and describe all the pods
 echo ">>> Pods:"
