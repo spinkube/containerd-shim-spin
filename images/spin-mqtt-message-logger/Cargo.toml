@@ -12,3 +12,5 @@ crate-type = ["cdylib"]
 anyhow = "1"
 chrono =  "0.4"
 spin-mqtt-sdk = { git = "https://github.com/spinkube/spin-trigger-mqtt" }
+
+[workspace]
