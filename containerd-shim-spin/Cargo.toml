@@ -21,12 +21,12 @@ spin-componentize = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.6.0", features = ["unsafe-aot-compilation"] }
 spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-trigger-mqtt = { git = "https://github.com/kate-goldenring/spin-trigger-mqtt", branch = "use-spin-telemetry" }
+trigger-mqtt = { git = "https://github.com/spinkube/spin-trigger-mqtt", ref = "8d3e0c23dc675df9dcd695f5a4791fe0095e8ca3" }
 trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "v0.7.0" }
 trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", tag = "v0.1.0" }
 spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-loader = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
+spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" } 
 spin-common = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
 spin-telemetry = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
