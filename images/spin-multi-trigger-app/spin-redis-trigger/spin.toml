@@ -2,7 +2,7 @@ spin_manifest_version = 2
 
 [application]
 authors = ["Suneet Nangia <suneetnangia@gmail.com>"]
-name = "spin-inbound-redis"
+name = "spin-redis-trigger"
 version = "1.0.0"
 
 [variables]
@@ -11,10 +11,11 @@ redis_channel = { required = true }
 
 [[trigger.redis]]
 address = "{{ redis_address }}"
+channel = "{{ redis_channel }}"
 component = "hello"
 
 [component.hello]
-source = "target/wasm32-wasi/release/spin_inbound_redis.wasm"
+source = "target/wasm32-wasi/release/spin_redis_trigger.wasm"
 allowed_outbound_hosts = ["redis://*:*"]
 
 [component.hello.build]
@@ -22,5 +23,4 @@ command = "cargo build --target wasm32-wasi --release"
 
 [component.hello.variables]
 redis_address = "{{ redis_address }}"
-redis_channel = "{{ redis_channel }}"
 

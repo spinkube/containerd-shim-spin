@@ -205,6 +205,11 @@ spec:
         command: ["/"]
         ports:
         - containerPort: 80
+        env:
+        - name: SPIN_VARIABLE_REDIS_ADDRESS
+          value: redis://redis-service.default.svc.cluster.local:6379
+        - name: SPIN_VARIABLE_REDIS_CHANNEL
+          value: testchannel
 ---
 apiVersion: v1
 kind: Service
