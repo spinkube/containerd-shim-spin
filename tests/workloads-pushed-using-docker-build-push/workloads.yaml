@@ -271,7 +271,7 @@ spec:
     spec:
       runtimeClassName: wasmtime-spin
       containers:
-        - name: spin-mqtt-message-logger
+      - name: spin-mqtt-message-logger
         image: docker.io/library/spin-mqtt-message-logger:latest
         imagePullPolicy: IfNotPresent
         command: ["/"]

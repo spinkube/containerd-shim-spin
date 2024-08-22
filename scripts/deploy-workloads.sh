@@ -11,6 +11,8 @@ fi
 
 update_mqtt_workload_with_broker_cluster_ip() {
     local dir=$1
+    echo "Waiting for emqx pod to be ready"
+    kubectl wait --for=condition=ready --timeout=20s pod/emqx
     # The MQTT trigger cannot do DNS resolution, so we need to use the IP address of the MQTT broker
     # Replace "EMQX_CLUSTER_IP" with the actual ClusterIP of the EMQX service
     local cluster_ip=$(kubectl get svc emqx -o jsonpath='{.spec.clusterIP}')
