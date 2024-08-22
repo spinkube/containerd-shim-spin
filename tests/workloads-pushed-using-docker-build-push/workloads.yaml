@@ -254,3 +254,46 @@ spec:
       targetPort: 80
   selector:
     app: spin-static-assets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spin-mqtt-message-logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spin-mqtt-message-logger
+  template:
+    metadata:
+      labels:
+        app: spin-mqtt-message-logger
+    spec:
+      runtimeClassName: wasmtime-spin
+      containers:
+        - name: spin-mqtt-message-logger
+        image: docker.io/library/spin-mqtt-message-logger:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/"]
+        ports:
+        - containerPort: 80
+        env:
+        - name: SPIN_VARIABLE_MQTT_TOPIC
+          value: hello
+        # The MQTT trigger cannot do DNS resolution, so we need to use the IP address of the MQTT broker
+        # Substitute `EMQX_CLUSTER_IP` with the result of `kubectl get svc emqx -n default -o jsonpath='{.spec.clusterIP}'`
+        - name: SPIN_VARIABLE_MQTT_BROKER_URI
+          value: "mqtt://EMQX_CLUSTER_IP:1883"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spin-mqtt-message-logger
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: spin-mqtt-message-logger
