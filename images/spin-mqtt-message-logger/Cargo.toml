@@ -1,0 +1,16 @@
+[package]
+name = "mqtt-message-logger"
+authors = ["Kate Goldenring <kate.goldenring@fermyon.com>"]
+description = "Triggered by MQTT"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = "1"
+chrono =  "0.4"
+spin-mqtt-sdk = { git = "https://github.com/spinkube/spin-trigger-mqtt" }
+
+[workspace]

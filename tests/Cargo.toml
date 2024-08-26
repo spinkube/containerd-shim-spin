@@ -20,3 +20,4 @@ http = "1.1"
 tower = "0.4"
 hyper = "1.4"
 redis = { version = "0.25", features = ["tokio-comp"] }
+rumqttc = "0.24.0"

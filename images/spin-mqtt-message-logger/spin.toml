@@ -1,0 +1,29 @@
+spin_manifest_version = 2
+
+[application]
+name = "mqtt-message-logger"
+version = "0.1.0"
+authors = ["Kate Goldenring <kate.goldenring@fermyon.com>"]
+description = "Triggered by MQTT"
+
+[variables]
+mqtt_topic = { required = true }
+mqtt_broker_uri = { required = true }
+
+[application.trigger.mqtt]
+address = "{{ mqtt_broker_uri }}"
+username = ""
+password = ""
+keep_alive_interval = "30"
+
+[[trigger.mqtt]]
+component = "mqtt-message-logger"
+topic = "{{ mqtt_topic }}"
+qos = "1"
+
+[component.mqtt-message-logger]
+source = "target/wasm32-wasi/release/mqtt_message_logger.wasm"
+allowed_outbound_hosts = []
+[component.mqtt-message-logger.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]

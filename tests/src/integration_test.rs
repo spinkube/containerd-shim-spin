@@ -124,6 +124,60 @@ mod test {
     }
 
     #[tokio::test]
+    async fn spin_mqtt_trigger_app_test() -> Result<()> {
+        use std::time::Duration;
+        let mqtt_port = 1883;
+        let message = "MESSAGE";
+        let iterations = 5;
+
+        // Ensure kubectl is in PATH
+        if !is_kubectl_installed().await? {
+            anyhow::bail!("kubectl is not installed");
+        }
+
+        // Port forward the emqx mqtt broker
+        let forward_port = port_forward_emqx(mqtt_port).await?;
+
+        // Publish a message to the emqx broker
+        let mut mqttoptions = rumqttc::MqttOptions::new("123", "127.0.0.1", forward_port);
+        mqttoptions.set_keep_alive(std::time::Duration::from_secs(1));
+
+        let (client, mut eventloop) = rumqttc::AsyncClient::new(mqttoptions, 10);
+        client
+            .subscribe("hello", rumqttc::QoS::AtMostOnce)
+            .await
+            .unwrap();
+
+        // Publish a message several times for redundancy
+        tokio::task::spawn(async move {
+            for _i in 0..iterations {
+                client
+                    .publish(
+                        "hello",
+                        rumqttc::QoS::AtLeastOnce,
+                        false,
+                        message.as_bytes(),
+                    )
+                    .await
+                    .unwrap();
+                tokio::time::sleep(Duration::from_millis(100)).await;
+            }
+        });
+        tokio::time::sleep(Duration::from_secs(5)).await;
+
+        // Poll the event loop to ensure messages are published
+        for _i in 0..iterations {
+            eventloop.poll().await?;
+        }
+        thread::sleep(time::Duration::from_secs(5));
+
+        // Ensure that the message was received and logged by the spin app
+        let log = get_logs_by_label("app=spin-mqtt-message-logger").await?;
+        assert!(log.contains(message));
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn spin_static_assets_test() -> Result<()> {
         let host_port = 8082;
 
@@ -171,6 +225,32 @@ mod test {
             .spawn()?;
         tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
         Ok(port)
+    }
+
+    async fn port_forward_emqx(emqx_port: u16) -> Result<u16> {
+        let port = get_random_port()?;
+
+        println!(" >>> kubectl portforward emqx {}:{} ", port, emqx_port);
+
+        Command::new("kubectl")
+            .arg("port-forward")
+            .arg("emqx")
+            .arg(format!("{}:{}", port, emqx_port))
+            .spawn()?;
+        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+        Ok(port)
+    }
+
+    async fn get_logs_by_label(label: &str) -> Result<String> {
+        let output = Command::new("kubectl")
+            .arg("logs")
+            .arg("-l")
+            .arg(label)
+            .output()
+            .await
+            .context("failed to get logs")?;
+        let log = std::str::from_utf8(&output.stdout)?;
+        Ok(log.to_owned())
     }
 
     /// Uses a track to get a random unused port
