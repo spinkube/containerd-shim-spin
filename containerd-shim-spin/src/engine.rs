@@ -291,7 +291,9 @@ impl SpinEngine {
                     mqtt_trigger.run(trigger_mqtt::CliArgs { test: false })
                 }
                 _ => {
-                    todo!("Only Http, Redis, MQTT and SQS triggers are currently supported.")
+                    todo!(
+                        "Only Http, Redis, MQTT, SQS and Command triggers are currently supported."
+                    )
                 }
             };
 
