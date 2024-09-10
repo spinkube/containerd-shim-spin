@@ -26,7 +26,7 @@ make setup # setup linux environment
 Build, install, and run the shim binary:
 
 ```bash
-make run-spin # run the shim binary
+make run # run the shim binary
 ```
 
 You may open another terminal and run the following command to test the shim:
