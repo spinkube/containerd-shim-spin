@@ -14,30 +14,34 @@ Containerd shim for running Spin workloads.
 containerd-shim-wasm = "0.6.0"
 containerd-shim = "0.7.1"
 log = "0.4"
-spin-app = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-core = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-componentize = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
+spin-app = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-core = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-componentize = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
 # Enable loading components precompiled by the shim
-spin-trigger = { git = "https://github.com/fermyon/spin", tag = "v2.6.0", features = ["unsafe-aot-compilation"] }
-spin-trigger-http = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-trigger-redis = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-trigger-mqtt = { git = "https://github.com/spinkube/spin-trigger-mqtt", tag = "v0.2.0" }
-trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "v0.7.0" }
-trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", tag = "v0.1.0" }
-spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-loader = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-oci = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" } 
-spin-common = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-spin-telemetry = { git = "https://github.com/fermyon/spin", tag = "v2.6.0" }
-wasmtime = "21.0.1"
+spin-trigger = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422", features = [
+    "unsafe-aot-compilation",
+] }
+spin-trigger-http = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+# spin-trigger-redis = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+# trigger-mqtt = { git = "https://github.com/spinkube/spin-trigger-mqtt", tag = "v0.2.0" }
+# trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "v0.7.0" }
+# trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", tag = "v0.1.0" }
+spin-manifest = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-loader = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-oci = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-common = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-expressions = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-factors-executor = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-telemetry = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-runtime-factors = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+wasmtime = "22.0"
 tokio = { version = "1.38", features = ["rt"] }
 openssl = { version = "*", features = ["vendored"] }
 serde = "1.0"
 serde_json = "1.0"
 url = "2.5"
 anyhow = "1.0"
-oci-spec = { version = "0.6.3" }
+oci-spec = "0.6.3"
 futures = "0.3"
 ctrlc = { version = "3.4", features = ["termination"] }
 

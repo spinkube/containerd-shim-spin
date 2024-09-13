@@ -1,0 +1,71 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/rylev/Code/fermyon/containerd-shim-spin/images/spin_dotnet/Project.csproj": {}
+  },
+  "projects": {
+    "/Users/rylev/Code/fermyon/containerd-shim-spin/images/spin_dotnet/Project.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/rylev/Code/fermyon/containerd-shim-spin/images/spin_dotnet/Project.csproj",
+        "projectName": "MyTestProject",
+        "projectPath": "/Users/rylev/Code/fermyon/containerd-shim-spin/images/spin_dotnet/Project.csproj",
+        "packagesPath": "/Users/rylev/.nuget/packages/",
+        "outputPath": "/Users/rylev/Code/fermyon/containerd-shim-spin/images/spin_dotnet/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/rylev/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Fermyon.Spin.Sdk": {
+              "target": "Package",
+              "version": "[0.1.0-alpha2, )"
+            },
+            "Wasi.Sdk": {
+              "target": "Package",
+              "version": "[0.1.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.306/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
