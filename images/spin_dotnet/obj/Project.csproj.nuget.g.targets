@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)wasi.sdk/0.1.1/build/Wasi.Sdk.targets" Condition="Exists('$(NuGetPackageRoot)wasi.sdk/0.1.1/build/Wasi.Sdk.targets')" />
+    <Import Project="$(NuGetPackageRoot)fermyon.spin.sdk/0.1.0-alpha2/build/Fermyon.Spin.Sdk.targets" Condition="Exists('$(NuGetPackageRoot)fermyon.spin.sdk/0.1.0-alpha2/build/Fermyon.Spin.Sdk.targets')" />
+  </ImportGroup>
+</Project>
