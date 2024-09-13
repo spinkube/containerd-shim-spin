@@ -2,7 +2,6 @@ use std::{
     collections::{hash_map::DefaultHasher, HashSet},
     env,
     hash::{Hash, Hasher},
-    path::Path,
 };
 
 use anyhow::{Context, Result};
@@ -14,25 +13,20 @@ use containerd_shim_wasm::{
 use futures::future;
 use log::info;
 use spin_app::locked::LockedApp;
-use spin_trigger::cli::{FactorsConfig, TriggerAppBuilder};
-use spin_trigger_http::HttpTrigger;
 use tokio::runtime::Runtime;
-// use spin_trigger_redis::RedisTrigger;
 // use trigger_command::CommandTrigger;
 // use trigger_mqtt::MqttTrigger;
 // use trigger_sqs::SqsTrigger;
 
 use crate::{
-    constants::{self, RUNTIME_CONFIG_PATH},
+    constants,
     source::Source,
-    trigger::get_supported_triggers,
+    trigger::{self, get_supported_triggers, HTTP_TRIGGER_TYPE, REDIS_TRIGGER_TYPE},
     utils::{
         configure_application_variables_from_environment_variables, initialize_cache,
         is_wasm_content, parse_addr,
     },
 };
-
-use super::trigger::HTTP_TRIGGER_TYPE;
 
 #[derive(Clone)]
 pub struct SpinEngine {
@@ -168,30 +162,21 @@ impl SpinEngine {
             Source::File(_) => {}
         };
         for trigger_type in trigger_types.iter() {
+            let app = spin_app::App::new("TODO", app.clone());
             let f = match trigger_type.as_str() {
                 HTTP_TRIGGER_TYPE => {
                     info!(" >>> running spin http trigger");
-                    let app = spin_app::App::new("TODO", app.clone());
                     let address_str = env::var(constants::SPIN_HTTP_LISTEN_ADDR_ENV)
                         .unwrap_or_else(|_| constants::SPIN_ADDR_DEFAULT.to_string());
                     let listen_address = parse_addr(&address_str)?;
                     let trigger = spin_trigger_http::HttpTrigger::new(&app, listen_address, None)?;
-                    let builder: TriggerAppBuilder<
-                        HttpTrigger,
-                        spin_runtime_factors::FactorsBuilder,
-                    > = TriggerAppBuilder::new(trigger);
-
-                    let future = builder
-                        .run(app, factors_config(), Default::default(), &loader)
-                        .await?;
-                    Box::pin(future)
+                    trigger::run(trigger, app, &loader).await?
                 }
-                // RedisTrigger::TRIGGER_TYPE => {
-                //     let redis_trigger =
-                //         build_trigger::<RedisTrigger>(app.clone(), app_source.clone()).await?;
-                //     info!(" >>> running spin redis trigger");
-                //     redis_trigger.run(spin_trigger::cli::NoArgs)
-                // }
+                REDIS_TRIGGER_TYPE => {
+                    info!(" >>> running spin redis trigger");
+                    let trigger = spin_trigger_redis::RedisTrigger;
+                    trigger::run(trigger, app, &loader).await?
+                }
                 // SqsTrigger::TRIGGER_TYPE => {
                 //     let sqs_trigger =
                 //         build_trigger::<SqsTrigger>(app.clone(), app_source.clone()).await?;
@@ -234,20 +219,6 @@ impl SpinEngine {
 
         result
     }
-}
-
-/// Configuration for the factors.
-fn factors_config() -> FactorsConfig {
-    // Load in runtime config if one exists at expected location
-    let runtime_config_file = Path::new(RUNTIME_CONFIG_PATH)
-        .exists()
-        .then(|| RUNTIME_CONFIG_PATH.into());
-    let factors_config = FactorsConfig {
-        working_dir: constants::SPIN_TRIGGER_WORKING_DIR.into(),
-        runtime_config_file,
-        ..Default::default()
-    };
-    factors_config
 }
 
 #[cfg(test)]
