@@ -22,7 +22,7 @@ spin-trigger = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e5
     "unsafe-aot-compilation",
 ] }
 spin-trigger-http = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
-# spin-trigger-redis = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-trigger-redis = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
 # trigger-mqtt = { git = "https://github.com/spinkube/spin-trigger-mqtt", tag = "v0.2.0" }
 # trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "v0.7.0" }
 # trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", tag = "v0.1.0" }
@@ -34,6 +34,7 @@ spin-expressions = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d7
 spin-factors-executor = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
 spin-telemetry = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
 spin-runtime-factors = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
+spin-factors = { git = "https://github.com/fermyon/spin", rev = "e7e69e5d7d719e532bcbd6a903476c430466f422" }
 wasmtime = "22.0"
 tokio = { version = "1.38", features = ["rt"] }
 openssl = { version = "*", features = ["vendored"] }
