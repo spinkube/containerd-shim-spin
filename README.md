@@ -4,6 +4,16 @@ This project aims to provide the [containerd shim](https://github.com/containerd
 
 [runwasi](https://github.com/deislabs/runwasi) is a project that aims to run WASI workloads managed by [containerd](https://containerd.io/).
 
+## Table of Contents
+
+- [Shim and Spin Version Map](#shim-and-spin-version-map)
+- [Documentation](#documentation)
+- [Building and running the shim on host](#building-and-running-the-containerd-shim-spin-on-host)
+- [Installing the shim on Kubernetes Nodes](#installing-the-containerd-shim-spin-on-kubernetes-nodes)
+- [Locating build artifacts](#locating-build-artifacts)
+- [Feedback](#feedback)
+- [Contributing](#contributing)
+
 ## Shim and Spin Version Map
 
 Below is a table for referencing the version of the Spin runtime used in each `containerd-shim-spin` release.
@@ -97,6 +107,28 @@ To carry out the installation step-by-step, do the following:
             image: ghcr.io/spinkube/containerd-shim-spin/examples/spin-rust-hello:v0.13.0
             command: ["/"]
     ```
+
+## Locating build artifacts
+
+### Versioned releases
+
+A GitHub release is created for each versioned release with build artifacts attached, including shim binaries for all supported architectures. See the [Releases page](https://github.com/spinkube/containerd-shim-spin/releases) for the full listing.
+
+In addition, container images for k3d, node-installer and example apps are published using the release version for their tags, eg [ghcr.io/spinkube/containerd-shim-spin:v0.15.1](https://github.com/spinkube/containerd-shim-spin/pkgs/container/containerd-shim-spin%2Fnode-installer/240852005?tag=v0.15.1). A listing of all images and their tags can be seen from the [packages page](https://github.com/orgs/spinkube/packages?repo_name=containerd-shim-spin).
+
+### Canary builds
+
+On every push to the `main` branch, the [release workflow](https://github.com/spinkube/containerd-shim-spin/actions/workflows/release.yaml) will run and attach shim binary artifacts once finished.
+
+Container images for k3d, node-installer and example apps are also published, using a unique tag of the form `$(date +%Y%m%d-%H%M%S)-g$(git rev-parse --short HEAD)`. A listing of all images and their tags can be seen from the [packages page](https://github.com/orgs/spinkube/packages?repo_name=containerd-shim-spin).
+
+### Branch builds
+
+For every push to a feature branch with a corresponding PR, the [ci workflow](https://github.com/spinkube/containerd-shim-spin/actions/workflows/ci.yaml) will run and attach shim binary artifacts once finished.
+
+If the feature branch is created from the origin repo, the [node-installer image](https://github.com/spinkube/containerd-shim-spin/pkgs/container/containerd-shim-spin%2Fnode-installer) will be published with a tag following the same convention as `main` builds. You can locate the tag corresponding to your branch via the commit string portion.
+
+> Note: A node-installer image won't be pushed for feature branches on forks, as they don't have access to the credentials needed to publish to the ghcr.io container registry.
 
 ## Feedback
 
