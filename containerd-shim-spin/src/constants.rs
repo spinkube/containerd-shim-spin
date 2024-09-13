@@ -18,5 +18,3 @@ pub(crate) const SPIN_MANIFEST_FILE_PATH: &str = "/spin.toml";
 pub(crate) const SPIN_APPLICATION_VARIABLE_PREFIX: &str = "SPIN_VARIABLE";
 /// Working directory for Spin applications
 pub(crate) const SPIN_TRIGGER_WORKING_DIR: &str = "/";
-/// Name of the Spin lock file
-pub(crate) const SPIN_LOCK_FILE_NAME: &str = "spin.lock";

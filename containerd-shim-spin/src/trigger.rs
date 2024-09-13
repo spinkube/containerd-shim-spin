@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 
+use anyhow::anyhow;
 use spin_app::locked::LockedApp;
 use spin_trigger::Trigger;
 // use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
@@ -47,5 +48,5 @@ pub(crate) fn get_supported_triggers(locked_app: &LockedApp) -> anyhow::Result<H
                 Ok(trigger_type.clone())
             }
         })
-        .collect::<Result<HashSet<_>>>()
+        .collect::<anyhow::Result<HashSet<_>>>()
 }
