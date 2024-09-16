@@ -39,7 +39,7 @@ url = "2.5"
 anyhow = "1.0"
 oci-spec = { version = "0.6.3" }
 futures = "0.3"
-ctrlc = { version = "3.2", features = ["termination"] }
+ctrlc = { version = "3.4", features = ["termination"] }
 
 [dev-dependencies]
 wat = "1"
