@@ -1,32 +1,35 @@
 use std::{collections::HashSet, future::Future, path::Path, pin::Pin};
 
-use anyhow::anyhow;
-use spin_app::locked::LockedApp;
-use spin_trigger::Trigger;
-// use spin_trigger::{loader, RuntimeConfig, TriggerExecutor, TriggerExecutorBuilder};
+use spin_app::{locked::LockedApp, App};
+use spin_runtime_factors::{FactorsBuilder, TriggerFactors};
+use spin_trigger::{
+    cli::{FactorsConfig, RuntimeFactorsBuilder, TriggerAppBuilder},
+    loader::ComponentLoader,
+    Trigger,
+};
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
 
 use crate::constants::{RUNTIME_CONFIG_PATH, SPIN_TRIGGER_WORKING_DIR};
-// use trigger_command::CommandTrigger;
-// use trigger_mqtt::MqttTrigger;
-// use trigger_sqs::SqsTrigger;
+use trigger_command::CommandTrigger;
+use trigger_mqtt::MqttTrigger;
+use trigger_sqs::SqsTrigger;
 
-pub(crate) const HTTP_TRIGGER_TYPE: &str = <HttpTrigger as Trigger<
-    <spin_runtime_factors::FactorsBuilder as spin_trigger::cli::RuntimeFactorsBuilder>::Factors,
->>::TYPE;
-pub(crate) const REDIS_TRIGGER_TYPE: &str = <RedisTrigger as Trigger<
-    <spin_runtime_factors::FactorsBuilder as spin_trigger::cli::RuntimeFactorsBuilder>::Factors,
->>::TYPE;
+pub(crate) const HTTP_TRIGGER_TYPE: &str = <HttpTrigger as Trigger<TriggerFactors>>::TYPE;
+pub(crate) const REDIS_TRIGGER_TYPE: &str = <RedisTrigger as Trigger<TriggerFactors>>::TYPE;
+pub(crate) const SQS_TRIGGER_TYPE: &str = <SqsTrigger as Trigger<TriggerFactors>>::TYPE;
+pub(crate) const MQTT_TRIGGER_TYPE: &str = <MqttTrigger as Trigger<TriggerFactors>>::TYPE;
+pub(crate) const COMMAND_TRIGGER_TYPE: &str = <CommandTrigger as Trigger<TriggerFactors>>::TYPE;
 
-/// Run the trigger with the given `App` and `ComponentLoader`.
+/// Run the trigger with the given CLI args, [`App`] and [`ComponentLoader`].
 pub(crate) async fn run<
     T: Trigger<<FactorsBuilder as RuntimeFactorsBuilder>::Factors> + 'static,
 >(
-    trigger: T,
+    cli_args: T::CliArgs,
     app: App,
-    loader: &spin_trigger::loader::ComponentLoader,
+    loader: &ComponentLoader,
 ) -> anyhow::Result<Pin<Box<dyn Future<Output = anyhow::Result<()>>>>> {
+    let trigger = T::new(cli_args, &app)?;
     let builder: TriggerAppBuilder<_, FactorsBuilder> = TriggerAppBuilder::new(trigger);
 
     let future = builder
@@ -41,12 +44,11 @@ fn factors_config() -> FactorsConfig {
     let runtime_config_file = Path::new(RUNTIME_CONFIG_PATH)
         .exists()
         .then(|| RUNTIME_CONFIG_PATH.into());
-    let factors_config = FactorsConfig {
+    FactorsConfig {
         working_dir: SPIN_TRIGGER_WORKING_DIR.into(),
         runtime_config_file,
         ..Default::default()
-    };
-    factors_config
+    }
 }
 
 /// get the supported trigger types from the `LockedApp`.
@@ -66,16 +68,16 @@ pub(crate) fn get_supported_triggers(locked_app: &LockedApp) -> anyhow::Result<H
     let supported_triggers: HashSet<&str> = HashSet::from([
         HTTP_TRIGGER_TYPE,
         REDIS_TRIGGER_TYPE,
-        // SqsTrigger::TRIGGER_TYPE,
-        // MqttTrigger::TRIGGER_TYPE,
-        // CommandTrigger::TRIGGER_TYPE,
+        SQS_TRIGGER_TYPE,
+        COMMAND_TRIGGER_TYPE,
+        MQTT_TRIGGER_TYPE,
     ]);
 
     locked_app.triggers.iter()
         .map(|trigger| {
             let trigger_type = &trigger.trigger_type;
             if !supported_triggers.contains(trigger_type.as_str()) {
-                Err(anyhow!(
+                Err(anyhow::anyhow!(
                     "Only Http, Redis, MQTT, SQS, and Command triggers are currently supported. Found unsupported trigger: {:?}",
                     trigger_type
                 ))
