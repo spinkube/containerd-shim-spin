@@ -91,7 +91,9 @@ async fn write_locked_app(locked_app: &LockedApp, working_dir: &Path) -> Result<
 /// - sqs
 /// - mqtt
 /// - command
-pub(crate) fn get_supported_triggers(locked_app: &LockedApp) -> anyhow::Result<Vec<String>> {
+///
+/// Note: this function returns a `HashSet` of supported trigger types. Duplicates are removed.
+pub(crate) fn get_supported_triggers(locked_app: &LockedApp) -> anyhow::Result<HashSet<String>> {
     let supported_triggers: HashSet<&str> = HashSet::from([
         RedisTrigger::TRIGGER_TYPE,
         HttpTrigger::TRIGGER_TYPE,
@@ -100,17 +102,17 @@ pub(crate) fn get_supported_triggers(locked_app: &LockedApp) -> anyhow::Result<V
         CommandTrigger::TRIGGER_TYPE,
     ]);
 
-    let mut types: Vec<String> = Vec::with_capacity(locked_app.triggers.len());
-
-    for trigger in &locked_app.triggers {
-        let trigger_type = &trigger.trigger_type;
-        if !supported_triggers.contains(trigger_type.as_str()) {
-            anyhow::bail!(
-                "Only Http, Redis, MQTT, SQS, and Command triggers are currently supported. Found unsupported trigger: {:?}",
-                trigger_type
-            );
-        }
-        types.push(trigger_type.clone());
-    }
-    Ok(types)
+    locked_app.triggers.iter()
+        .map(|trigger| {
+            let trigger_type = &trigger.trigger_type;
+            if !supported_triggers.contains(trigger_type.as_str()) {
+                Err(anyhow!(
+                    "Only Http, Redis, MQTT, SQS, and Command triggers are currently supported. Found unsupported trigger: {:?}",
+                    trigger_type
+                ))
+            } else {
+                Ok(trigger_type.clone())
+            }
+        })
+        .collect::<Result<HashSet<_>>>()
 }

@@ -1,5 +1,5 @@
 use std::{
-    collections::hash_map::DefaultHasher,
+    collections::{hash_map::DefaultHasher, HashSet},
     env,
     hash::{Hash, Hasher},
 };
@@ -137,28 +137,24 @@ impl SpinEngine {
         configure_application_variables_from_environment_variables(&locked_app)?;
         let trigger_cmds = get_supported_triggers(&locked_app)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
-
         let _telemetry_guard = spin_telemetry::init(version!().to_string())?;
 
-        self.run_trigger(
-            ctx,
-            trigger_cmds.iter().map(|s| s.as_ref()).collect(),
-            locked_app,
-            app_source,
-        )
-        .await
+        self.run_trigger(ctx, &trigger_cmds, locked_app, app_source)
+            .await
     }
 
     async fn run_trigger(
         &self,
         ctx: &impl RuntimeContext,
-        trigger_types: Vec<&str>,
+        trigger_types: &HashSet<String>,
         app: LockedApp,
         app_source: Source,
     ) -> Result<()> {
-        let mut futures_list = Vec::with_capacity(trigger_types.len());
+        let mut futures_list = Vec::new();
+        let mut trigger_type_map = Vec::new();
+
         for trigger_type in trigger_types.iter() {
-            let f = match trigger_type.to_owned() {
+            let f = match trigger_type.as_str() {
                 HttpTrigger::TRIGGER_TYPE => {
                     let http_trigger =
                         build_trigger::<HttpTrigger>(app.clone(), app_source.clone()).await?;
@@ -204,17 +200,17 @@ impl SpinEngine {
                 }
             };
 
-            futures_list.push(f)
+            trigger_type_map.push(trigger_type.clone());
+            futures_list.push(f);
         }
 
         info!(" >>> notifying main thread we are about to start");
 
         // exit as soon as any of the trigger completes/exits
         let (result, index, rest) = future::select_all(futures_list).await;
-        info!(
-            " >>> trigger type '{trigger_type}' exited",
-            trigger_type = trigger_types[index]
-        );
+        let trigger_type = &trigger_type_map[index];
+
+        info!(" >>> trigger type '{trigger_type}' exited");
 
         drop(rest);
 
