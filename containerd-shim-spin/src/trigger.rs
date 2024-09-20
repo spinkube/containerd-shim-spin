@@ -3,7 +3,7 @@ use std::{collections::HashSet, future::Future, path::Path, pin::Pin};
 use spin_app::{locked::LockedApp, App};
 use spin_runtime_factors::{FactorsBuilder, TriggerFactors};
 use spin_trigger::{
-    cli::{FactorsConfig, RuntimeFactorsBuilder, TriggerAppBuilder},
+    cli::{FactorsConfig, TriggerAppBuilder},
     loader::ComponentLoader,
     Trigger,
 };
@@ -22,13 +22,14 @@ pub(crate) const MQTT_TRIGGER_TYPE: &str = <MqttTrigger as Trigger<TriggerFactor
 pub(crate) const COMMAND_TRIGGER_TYPE: &str = <CommandTrigger as Trigger<TriggerFactors>>::TYPE;
 
 /// Run the trigger with the given CLI args, [`App`] and [`ComponentLoader`].
-pub(crate) async fn run<
-    T: Trigger<<FactorsBuilder as RuntimeFactorsBuilder>::Factors> + 'static,
->(
+pub(crate) async fn run<T>(
     cli_args: T::CliArgs,
     app: App,
     loader: &ComponentLoader,
-) -> anyhow::Result<Pin<Box<dyn Future<Output = anyhow::Result<()>>>>> {
+) -> anyhow::Result<Pin<Box<dyn Future<Output = anyhow::Result<()>>>>>
+where
+    T: Trigger<TriggerFactors> + 'static,
+{
     let trigger = T::new(cli_args, &app)?;
     let builder: TriggerAppBuilder<_, FactorsBuilder> = TriggerAppBuilder::new(trigger);
 

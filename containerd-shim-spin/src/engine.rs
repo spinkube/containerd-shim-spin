@@ -174,9 +174,9 @@ impl SpinEngine {
                     info!(" >>> running spin http trigger");
                     let address_str = env::var(constants::SPIN_HTTP_LISTEN_ADDR_ENV)
                         .unwrap_or_else(|_| constants::SPIN_ADDR_DEFAULT.to_string());
-                    let listen_address = parse_addr(&address_str)?;
+                    let address = parse_addr(&address_str)?;
                     let cli_args = spin_trigger_http::CliArgs {
-                        address: listen_address,
+                        address,
                         tls_cert: None,
                         tls_key: None,
                     };
