@@ -4,7 +4,12 @@ use containerd_shim_wasm::{
     sandbox::cli::{revision, shim_main, version},
 };
 
+mod constants;
 mod engine;
+mod source;
+mod stdio_hook;
+mod trigger;
+mod utils;
 
 fn main() {
     // Configure the shim to have only error level logging for performance improvements.
