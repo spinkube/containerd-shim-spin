@@ -23,9 +23,9 @@ spin-trigger = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecf
 ] }
 spin-trigger-http = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-trigger-redis = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
-trigger-mqtt = { git = "https://github.com/rylev/spin-trigger-mqtt", rev = "476c8a91b1dba5666be425ec47203c64c4828c15" }
-trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "fa95ebdd25fc145616aef758f31a15ae47648f44" }
-trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", rev = "2502a964b66c36b2b3d81813e58240d01cf5767b" }
+trigger-mqtt = { git = "https://github.com/rylev/spin-trigger-mqtt", rev = "4f6bf7e6783833dc344078d3096b171b43e09f57" }
+trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", rev = "71877907ebd822bb1aacf7a20065733b7cd188dc" }
+trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", rev = "db55291552233e04189275a2dd82c07e5fa4fdf2" }
 spin-manifest = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-loader = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-oci = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
