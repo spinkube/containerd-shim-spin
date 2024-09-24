@@ -172,7 +172,6 @@ impl SpinEngine {
             let app = spin_app::App::new("TODO", app.clone());
             let f = match trigger_type.as_str() {
                 HTTP_TRIGGER_TYPE => {
-                    info!(" >>> running spin http trigger");
                     let address_str = env::var(constants::SPIN_HTTP_LISTEN_ADDR_ENV)
                         .unwrap_or_else(|_| constants::SPIN_ADDR_DEFAULT.to_string());
                     let address = parse_addr(&address_str)?;
@@ -183,23 +182,15 @@ impl SpinEngine {
                     };
                     trigger::run::<HttpTrigger>(cli_args, app, &loader).await?
                 }
-                REDIS_TRIGGER_TYPE => {
-                    info!(" >>> running spin redis trigger");
-                    trigger::run::<RedisTrigger>(NoCliArgs, app, &loader).await?
-                }
-                SQS_TRIGGER_TYPE => {
-                    info!(" >>> running spin sqs trigger");
-                    trigger::run::<SqsTrigger>(NoCliArgs, app, &loader).await?
-                }
+                REDIS_TRIGGER_TYPE => trigger::run::<RedisTrigger>(NoCliArgs, app, &loader).await?,
+                SQS_TRIGGER_TYPE => trigger::run::<SqsTrigger>(NoCliArgs, app, &loader).await?,
                 COMMAND_TRIGGER_TYPE => {
-                    info!(" >>> running spin command trigger");
                     let cli_args = trigger_command::CliArgs {
                         guest_args: ctx.args().to_vec(),
                     };
                     trigger::run::<CommandTrigger>(cli_args, app, &loader).await?
                 }
                 MQTT_TRIGGER_TYPE => {
-                    info!(" >>> running spin mqtt trigger");
                     let cli_args = trigger_mqtt::CliArgs { test: false };
                     trigger::run::<MqttTrigger>(cli_args, app, &loader).await?
                 }

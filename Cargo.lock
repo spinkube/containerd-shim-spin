@@ -6696,7 +6696,7 @@ dependencies = [
  "anyhow",
  "conformance-tests",
  "log",
- "nix 0.28.0",
+ "nix 0.29.0",
  "test-environment",
 ]
 
