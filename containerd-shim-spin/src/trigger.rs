@@ -9,11 +9,11 @@ use spin_trigger::{
 };
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
-
-use crate::constants::{RUNTIME_CONFIG_PATH, SPIN_TRIGGER_WORKING_DIR};
 use trigger_command::CommandTrigger;
 use trigger_mqtt::MqttTrigger;
 use trigger_sqs::SqsTrigger;
+
+use crate::constants::{RUNTIME_CONFIG_PATH, SPIN_TRIGGER_WORKING_DIR};
 
 pub(crate) const HTTP_TRIGGER_TYPE: &str = <HttpTrigger as Trigger<TriggerFactors>>::TYPE;
 pub(crate) const REDIS_TRIGGER_TYPE: &str = <RedisTrigger as Trigger<TriggerFactors>>::TYPE;
