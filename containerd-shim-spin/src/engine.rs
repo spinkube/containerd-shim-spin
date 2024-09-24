@@ -153,8 +153,6 @@ impl SpinEngine {
         app: LockedApp,
         app_source: Source,
     ) -> Result<()> {
-        let mut futures_list = Vec::new();
-        let mut trigger_type_map = Vec::new();
         let mut loader = spin_trigger::loader::ComponentLoader::default();
         match app_source {
             Source::Oci => unsafe {
@@ -167,6 +165,9 @@ impl SpinEngine {
             // `spin registry push`
             Source::File(_) => {}
         };
+
+        let mut futures_list = Vec::new();
+        let mut trigger_type_map = Vec::new();
         for trigger_type in trigger_types.iter() {
             let app = spin_app::App::new("TODO", app.clone());
             let f = match trigger_type.as_str() {
