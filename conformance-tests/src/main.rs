@@ -35,11 +35,11 @@ fn run_test(
     ctr_binary: &std::path::Path,
 ) -> anyhow::Result<()> {
     println!("running test: {}", test.name);
-    let mut services = vec!["registry".into()];
+    let mut services = vec!["registry"];
     for precondition in &test.config.preconditions {
         match precondition {
             conformance_tests::config::Precondition::HttpEcho => {
-                services.push("http-echo".into());
+                services.push("http-echo");
             }
             conformance_tests::config::Precondition::KeyValueStore(k) => {
                 if k.label != "default" {
@@ -47,14 +47,14 @@ fn run_test(
                 }
             }
             conformance_tests::config::Precondition::TcpEcho => {
-                services.push("tcp-echo".into());
+                services.push("tcp-echo");
             }
             conformance_tests::config::Precondition::Sqlite => {}
             conformance_tests::config::Precondition::Redis => {
-                services.push("redis".into());
+                services.push("redis");
             }
             conformance_tests::config::Precondition::Mqtt => {
-                services.push("mqtt".into());
+                services.push("mqtt");
             }
         }
     }

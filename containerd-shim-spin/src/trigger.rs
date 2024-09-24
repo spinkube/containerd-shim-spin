@@ -1,5 +1,6 @@
 use std::{collections::HashSet, future::Future, path::Path, pin::Pin};
 
+use log::info;
 use spin_app::{locked::LockedApp, App};
 use spin_runtime_factors::{FactorsBuilder, TriggerFactors};
 use spin_trigger::{
@@ -30,6 +31,7 @@ pub(crate) async fn run<T>(
 where
     T: Trigger<TriggerFactors> + 'static,
 {
+    info!(" >>> running {} trigger", T::TYPE);
     let trigger = T::new(cli_args, &app)?;
     let builder: TriggerAppBuilder<_, FactorsBuilder> = TriggerAppBuilder::new(trigger);
 
