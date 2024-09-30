@@ -4,7 +4,7 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use containerd_shim_wasm::{
     container::{Engine, RuntimeContext, Stdio},
     sandbox::WasmLayer,
@@ -13,6 +13,7 @@ use containerd_shim_wasm::{
 use futures::future;
 use log::info;
 use spin_app::locked::LockedApp;
+use spin_factor_outbound_networking::{allowed_outbound_hosts, parse_service_chaining_target};
 use spin_trigger::cli::NoCliArgs;
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
@@ -136,6 +137,12 @@ impl SpinEngine {
     async fn wasm_exec_async(&self, ctx: &impl RuntimeContext) -> Result<()> {
         let cache = initialize_cache().await?;
         let app_source = Source::from_ctx(ctx, &cache).await?;
+        let components_to_execute = env::var(constants::SPIN_COMPONENTS_TO_RETAIN_ENV)
+        .ok()
+        .map(|s| s.split(',').map(|s| s.to_string()).collect::<Vec<String>>());
+        if components_to_execute.is_some() {
+            log::info!("Components to execute: {:?}", components_to_execute);
+        }
         let locked_app = app_source.to_locked_app(&cache).await?;
         configure_application_variables_from_environment_variables(&locked_app)?;
         let trigger_cmds = get_supported_triggers(&locked_app)
@@ -216,6 +223,86 @@ impl SpinEngine {
 
         result
     }
+}
+
+/// Scrubs the locked app to only contain the given list of components
+/// Introspects the LockedApp to find and selectively retain the triggers that correspond to those components
+fn retain_components(locked_app: &mut LockedApp, retained_components: &[String]) -> Result<()> {
+    // Create a temporary app to access parsed component and trigger information
+    let tmp_app = spin_app::App::new("tmp", locked_app.clone());
+    validate_retained_components_exist(&tmp_app, retained_components)?;
+    validate_retained_components_service_chaining(&tmp_app, retained_components)?;
+    let (component_ids, trigger_ids): (HashSet<String>, HashSet<String>) = tmp_app
+        .triggers()
+        .filter_map(|t| match t.component() {
+            Ok(comp) if retained_components.contains(&comp.id().to_string()) => {
+                Some((comp.id().to_owned(), t.id().to_owned()))
+            }
+            _ => None,
+        })
+        .collect();
+    locked_app
+        .components
+        .retain(|c| component_ids.contains(&c.id));
+    locked_app.triggers.retain(|t| trigger_ids.contains(&t.id));
+    Ok(())
+}
+
+/// Validates that all service chaining of an app will be satisfied by the
+/// retained components.
+///
+/// This does a best effort look up of components that are
+/// allowed to be accessed through service chaining and will error early if a
+/// component is configured to to chain to another component that is not
+/// retained. All wildcard service chaining is disallowed and all templated URLs
+/// are ignored.
+fn validate_retained_components_service_chaining(
+    app: &spin_app::App,
+    retained_components: &[String],
+) -> Result<()> {
+    app
+        .triggers().try_for_each(|t| {
+            let Ok(component) = t.component() else  { return Ok(()) };
+            if retained_components.contains(&component.id().to_string()) {
+            let allowed_hosts = allowed_outbound_hosts(&component).context("failed to get allowed hosts")?;
+            for host in allowed_hosts {
+                // Templated URLs are not yet resolved at this point, so ignore unresolvable URIs
+                if let Ok(uri) = host.parse::<http::Uri>() {
+                    if let Some(chaining_target) = parse_service_chaining_target(&uri) {
+                        if !retained_components.contains(&chaining_target) {
+                            if chaining_target == "*" {
+                                bail!("Component selected with '--component {}' cannot use wildcard service chaining: allowed_outbound_hosts = [\"http://*.spin.internal\"]", component.id());
+                            }
+                            bail!(
+                                "Component selected with '--component {}' cannot use service chaining to unselected component: allowed_outbound_hosts = [\"http://{}.spin.internal\"]",
+                                component.id(), chaining_target
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        anyhow::Ok(())
+    })?;
+
+    Ok(())
+}
+
+/// Validates that all components specified to be retained actually exist in the app
+fn validate_retained_components_exist(
+    app: &spin_app::App,
+    retained_components: &[String],
+) -> Result<()> {
+    let app_components = app
+        .components()
+        .map(|c| c.id().to_string())
+        .collect::<HashSet<_>>();
+    for c in retained_components {
+        if !app_components.contains(c) {
+            bail!("Specified component \"{c}\" not found in application");
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]

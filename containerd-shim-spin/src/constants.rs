@@ -18,3 +18,6 @@ pub(crate) const SPIN_MANIFEST_FILE_PATH: &str = "/spin.toml";
 pub(crate) const SPIN_APPLICATION_VARIABLE_PREFIX: &str = "SPIN_VARIABLE";
 /// Working directory for Spin applications
 pub(crate) const SPIN_TRIGGER_WORKING_DIR: &str = "/";
+/// Defines the subset of application components that should be executable by the shim
+/// If empty or DNE, all components will be supported
+pub(crate) const SPIN_COMPONENTS_TO_RETAIN_ENV: &str = "SPIN_COMPONENTS_TO_RETAIN";
