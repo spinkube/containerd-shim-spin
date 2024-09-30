@@ -13,6 +13,7 @@ Containerd shim for running Spin workloads.
 [dependencies]
 containerd-shim-wasm = "0.6.0"
 containerd-shim = "0.7.1"
+http = "1"
 log = "0.4"
 spin-app = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-core = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
@@ -35,8 +36,9 @@ spin-factors-executor = { git = "https://github.com/fermyon/spin", rev = "485b04
 spin-telemetry = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-runtime-factors = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-factors = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
+spin-factor-outbound-networking = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 wasmtime = "22.0"
-tokio = { version = "1.38", features = ["rt"] }
+tokio = { version = "1", features = ["rt"] }
 openssl = { version = "*", features = ["vendored"] }
 serde = "1.0"
 serde_json = "1.0"
@@ -49,3 +51,5 @@ ctrlc = { version = "3.4", features = ["termination"] }
 [dev-dependencies]
 wat = "1"
 temp-env = "0.3.6"
+toml = "0.8"
+tempfile = "3"
