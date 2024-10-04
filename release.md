@@ -8,14 +8,21 @@ following:
    commit selected to be tagged and released.
 
 1. Change all references of the version number in package
-   [Cargo.toml](./Cargo.toml), crate
-   [Cargo.toml](./containerd-shim-spin/Cargo.toml),
-   [quickstart](./containerd-shim-spin/quickstart.md), [README](./README.md),
-   [deployments](./deployments/), and [images](./images/). Run `cargo build
+   
+   * [Cargo.toml](./Cargo.toml), 
+   * crate [Cargo.toml](./containerd-shim-spin/Cargo.toml),
+   * [quickstart](./containerd-shim-spin/quickstart.md), 
+   * [README](./README.md),
+   * [deployments](./deployments/), 
+   * [images](./images/). 
+   * [CHANGELOG.md](./CHANGELOG.md) the Unreleased section should be updated with the new version number and the date of the release. Update the links to new version tag in the footer of CHANGELOG.md
+   
+   Run `cargo build
    --release` to make sure lockfiles reflect Cargo.toml updates. Add a new
    column to the [README shim and Spin version
    map](./README.md#shim-and-spin-version-map) that lists the version of the
    Spin dependencies for the release.
+   
 
 1. Create a pull request with these changes and merge once approved.
 
