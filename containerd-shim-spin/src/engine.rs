@@ -4,7 +4,7 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use containerd_shim_wasm::{
     container::{Engine, RuntimeContext, Stdio},
     sandbox::WasmLayer,
@@ -13,7 +13,8 @@ use containerd_shim_wasm::{
 use futures::future;
 use log::info;
 use spin_app::locked::LockedApp;
-use spin_trigger::TriggerExecutor;
+use spin_factor_outbound_networking::{allowed_outbound_hosts, parse_service_chaining_target};
+use spin_trigger::cli::NoCliArgs;
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
 use tokio::runtime::Runtime;
@@ -24,7 +25,10 @@ use trigger_sqs::SqsTrigger;
 use crate::{
     constants,
     source::Source,
-    trigger::{build_trigger, get_supported_triggers},
+    trigger::{
+        self, get_supported_triggers, COMMAND_TRIGGER_TYPE, HTTP_TRIGGER_TYPE, MQTT_TRIGGER_TYPE,
+        REDIS_TRIGGER_TYPE, SQS_TRIGGER_TYPE,
+    },
     utils::{
         configure_application_variables_from_environment_variables, initialize_cache,
         is_wasm_content, parse_addr,
@@ -133,6 +137,12 @@ impl SpinEngine {
     async fn wasm_exec_async(&self, ctx: &impl RuntimeContext) -> Result<()> {
         let cache = initialize_cache().await?;
         let app_source = Source::from_ctx(ctx, &cache).await?;
+        let components_to_execute = env::var(constants::SPIN_COMPONENTS_TO_RETAIN_ENV)
+        .ok()
+        .map(|s| s.split(',').map(|s| s.to_string()).collect::<Vec<String>>());
+        if components_to_execute.is_some() {
+            log::info!("Components to execute: {:?}", components_to_execute);
+        }
         let locked_app = app_source.to_locked_app(&cache).await?;
         configure_application_variables_from_environment_variables(&locked_app)?;
         let trigger_cmds = get_supported_triggers(&locked_app)
@@ -150,49 +160,46 @@ impl SpinEngine {
         app: LockedApp,
         app_source: Source,
     ) -> Result<()> {
+        let mut loader = spin_trigger::loader::ComponentLoader::default();
+        match app_source {
+            Source::Oci => unsafe {
+                // Configure the loader to support loading AOT compiled components..
+                // Since all components were compiled by the shim (during `precompile`),
+                // this operation can be considered safe.
+                loader.enable_loading_aot_compiled_components();
+            },
+            // Currently, it is only possible to precompile applications distributed using
+            // `spin registry push`
+            Source::File(_) => {}
+        };
+
         let mut futures_list = Vec::new();
         let mut trigger_type_map = Vec::new();
-
         for trigger_type in trigger_types.iter() {
+            let app = spin_app::App::new("TODO", app.clone());
             let f = match trigger_type.as_str() {
-                HttpTrigger::TRIGGER_TYPE => {
-                    let http_trigger =
-                        build_trigger::<HttpTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin http trigger");
+                HTTP_TRIGGER_TYPE => {
                     let address_str = env::var(constants::SPIN_HTTP_LISTEN_ADDR_ENV)
                         .unwrap_or_else(|_| constants::SPIN_ADDR_DEFAULT.to_string());
                     let address = parse_addr(&address_str)?;
-                    http_trigger.run(spin_trigger_http::CliArgs {
+                    let cli_args = spin_trigger_http::CliArgs {
                         address,
                         tls_cert: None,
                         tls_key: None,
-                    })
+                    };
+                    trigger::run::<HttpTrigger>(cli_args, app, &loader).await?
                 }
-                RedisTrigger::TRIGGER_TYPE => {
-                    let redis_trigger =
-                        build_trigger::<RedisTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin redis trigger");
-                    redis_trigger.run(spin_trigger::cli::NoArgs)
-                }
-                SqsTrigger::TRIGGER_TYPE => {
-                    let sqs_trigger =
-                        build_trigger::<SqsTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin sqs trigger");
-                    sqs_trigger.run(spin_trigger::cli::NoArgs)
-                }
-                CommandTrigger::TRIGGER_TYPE => {
-                    let command_trigger =
-                        build_trigger::<CommandTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin command trigger");
-                    command_trigger.run(trigger_command::CliArgs {
+                REDIS_TRIGGER_TYPE => trigger::run::<RedisTrigger>(NoCliArgs, app, &loader).await?,
+                SQS_TRIGGER_TYPE => trigger::run::<SqsTrigger>(NoCliArgs, app, &loader).await?,
+                COMMAND_TRIGGER_TYPE => {
+                    let cli_args = trigger_command::CliArgs {
                         guest_args: ctx.args().to_vec(),
-                    })
+                    };
+                    trigger::run::<CommandTrigger>(cli_args, app, &loader).await?
                 }
-                MqttTrigger::TRIGGER_TYPE => {
-                    let mqtt_trigger =
-                        build_trigger::<MqttTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin mqtt trigger");
-                    mqtt_trigger.run(trigger_mqtt::CliArgs { test: false })
+                MQTT_TRIGGER_TYPE => {
+                    let cli_args = trigger_mqtt::CliArgs { test: false };
+                    trigger::run::<MqttTrigger>(cli_args, app, &loader).await?
                 }
                 _ => {
                     // This should never happen as we check for supported triggers in get_supported_triggers
@@ -216,6 +223,86 @@ impl SpinEngine {
 
         result
     }
+}
+
+/// Scrubs the locked app to only contain the given list of components
+/// Introspects the LockedApp to find and selectively retain the triggers that correspond to those components
+fn retain_components(locked_app: &mut LockedApp, retained_components: &[String]) -> Result<()> {
+    // Create a temporary app to access parsed component and trigger information
+    let tmp_app = spin_app::App::new("tmp", locked_app.clone());
+    validate_retained_components_exist(&tmp_app, retained_components)?;
+    validate_retained_components_service_chaining(&tmp_app, retained_components)?;
+    let (component_ids, trigger_ids): (HashSet<String>, HashSet<String>) = tmp_app
+        .triggers()
+        .filter_map(|t| match t.component() {
+            Ok(comp) if retained_components.contains(&comp.id().to_string()) => {
+                Some((comp.id().to_owned(), t.id().to_owned()))
+            }
+            _ => None,
+        })
+        .collect();
+    locked_app
+        .components
+        .retain(|c| component_ids.contains(&c.id));
+    locked_app.triggers.retain(|t| trigger_ids.contains(&t.id));
+    Ok(())
+}
+
+/// Validates that all service chaining of an app will be satisfied by the
+/// retained components.
+///
+/// This does a best effort look up of components that are
+/// allowed to be accessed through service chaining and will error early if a
+/// component is configured to to chain to another component that is not
+/// retained. All wildcard service chaining is disallowed and all templated URLs
+/// are ignored.
+fn validate_retained_components_service_chaining(
+    app: &spin_app::App,
+    retained_components: &[String],
+) -> Result<()> {
+    app
+        .triggers().try_for_each(|t| {
+            let Ok(component) = t.component() else  { return Ok(()) };
+            if retained_components.contains(&component.id().to_string()) {
+            let allowed_hosts = allowed_outbound_hosts(&component).context("failed to get allowed hosts")?;
+            for host in allowed_hosts {
+                // Templated URLs are not yet resolved at this point, so ignore unresolvable URIs
+                if let Ok(uri) = host.parse::<http::Uri>() {
+                    if let Some(chaining_target) = parse_service_chaining_target(&uri) {
+                        if !retained_components.contains(&chaining_target) {
+                            if chaining_target == "*" {
+                                bail!("Component selected with '--component {}' cannot use wildcard service chaining: allowed_outbound_hosts = [\"http://*.spin.internal\"]", component.id());
+                            }
+                            bail!(
+                                "Component selected with '--component {}' cannot use service chaining to unselected component: allowed_outbound_hosts = [\"http://{}.spin.internal\"]",
+                                component.id(), chaining_target
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        anyhow::Ok(())
+    })?;
+
+    Ok(())
+}
+
+/// Validates that all components specified to be retained actually exist in the app
+fn validate_retained_components_exist(
+    app: &spin_app::App,
+    retained_components: &[String],
+) -> Result<()> {
+    let app_components = app
+        .components()
+        .map(|c| c.id().to_string())
+        .collect::<HashSet<_>>();
+    for c in retained_components {
+        if !app_components.contains(c) {
+            bail!("Specified component \"{c}\" not found in application");
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]
