@@ -368,7 +368,7 @@ dependencies = [
 
 [[package]]
 name = "spin-outbound-redis"
-version = "0.13.1"
+version = "0.16.0"
 dependencies = [
  "anyhow",
  "bytes",

@@ -10,7 +10,6 @@ following:
 1. Change all references of the version number in package
    
    * [Cargo.toml](./Cargo.toml), 
-   * crate [Cargo.toml](./containerd-shim-spin/Cargo.toml),
    * [quickstart](./containerd-shim-spin/quickstart.md), 
    * [README](./README.md),
    * [deployments](./deployments/), 
