@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - Added MQTT trigger and tests ([#175](https://github.com/spinkube/containerd-shim-spin/pull/175))
-- Make container environment bariables accessible as application variables ([#149](https://github.com/spinkube/containerd-shim-spin/pull/149))
+- Make container environment variables accessible as application variables ([#149](https://github.com/spinkube/containerd-shim-spin/pull/149))
 - Added feature to conditionally restart the k0s controller service when present during node installation. ([#167](https://github.com/spinkube/containerd-shim-spin/pull/167))
 
 ### Changed
