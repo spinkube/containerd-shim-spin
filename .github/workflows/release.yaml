@@ -71,7 +71,7 @@ jobs:
             --verify-tag
             $PRERELEASE_ARGS \
             _dist/runtime.yaml#example-runtimes \
-            _dist/workload.yaml#example-workloads \
+            _dist/workload.yaml#example-workloads
 
           for f in ./_artifacts/*/*.tar.gz; do gh release upload ${{ env.RELEASE_VERSION }} $f; done
 
