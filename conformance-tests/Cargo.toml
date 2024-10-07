@@ -11,5 +11,5 @@ homepage.workspace = true
 anyhow = "1.0"
 conformance-tests = { git = "https://github.com/fermyon/conformance-tests", ref = "db0ee32a825561d35f884a246e1d390134d78823"  }
 log = "0.4"
-nix = "0.28"
+nix = "0.29"
 test-environment = { git = "https://github.com/fermyon/conformance-tests", ref = "db0ee32a825561d35f884a246e1d390134d78823" }
