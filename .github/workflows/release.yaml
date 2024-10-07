@@ -47,30 +47,13 @@ jobs:
           mkdir -p _dist
           cp ./deployments/workloads/runtime.yaml _dist/runtime.yaml
           cp ./deployments/workloads/workload.yaml _dist/workload.yaml
-      
-      - name: extract changelog
-        run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          cd $GITHUB_WORKSPACE
-          ./scripts/extract-changelog.sh $TAG_NAME > RELEASE_NOTES.md
-          cat RELEASE_NOTES.md
   
       - name: create release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          if [[ "$TAG_NAME" =~ .+-pre.* ]]; then
-            PRERELEASE_ARGS="--prerelease --latest=false"
-          else
-            PRERELEASE_ARGS=""
-          fi
           gh release create ${{ env.RELEASE_VERSION }} \
-            --notes-file RELEASE_NOTES.md \
-            --title ${{ env.RELEASE_VERSION }} \
-            --verify-tag
-            $PRERELEASE_ARGS \
             _dist/runtime.yaml#example-runtimes \
             _dist/workload.yaml#example-workloads \
 
