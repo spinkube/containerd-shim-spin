@@ -168,8 +168,10 @@ impl SpinEngine {
 
         let mut futures_list = Vec::new();
         let mut trigger_type_map = Vec::new();
+        // The `HOSTNAME` environment variable should contain the fully unique container name
+        let app_id = std::env::var("HOSTNAME").unwrap_or_else(|_| "unknown".into());
         for trigger_type in trigger_types.iter() {
-            let app = spin_app::App::new("TODO", app.clone());
+            let app = spin_app::App::new(&app_id, app.clone());
             let f = match trigger_type.as_str() {
                 HTTP_TRIGGER_TYPE => {
                     let address_str = env::var(constants::SPIN_HTTP_LISTEN_ADDR_ENV)
