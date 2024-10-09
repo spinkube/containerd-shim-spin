@@ -7,7 +7,6 @@ use containerd_shim_wasm::{
 mod constants;
 mod engine;
 mod source;
-mod stdio_hook;
 mod trigger;
 mod utils;
 

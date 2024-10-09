@@ -13,7 +13,7 @@ use containerd_shim_wasm::{
 use futures::future;
 use log::info;
 use spin_app::locked::LockedApp;
-use spin_trigger::TriggerExecutor;
+use spin_trigger::cli::NoCliArgs;
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
 use tokio::runtime::Runtime;
@@ -24,7 +24,10 @@ use trigger_sqs::SqsTrigger;
 use crate::{
     constants,
     source::Source,
-    trigger::{build_trigger, get_supported_triggers},
+    trigger::{
+        self, get_supported_triggers, COMMAND_TRIGGER_TYPE, HTTP_TRIGGER_TYPE, MQTT_TRIGGER_TYPE,
+        REDIS_TRIGGER_TYPE, SQS_TRIGGER_TYPE,
+    },
     utils::{
         configure_application_variables_from_environment_variables, initialize_cache,
         is_wasm_content, parse_addr,
@@ -150,49 +153,48 @@ impl SpinEngine {
         app: LockedApp,
         app_source: Source,
     ) -> Result<()> {
+        let mut loader = spin_trigger::loader::ComponentLoader::default();
+        match app_source {
+            Source::Oci => unsafe {
+                // Configure the loader to support loading AOT compiled components..
+                // Since all components were compiled by the shim (during `precompile`),
+                // this operation can be considered safe.
+                loader.enable_loading_aot_compiled_components();
+            },
+            // Currently, it is only possible to precompile applications distributed using
+            // `spin registry push`
+            Source::File(_) => {}
+        };
+
         let mut futures_list = Vec::new();
         let mut trigger_type_map = Vec::new();
-
+        // The `HOSTNAME` environment variable should contain the fully unique container name
+        let app_id = std::env::var("HOSTNAME").unwrap_or_else(|_| "unknown".into());
         for trigger_type in trigger_types.iter() {
+            let app = spin_app::App::new(&app_id, app.clone());
             let f = match trigger_type.as_str() {
-                HttpTrigger::TRIGGER_TYPE => {
-                    let http_trigger =
-                        build_trigger::<HttpTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin http trigger");
+                HTTP_TRIGGER_TYPE => {
                     let address_str = env::var(constants::SPIN_HTTP_LISTEN_ADDR_ENV)
                         .unwrap_or_else(|_| constants::SPIN_ADDR_DEFAULT.to_string());
                     let address = parse_addr(&address_str)?;
-                    http_trigger.run(spin_trigger_http::CliArgs {
+                    let cli_args = spin_trigger_http::CliArgs {
                         address,
                         tls_cert: None,
                         tls_key: None,
-                    })
+                    };
+                    trigger::run::<HttpTrigger>(cli_args, app, &loader).await?
                 }
-                RedisTrigger::TRIGGER_TYPE => {
-                    let redis_trigger =
-                        build_trigger::<RedisTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin redis trigger");
-                    redis_trigger.run(spin_trigger::cli::NoArgs)
-                }
-                SqsTrigger::TRIGGER_TYPE => {
-                    let sqs_trigger =
-                        build_trigger::<SqsTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin sqs trigger");
-                    sqs_trigger.run(spin_trigger::cli::NoArgs)
-                }
-                CommandTrigger::TRIGGER_TYPE => {
-                    let command_trigger =
-                        build_trigger::<CommandTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin command trigger");
-                    command_trigger.run(trigger_command::CliArgs {
+                REDIS_TRIGGER_TYPE => trigger::run::<RedisTrigger>(NoCliArgs, app, &loader).await?,
+                SQS_TRIGGER_TYPE => trigger::run::<SqsTrigger>(NoCliArgs, app, &loader).await?,
+                COMMAND_TRIGGER_TYPE => {
+                    let cli_args = trigger_command::CliArgs {
                         guest_args: ctx.args().to_vec(),
-                    })
+                    };
+                    trigger::run::<CommandTrigger>(cli_args, app, &loader).await?
                 }
-                MqttTrigger::TRIGGER_TYPE => {
-                    let mqtt_trigger =
-                        build_trigger::<MqttTrigger>(app.clone(), app_source.clone()).await?;
-                    info!(" >>> running spin mqtt trigger");
-                    mqtt_trigger.run(trigger_mqtt::CliArgs { test: false })
+                MQTT_TRIGGER_TYPE => {
+                    let cli_args = trigger_mqtt::CliArgs { test: false };
+                    trigger::run::<MqttTrigger>(cli_args, app, &loader).await?
                 }
                 _ => {
                     // This should never happen as we check for supported triggers in get_supported_triggers
