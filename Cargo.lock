@@ -8428,7 +8428,7 @@ dependencies = [
 [[package]]
 name = "trigger-mqtt"
 version = "0.2.0"
-source = "git+https://github.com/spinkube/spin-trigger-mqtt?rev=4c76e52dc5d3e7961c7b4d4933543c1adb2778cf#4c76e52dc5d3e7961c7b4d4933543c1adb2778cf"
+source = "git+https://github.com/spinkube/spin-trigger-mqtt?rev=083959eb48e8705e7a4f3790e4958be798d8fcb3#083959eb48e8705e7a4f3790e4958be798d8fcb3"
 dependencies = [
  "anyhow",
  "clap 3.2.25",
