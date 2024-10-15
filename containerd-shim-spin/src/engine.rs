@@ -136,7 +136,13 @@ impl SpinEngine {
     async fn wasm_exec_async(&self, ctx: &impl RuntimeContext) -> Result<()> {
         let cache = initialize_cache().await?;
         let app_source = Source::from_ctx(ctx, &cache).await?;
-        let locked_app = app_source.to_locked_app(&cache).await?;
+        let mut locked_app = app_source.to_locked_app(&cache).await?;
+        let components_to_execute = env::var(constants::SPIN_COMPONENTS_TO_RETAIN_ENV)
+            .ok()
+            .map(|s| s.split(',').map(|s| s.to_string()).collect::<Vec<String>>());
+        if let Some(components) = components_to_execute {
+            crate::retain::retain_components(&mut locked_app, &components)?;
+        }
         configure_application_variables_from_environment_variables(&locked_app)?;
         let trigger_cmds = get_supported_triggers(&locked_app)
             .with_context(|| format!("Couldn't find trigger executor for {app_source:?}"))?;
