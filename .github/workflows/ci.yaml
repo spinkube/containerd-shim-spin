@@ -46,7 +46,7 @@ jobs:
       - uses: azure/setup-kubectl@v4
       - uses: fermyon/actions/spin/setup@v1
         with:
-          version: "v2.4.2"
+          version: "v2.7.0"
 
       - name: Setup build env
         run: |
