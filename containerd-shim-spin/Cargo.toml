@@ -11,8 +11,8 @@ Containerd shim for running Spin workloads.
 """
 
 [dependencies]
-containerd-shim-wasm = "0.6.0"
-containerd-shim = "0.7.1"
+containerd-shim-wasm = "0.7.0"
+containerd-shim = "0.7.4"
 http = "1"
 log = "0.4"
 spin-app = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
