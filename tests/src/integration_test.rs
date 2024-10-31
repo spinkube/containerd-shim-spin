@@ -135,16 +135,16 @@ mod test {
             anyhow::bail!("kubectl is not installed");
         }
 
-        // Port forward the emqx mqtt broker
-        let forward_port = port_forward_emqx(mqtt_port).await?;
-
-        // Publish a message to the emqx broker
-        let mut mqttoptions = rumqttc::MqttOptions::new("123", "127.0.0.1", forward_port);
+        // Publish a message to the MQTT broker
+        let mut mqttoptions = rumqttc::MqttOptions::new("123", "test.mosquitto.org", mqtt_port);
         mqttoptions.set_keep_alive(std::time::Duration::from_secs(1));
 
         let (client, mut eventloop) = rumqttc::AsyncClient::new(mqttoptions, 10);
         client
-            .subscribe("hello", rumqttc::QoS::AtMostOnce)
+            .subscribe(
+                "containerd-shim-spin/mqtt-test-17h24d",
+                rumqttc::QoS::AtMostOnce,
+            )
             .await
             .unwrap();
 
@@ -153,7 +153,7 @@ mod test {
             for _i in 0..iterations {
                 client
                     .publish(
-                        "hello",
+                        "containerd-shim-spin/mqtt-test-17h24d",
                         rumqttc::QoS::AtLeastOnce,
                         false,
                         message.as_bytes(),
@@ -222,20 +222,6 @@ mod test {
             .arg("port-forward")
             .arg("redis")
             .arg(format!("{}:{}", port, redis_port))
-            .spawn()?;
-        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
-        Ok(port)
-    }
-
-    async fn port_forward_emqx(emqx_port: u16) -> Result<u16> {
-        let port = get_random_port()?;
-
-        println!(" >>> kubectl portforward emqx {}:{} ", port, emqx_port);
-
-        Command::new("kubectl")
-            .arg("port-forward")
-            .arg("emqx")
-            .arg(format!("{}:{}", port, emqx_port))
             .spawn()?;
         tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
         Ok(port)
