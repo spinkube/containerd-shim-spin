@@ -12,6 +12,8 @@ fi
 # apply the workloads
 echo ">>> apply workloads"
 kubectl apply -f tests/workloads-common
+# wait for all the pods to be ready
+kubectl wait --for=condition=ready --timeout=120s pod --all
 
 if [ "$1" == "workloads-pushed-using-spin-registry-push" ]; then
     echo "deploying spin apps pushed to registry using 'spin registry push' command"
