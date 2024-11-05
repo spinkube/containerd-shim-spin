@@ -21,3 +21,5 @@ pub(crate) const SPIN_TRIGGER_WORKING_DIR: &str = "/";
 /// Defines the subset of application components that should be executable by the shim
 /// If empty or DNE, all components will be supported
 pub(crate) const SPIN_COMPONENTS_TO_RETAIN_ENV: &str = "SPIN_COMPONENTS_TO_RETAIN";
+/// The default state directory for the triggers.
+pub(crate) const SPIN_DEFAULT_STATE_DIR: &str = ".spin";

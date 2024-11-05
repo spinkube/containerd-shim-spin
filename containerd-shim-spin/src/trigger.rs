@@ -1,10 +1,15 @@
-use std::{collections::HashSet, future::Future, path::Path, pin::Pin};
+use std::{
+    collections::HashSet,
+    future::Future,
+    path::{Path, PathBuf},
+    pin::Pin,
+};
 
 use log::info;
 use spin_app::{locked::LockedApp, App};
 use spin_runtime_factors::{FactorsBuilder, TriggerFactors};
 use spin_trigger::{
-    cli::{FactorsConfig, TriggerAppBuilder},
+    cli::{FactorsConfig, TriggerAppBuilder, UserProvidedPath},
     loader::ComponentLoader,
     Trigger,
 };
@@ -14,7 +19,7 @@ use trigger_command::CommandTrigger;
 use trigger_mqtt::MqttTrigger;
 use trigger_sqs::SqsTrigger;
 
-use crate::constants::{RUNTIME_CONFIG_PATH, SPIN_TRIGGER_WORKING_DIR};
+use crate::constants::{RUNTIME_CONFIG_PATH, SPIN_DEFAULT_STATE_DIR, SPIN_TRIGGER_WORKING_DIR};
 
 pub(crate) const HTTP_TRIGGER_TYPE: &str = <HttpTrigger as Trigger<TriggerFactors>>::TYPE;
 pub(crate) const REDIS_TRIGGER_TYPE: &str = <RedisTrigger as Trigger<TriggerFactors>>::TYPE;
@@ -47,9 +52,16 @@ fn factors_config() -> FactorsConfig {
     let runtime_config_file = Path::new(RUNTIME_CONFIG_PATH)
         .exists()
         .then(|| RUNTIME_CONFIG_PATH.into());
+    // Configure the application state directory path. This is used in the default
+    // locations for logs, key value stores, etc.
+    let state_dir = PathBuf::from(SPIN_TRIGGER_WORKING_DIR).join(SPIN_DEFAULT_STATE_DIR);
     FactorsConfig {
         working_dir: SPIN_TRIGGER_WORKING_DIR.into(),
         runtime_config_file,
+        state_dir: UserProvidedPath::Provided(state_dir),
+        // Explicitly do not set log dir in order to force logs to be displayed to stdout.
+        // Otherwise, would default to the state directory.
+        log_dir: UserProvidedPath::Unset,
         ..Default::default()
     }
 }
