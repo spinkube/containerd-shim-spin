@@ -1,12 +1,12 @@
-FROM --platform=${BUILDPLATFORM} rust:1.71 AS build
+FROM --platform=${BUILDPLATFORM} rust:1.79 AS build
 WORKDIR /opt/build
 COPY . .
 RUN rustup target add wasm32-wasi && cargo build --target wasm32-wasi --release
 
-FROM --platform=linux/amd64 golang:1.21.3-bullseye AS build-go
+FROM --platform=linux/amd64 golang:1.23.2-bullseye AS build-go
 WORKDIR /opt/build
 COPY . .
-RUN curl -LO https://github.com/tinygo-org/tinygo/releases/download/v0.30.0/tinygo_0.30.0_amd64.deb && dpkg -i tinygo_0.30.0_amd64.deb
+RUN curl -LO https://github.com/tinygo-org/tinygo/releases/download/v0.34.0/tinygo_0.34.0_amd64.deb && dpkg -i tinygo_0.34.0_amd64.deb
 RUN cd go-hello && tinygo build -target=wasi -o spin_go_hello.wasm main.go
 
 FROM scratch

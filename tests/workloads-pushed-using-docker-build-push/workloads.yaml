@@ -284,11 +284,10 @@ spec:
         - containerPort: 80
         env:
         - name: SPIN_VARIABLE_MQTT_TOPIC
-          value: hello
+          value: containerd-shim-spin/mqtt-test-17h24d
         # The MQTT trigger cannot do DNS resolution, so we need to use the IP address of the MQTT broker
-        # Substitute `EMQX_CLUSTER_IP` with the result of `kubectl get svc emqx -n default -o jsonpath='{.spec.clusterIP}'`
         - name: SPIN_VARIABLE_MQTT_BROKER_URI
-          value: "mqtt://EMQX_CLUSTER_IP:1883"
+          value: "mqtt://test.mosquitto.org"
 ---
 apiVersion: v1
 kind: Service
