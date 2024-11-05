@@ -45,6 +45,10 @@ impl Default for SpinEngine {
         // turned on for the components we compile.
         let mut config = wasmtime::Config::default();
         config.epoch_interruption(true);
+        // Turn off native unwinding to avoid faulty libunwind detection error
+        // TODO: This can be removed once the Wasmtime fix is brought into Spin
+        // Issue to track: https://github.com/fermyon/spin/issues/2889
+        config.native_unwind_info(false);
         Self {
             wasmtime_engine: wasmtime::Engine::new(&config).unwrap(),
         }
