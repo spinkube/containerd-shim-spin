@@ -12,6 +12,7 @@ else
 VERBOSE_FLAG := -vvv
 endif
 
+IS_CI ?= false
 BIN_DIR ?= 
 
 UNAME_S := $(shell uname -s)
@@ -51,6 +52,9 @@ unit-tests: build
 # integration-tests
 integration-tests: prepare-cluster-and-images integration-docker-build-push-tests integration-spin-registry-push-tests
 	echo "Integration tests complete. You may run 'make tests/clean' to clean up the test environment."
+
+free-disk:
+	./scripts/free-disk.sh
 
 # integration-tests for workloads pushed using docker build push
 integration-docker-build-push-tests:
@@ -126,7 +130,7 @@ deploy-workloads-pushed-using-spin-registry-push:
 pod-terminates-test:
 	./scripts/pod-terminates-test.sh
 
-prepare-cluster-and-images: check-bins move-bins up pod-status-check
+prepare-cluster-and-images: check-bins move-bins up free-disk pod-status-check
 
 # clean
 

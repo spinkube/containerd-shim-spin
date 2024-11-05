@@ -63,7 +63,7 @@ jobs:
         run: make install-k3d
 
       - name: run integration tests
-        run: BIN_DIR="./bin" make integration-tests
+        run: BIN_DIR="./bin" IS_CI=true make integration-tests
 
       - name: run collect debug logs
         if: failure()
@@ -76,7 +76,9 @@ jobs:
           name: debug-logs
           path: debug-logs/
           retention-days: 5
-
+      - name: Output runner storage on failure
+        if: failure()
+        run: df -h
       - name: clean up k3d
         if: always()
         run: make tests/clean
