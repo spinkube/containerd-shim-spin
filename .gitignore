@@ -10,5 +10,3 @@ target/
 .tmp
 
 test/*
-
-.vscode/*
