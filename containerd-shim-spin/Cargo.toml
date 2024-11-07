@@ -15,7 +15,7 @@ containerd-shim-wasm = "0.6.0"
 containerd-shim = "0.7.1"
 http = "1"
 log = "0.4"
-spin-app = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
+spin-app = { git = "https://github.com/fermyon/spin", rev = "d814705824529896571dd70eccf0ab235c6d269c" }
 spin-core = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-componentize = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 # Enable loading components precompiled by the shim
@@ -36,7 +36,7 @@ spin-factors-executor = { git = "https://github.com/fermyon/spin", rev = "485b04
 spin-telemetry = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-runtime-factors = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
 spin-factors = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
-spin-factor-outbound-networking = { git = "https://github.com/fermyon/spin", rev = "485b04090644ecfda4d0034891a5feca9a90332c" }
+spin-factor-outbound-networking = { git = "https://github.com/fermyon/spin", rev = "d814705824529896571dd70eccf0ab235c6d269c" }
 wasmtime = "22.0"
 tokio = { version = "1", features = ["rt"] }
 openssl = { version = "*", features = ["vendored"] }
