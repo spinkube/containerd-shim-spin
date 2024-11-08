@@ -7,16 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - Added component filtering based on env var `SPIN_COMPONENTS_TO_RETAIN` ([#197](https://github.com/spinkube/containerd-shim-spin/pull/197))
+- Improved error hanlding in selective deployment ([#229](https://github.com/spinkube/containerd-shim-spin/pull/229))
 
 ### Changed
 
 - Turn off native unwinding from Wasmtime Config to avoid faulty libunwind detection errors ([#215](https://github.com/spinkube/containerd-shim-spin/pull/215))
+- Updated the spin version to v3.0.0 ([#230](https://github.com/spinkube/containerd-shim-spin/pull/230))
 
 ### Fixed
 
 - Fixed [#216](https://github.com/spinkube/containerd-shim-spin/issues/216): Spin state dir not being created
 - FIxed CI errors due to old versions of Go and TinyGo and disk pressure ([#217](https://github.com/spinkube/containerd-shim-spin/pull/217))
-
 
 
 ## [v0.16.0](https://github.com/spinkube/containerd-shim-spin/releases/tag/v0.16.0) - 2024-10-04
