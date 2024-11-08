@@ -2,7 +2,7 @@
 name = "spin-http-trigger"
 authors = ["Rajat Jindal <rajatjindal83@gmail.com>"]
 description = ""
-version = "0.16.0"
+version = "0.17.0"
 edition = "2021"
 
 [lib]
