@@ -145,7 +145,10 @@ impl SpinEngine {
             .ok()
             .map(|s| s.split(',').map(|s| s.to_string()).collect::<Vec<String>>());
         if let Some(components) = components_to_execute {
-            crate::retain::retain_components(&mut locked_app, &components)?;
+            if let Err(e) = crate::retain::retain_components(&mut locked_app, &components) {
+                println!("Error with selective deployment: {:?}", e);
+                return Err(e);
+            }
         }
         configure_application_variables_from_environment_variables(&locked_app)?;
         let trigger_cmds = get_supported_triggers(&locked_app)
