@@ -60,7 +60,16 @@ To carry out the installation step-by-step, do the following:
 
     Install a [release of the shim](https://github.com/spinkube/containerd-shim-spin/releases) on the `PATH` of your Kubernetes worker nodes. For example, copy `containerd-shim-spin-v2` to `/bin`. Shims are additive, so once the `containerd-shim-spin` is installed on a Node, it can support Spin WebAssembly apps alongside Linux containers.
 
-2. Add the following to the containerd config.toml that maps the runtime type to the shim binary from step 1.
+2. Add the following to the containerd `config.toml` that maps the runtime type to the shim binary from step 1.
+
+    If you are using containerd 2 or later, add:
+
+    ```toml
+    [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.spin]
+    runtime_type = "io.containerd.spin.v2"
+    ```
+
+    Otherwise, add:
 
     ```toml
     [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
