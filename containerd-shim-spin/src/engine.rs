@@ -64,10 +64,13 @@ impl Engine for SpinEngine {
         stdio.redirect()?;
 
         // Set the container environment variables which will be collected by Spin's
-        // [environment variable provider].
+        // [environment variable provider]. We use these variables to configure both the Spin runtime
+        // and the Spin application per the [SKIP 003] proposal.
+        //
         // TODO: This is a temporary solution to allow Spin to collect the container environment variables.
         // We should later look into other variable providers to collect container variables.
         //
+        // [SKIP 003]: https://github.com/spinkube/skips/tree/main/proposals/003-shim-runtime-options
         // [environment variable provider]: https://github.com/fermyon/spin/blob/v3.0.0/crates/variables/src/env.rs
         ctx.envs().iter().for_each(|v| {
             let (key, value) = v.split_once('=').unwrap_or((v.as_str(), ""));
