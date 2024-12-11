@@ -1,15 +1,54 @@
 #[cfg(test)]
 mod test {
-    use std::{thread, time};
+    use std::{
+        process::Command,
+        thread,
+        time::{self, Duration},
+    };
 
     use anyhow::{Context, Result};
+    use curl::easy::Easy;
     use redis::AsyncCommands;
-    use tokio::process::Command;
-
-    use crate::retry_get;
 
     const RETRY_TIMES: u32 = 5;
     const INTERVAL_IN_SECS: u64 = 10;
+
+    pub async fn retry_get(url: &str, retry_times: u32, interval_in_secs: u64) -> Result<Vec<u8>> {
+        let mut i = 0;
+        let mut handle = Easy::new();
+        handle.url(url)?;
+        let mut buf = Vec::new();
+        loop {
+            let res = {
+                let mut transfer = handle.transfer();
+                transfer.write_function(|data| {
+                    buf.extend_from_slice(data);
+                    Ok(data.len())
+                })?;
+                transfer.perform()
+            };
+            let response_code = handle.response_code()?;
+            // verify res is ok and not 404
+            match res {
+                Ok(_) => {
+                    println!("response_code: {}", response_code);
+                    if response_code / 100 == 2 {
+                        break; // 2xx response
+                    }
+                }
+                Err(e) => {
+                    println!("res: {}, response_code: {}", e, response_code);
+                }
+            }
+            i += 1;
+            if i == retry_times {
+                anyhow::bail!("failed to curl for {}", url);
+            }
+            buf = Vec::new();
+            tokio::time::sleep(Duration::from_secs(interval_in_secs)).await;
+        }
+        Ok(buf)
+    }
 
     #[tokio::test]
     async fn spin_test() -> Result<()> {
@@ -201,7 +240,7 @@ mod test {
     }
 
     async fn is_kubectl_installed() -> anyhow::Result<bool> {
-        let output: Result<std::process::Output, std::io::Error> = Command::new("kubectl")
+        let output: Result<std::process::Output, std::io::Error> = tokio::process::Command::new("kubectl")
             .arg("version")
             .arg("--client")
             .output()
@@ -228,7 +267,7 @@ mod test {
     }
 
     async fn get_logs_by_label(label: &str) -> Result<String> {
-        let output = Command::new("kubectl")
+        let output = tokio::process::Command::new("kubectl")
             .arg("logs")
             .arg("-l")
             .arg(label)
