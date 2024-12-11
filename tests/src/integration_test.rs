@@ -240,11 +240,12 @@ mod test {
     }
 
     async fn is_kubectl_installed() -> anyhow::Result<bool> {
-        let output: Result<std::process::Output, std::io::Error> = tokio::process::Command::new("kubectl")
-            .arg("version")
-            .arg("--client")
-            .output()
-            .await;
+        let output: Result<std::process::Output, std::io::Error> =
+            tokio::process::Command::new("kubectl")
+                .arg("version")
+                .arg("--client")
+                .output()
+                .await;
 
         match output {
             Ok(output) => Ok(output.status.success()),
