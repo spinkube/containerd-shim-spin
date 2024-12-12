@@ -12,29 +12,16 @@ env:
   CARGO_TERM_COLOR: always
 jobs:
   rustfmt:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            "containerd-shim-* -> target"
-      - run: 
-          rustup toolchain install nightly --component rustfmt
-      - name: Setup build env
-        run: |
-          make setup
-      - name: fmt
-        run: |
-          make fmt
+    uses: ./.github/workflows/action-check.yml
+  build:
+    uses: ./.github/workflows/action-build.yaml
   build-wasm-images:
-    uses: ./.github/workflows/docker-build-push.yaml
+    uses: ./.github/workflows/action-docker-build-push.yaml
+    needs: build
     with:
       test: true
-  build:
-    uses: ./.github/workflows/build.yaml
   publish-node-installer-image:
-    uses: ./.github/workflows/node-installer.yaml
+    uses: ./.github/workflows/action-node-installer.yaml
     needs: build
     # This action requires use of the GITHUB_TOKEN to publish the image
     # By default, PRs from forks don't have access, so we only run when the PR branch is on origin.
@@ -43,48 +30,4 @@ jobs:
       ref: ${{ github.ref }}
   test:
     needs: build
-    runs-on: ubuntu-latest
-    env:
-      ARCH: x86_64
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-      - uses: azure/setup-kubectl@v4
-      - uses: fermyon/actions/spin/setup@v1
-        with:
-          version: "v2.7.0"
-
-      - name: Setup build env
-        run: |
-          make setup
-
-      - name: Extract containerd-shim-spin-linux-${{ env.ARCH }}
-        run: |
-          mkdir -p ./bin
-          for f in containerd-shim-spin-*-linux-${{ env.ARCH }}/containerd-shim-spin-*-linux-${{ env.ARCH }}.tar.gz
-            do tar -xzf "$f" -C ./bin
-          done
-
-      - name: install k3d
-        run: make install-k3d
-
-      - name: run integration tests
-        run: BIN_DIR="./bin" IS_CI=true make integration-tests
-
-      - name: run collect debug logs
-        if: failure()
-        run: make tests/collect-debug-logs
- 
-      - name: upload debug logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-logs
-          path: debug-logs/
-          retention-days: 5
-      - name: Output runner storage on failure
-        if: failure()
-        run: df -h
-      - name: clean up k3d
-        if: always()
-        run: make tests/clean
+    uses: ./.github/workflows/action-test.yml
