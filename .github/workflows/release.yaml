@@ -7,15 +7,15 @@ on:
       - "v[0-9]+.[0-9]+.*"
 jobs:
   build:
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/action-build.yaml
 
   build-and-push-wasm-images:
-    uses: ./.github/workflows/docker-build-push.yaml
+    uses: ./.github/workflows/action-docker-build-push.yaml
     with:
       test: false
 
   publish-node-installer-image:
-    uses: ./.github/workflows/node-installer.yaml
+    uses: ./.github/workflows/action-node-installer.yaml
     needs: build
     with:
       ref: ${{ github.ref }}

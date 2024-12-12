@@ -1,0 +1,51 @@
+name: Run Check
+
+on:
+  workflow_call:
+    runs-on: ubuntu-latest
+    env:
+      ARCH: x86_64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+      - uses: azure/setup-kubectl@v4
+      - uses: fermyon/actions/spin/setup@v1
+        with:
+          version: "v2.7.0"
+
+      - name: Setup build env
+        run: |
+          make setup
+
+      - name: Extract containerd-shim-spin-linux-${{ env.ARCH }}
+        run: |
+          mkdir -p ./bin
+          for f in containerd-shim-spin-*-linux-${{ env.ARCH }}/containerd-shim-spin-*-linux-${{ env.ARCH }}.tar.gz
+            do tar -xzf "$f" -C ./bin
+          done
+
+      - name: install k3d
+        run: make install-k3d
+
+      - name: run integration tests
+        run: BIN_DIR="./bin" IS_CI=true make integration-tests
+
+      - name: run collect debug logs
+        if: failure()
+        run: make tests/collect-debug-logs
+ 
+      - name: upload debug logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-logs
+          path: debug-logs/
+          retention-days: 5
+
+      - name: Output runner storage on failure
+        if: failure()
+        run: df -h
+
+      - name: clean up k3d
+        if: always()
+        run: make tests/clean
