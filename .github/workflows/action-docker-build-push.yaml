@@ -6,6 +6,7 @@ on:
         description: 'Is this a test run?'
         type: boolean
         required: true
+
 jobs:
   build_and_push:
     permissions:
@@ -32,21 +33,21 @@ jobs:
           echo "RUNNER_OS=$OS" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      - name: setup buildx
+      - name: Setup buildx
         uses: docker/setup-buildx-action@v3
-      - name: login to GitHub container registry
+      - name: Login to GitHub container registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: enable containerd image store
+      - name: Enable containerd image store
         run: |
           echo '{ "features": { "containerd-snapshotter": true } }' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
       
-      - name: test
+      - name: Build and load (test run)
         uses: docker/build-push-action@v5
         if: ${{ inputs.test }}
         with:
@@ -54,7 +55,7 @@ jobs:
           load: true
           tags: containerd-shim-spin/${{ matrix.image.imageName }}:test
           platforms: wasi/wasm
-      - name: build and push
+      - name: Build and push
         uses: docker/build-push-action@v5
         if: ${{ !inputs.test }}
         with:
