@@ -2,6 +2,9 @@ name: Run Check
 
 on:
   workflow_call:
+
+jobs:
+  test:
     runs-on: ubuntu-latest
     env:
       ARCH: x86_64
