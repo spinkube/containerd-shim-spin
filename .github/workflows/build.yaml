@@ -21,10 +21,9 @@ jobs:
       ARCH: ${{ matrix.config.arch }}
     steps:
       - uses: actions/checkout@v4
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            "containerd-shim-* -> target"
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        env:
+          RUST_CACHE_KEY_OS: rust-cache-${{ matrix.config.os }}-{{ matrix.config.arch}}
       - name: Setup build env
         run: |
           make setup
