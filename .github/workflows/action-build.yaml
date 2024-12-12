@@ -27,24 +27,24 @@ jobs:
       - name: Setup build env
         run: |
           make setup
-      - name: build spin shim
+      - name: Build spin shim
         run: |
           VERBOSE=1 make build
-      - name: unit tests spin shim
+      - name: Run unit tests spin shim
         run: |
           VERBOSE=1 make unit-tests
-      - name: lowercase the runner OS name
+      - name: Lowercase the runner OS name
         shell: bash
         run: |
           OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
           echo "RUNNER_OS=$OS" >> $GITHUB_ENV
-      - name: package release assets
+      - name: Package release assets
         run: |
           mkdir _dist
           cp target/${{ matrix.config.arch }}-unknown-linux-musl/release/containerd-shim-spin-v2 _dist/
           cd _dist
           tar czf containerd-shim-spin-v2-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}.tar.gz containerd-shim-spin-v2
-      - name: upload shim artifacts
+      - name: Upload shim artifacts
         uses: actions/upload-artifact@v4
         with:
           name: containerd-shim-spin-v2-${{ env.RUNNER_OS }}-${{ matrix.config.arch }}

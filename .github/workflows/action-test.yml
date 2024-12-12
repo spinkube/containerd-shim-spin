@@ -27,17 +27,17 @@ jobs:
             do tar -xzf "$f" -C ./bin
           done
 
-      - name: install k3d
+      - name: Install k3d
         run: make install-k3d
 
-      - name: run integration tests
+      - name: Run integration tests
         run: BIN_DIR="./bin" IS_CI=true make integration-tests
 
-      - name: run collect debug logs
+      - name: Collect debug logs
         if: failure()
         run: make tests/collect-debug-logs
  
-      - name: upload debug logs
+      - name: Upload debug logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -49,6 +49,6 @@ jobs:
         if: failure()
         run: df -h
 
-      - name: clean up k3d
+      - name: Clean up k3d
         if: always()
         run: make tests/clean
