@@ -67,6 +67,22 @@ integration-spin-registry-push-tests:
 tests/collect-debug-logs:
 	./scripts/collect-debug-logs.sh 2>&1
 
+# test/k3s
+
+.PHONY: install-k3s, build-and-push-images
+install-k3s:
+	./tests/k3s/install-k3s.sh
+build-and-push-images:
+	./tests/k3s/build-and-push-images.sh
+
+.PHONY: test/k3s
+test/k3s: install-k3s build-and-push-images
+	kubectl apply -f tests/workloads-common
+	kubectl apply -f tests/k3s/workloads-pushed-using-spin-registry-push
+	make pod-terminates-test
+	SPIN_TEST_PORT=80 cargo test -p containerd-shim-spin-tests -- --nocapture
+	make teardown-workloads-k3s
+
 # fmt
 
 .PHONY: fmt fix
@@ -113,7 +129,7 @@ run-%: install load
 
 # deploy
 
-./PHONY: up move-bins deploy-workloads-pushed-using-docker-build-push deploy-workloads-pushed-using-spin-registry-push pod-terminates-test prepare-cluster-and-images
+.PHONY: up move-bins deploy-workloads-pushed-using-docker-build-push deploy-workloads-pushed-using-spin-registry-push pod-terminates-test prepare-cluster-and-images
 
 up:
 	./scripts/up.sh
@@ -134,9 +150,12 @@ prepare-cluster-and-images: check-bins move-bins up free-disk pod-status-check
 
 # clean
 
-./PHONY: teardown-workloads tests/clean
-teardown-workloads:
-	./scripts/teardown-workloads.sh
+.PHONY: teardown-workloads-k3d teardown-workloads-k3s tests/clean
+teardown-workloads-k3d:
+	./scripts/teardown-workloads.sh "k3d"
+teardown-workloads-k3s:
+	./scripts/teardown-workloads.sh "k3s"
+	docker container stop test-registry && docker container rm test-registry
 
 tests/clean:
 	./scripts/down.sh
