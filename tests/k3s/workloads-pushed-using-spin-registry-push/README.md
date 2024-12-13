@@ -1,0 +1,1 @@
+This folder has yaml file to apply workloads which are built using `spin build` and pushed to a registry, managed with k3d in CI, using `spin registry push` command.
