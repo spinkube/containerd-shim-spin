@@ -151,7 +151,8 @@ mod test {
             .context("connecting to redis")?;
         let mut con = client.get_multiplexed_async_connection().await?;
 
-        con.publish("testchannel", "some-payload").await?;
+        con.publish::<_, _, ()>("testchannel", "some-payload")
+            .await?;
 
         let one_sec = time::Duration::from_secs(1);
         thread::sleep(one_sec);
