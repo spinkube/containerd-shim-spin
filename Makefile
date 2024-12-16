@@ -71,7 +71,7 @@ tests/collect-debug-logs:
 
 .PHONY: install-k3s, build-and-push-images
 install-k3s:
-	./tests/k3s/install-k3s.sh
+	./scripts/install-k3s.sh
 build-and-push-images:
 	./tests/k3s/build-and-push-images.sh
 
