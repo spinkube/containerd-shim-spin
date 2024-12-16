@@ -1,0 +1,25 @@
+name: Run Check
+
+on:
+  workflow_call:
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt, clippy
+      - name: Install nightly rustfmt
+        run: 
+          rustup toolchain install nightly --component rustfmt
+      - name: Setup build env
+        run: |
+          make setup
+      - name: Run fmt
+        run: |
+          make fmt
