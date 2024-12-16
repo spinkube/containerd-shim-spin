@@ -73,7 +73,7 @@ tests/collect-debug-logs:
 install-k3s:
 	./scripts/install-k3s.sh
 build-and-push-images:
-	./tests/k3s/build-and-push-images.sh
+	./scripts/build-and-push-images.sh --spin
 
 .PHONY: test/k3s
 test/k3s: install-k3s build-and-push-images
@@ -132,7 +132,7 @@ run-%: install load
 .PHONY: up move-bins deploy-workloads-pushed-using-docker-build-push deploy-workloads-pushed-using-spin-registry-push pod-terminates-test prepare-cluster-and-images
 
 up:
-	./scripts/up.sh
+	./scripts/k3d-up.sh
 
 move-bins:
 	./scripts/move-bins.sh $(BIN_DIR)
