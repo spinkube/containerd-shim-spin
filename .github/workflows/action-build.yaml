@@ -22,8 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
-        env:
-          RUST_CACHE_KEY_OS: rust-cache-${{ matrix.config.os }}-{{ matrix.config.arch}}
+        with:
+          cache-key: rust-cache-${{ matrix.config.os }}-{{ matrix.config.arch}}
       - name: Setup build env
         run: |
           make setup
