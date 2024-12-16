@@ -50,6 +50,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-[Unreleased]: <https://github.com/spinkube/containerd-shim-spin/compare/v0.17.0s..HEAD>
+[Unreleased]: <https://github.com/spinkube/containerd-shim-spin/compare/v0.17.0..HEAD>
 [v0.17.0]: https://github.com/spinkube/containerd-shim-spin/compare/v0.16.0...v0.17.0
 [v0.16.0]: https://github.com/spinkube/containerd-shim-spin/compare/v0.15.1...v0.16.0
