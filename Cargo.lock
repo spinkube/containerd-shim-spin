@@ -1524,7 +1524,7 @@ dependencies = [
  "log",
  "mio 1.0.3",
  "nix 0.29.0",
- "oci-spec",
+ "oci-spec 0.6.8",
  "os_pipe",
  "page_size",
  "prctl",
@@ -1569,7 +1569,7 @@ dependencies = [
  "futures",
  "http 1.2.0",
  "log",
- "oci-spec",
+ "oci-spec 0.7.1",
  "openssl",
  "serde 1.0.216",
  "serde_json",
@@ -1620,7 +1620,7 @@ dependencies = [
  "libcontainer",
  "log",
  "nix 0.28.0",
- "oci-spec",
+ "oci-spec 0.6.8",
  "protobuf 3.2.0",
  "serde 1.0.216",
  "serde_json",
@@ -3728,7 +3728,7 @@ checksum = "ef6c844cd81f0e078bb07896a14fddcec9f9582833ce18f99c2d4c9b69081d53"
 dependencies = [
  "fixedbitset 0.5.7",
  "nix 0.28.0",
- "oci-spec",
+ "oci-spec 0.6.8",
  "procfs",
  "serde 1.0.216",
  "thiserror 1.0.69",
@@ -3751,7 +3751,7 @@ dependencies = [
  "libseccomp",
  "nc",
  "nix 0.28.0",
- "oci-spec",
+ "oci-spec 0.6.8",
  "once_cell",
  "prctl",
  "procfs",
@@ -4573,6 +4573,22 @@ dependencies = [
  "strum 0.26.3",
  "strum_macros 0.26.4",
  "thiserror 1.0.69",
+]
+
+[[package]]
+name = "oci-spec"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da406e58efe2eb5986a6139626d611ce426e5324a824133d76367c765cf0b882"
+dependencies = [
+ "derive_builder 0.20.2",
+ "getset",
+ "regex",
+ "serde 1.0.216",
+ "serde_json",
+ "strum 0.26.3",
+ "strum_macros 0.26.4",
+ "thiserror 2.0.6",
 ]
 
 [[package]]
