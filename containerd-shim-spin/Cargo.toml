@@ -31,7 +31,7 @@ spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
 spin-loader = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
 spin-oci = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
 spin-common = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
-spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
+spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v3.1.1" }
 spin-factors-executor = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
 spin-telemetry = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
 spin-runtime-factors = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
