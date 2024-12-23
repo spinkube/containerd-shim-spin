@@ -28,7 +28,7 @@ trigger-mqtt = { git = "https://github.com/spinkube/spin-trigger-mqtt", tag = "v
 trigger-sqs = { git = "https://github.com/fermyon/spin-trigger-sqs", tag = "v0.8.0" }
 trigger-command = { git = "https://github.com/fermyon/spin-trigger-command", tag = "v0.2.0" }
 spin-manifest = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
-spin-loader = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
+spin-loader = { git = "https://github.com/fermyon/spin", tag = "v3.1.1" }
 spin-oci = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
 spin-common = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
 spin-expressions = { git = "https://github.com/fermyon/spin", tag = "v3.0.0" }
