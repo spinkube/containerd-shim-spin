@@ -5,8 +5,6 @@ use std::{
 };
 
 use anyhow::{anyhow, Context, Result};
-use containerd_shim_wasm::sandbox::WasmLayer;
-use oci_spec::image::MediaType;
 use spin_app::locked::LockedApp;
 use spin_loader::cache::Cache;
 
@@ -41,16 +39,6 @@ pub(crate) async fn handle_archive_layer(
     }
 
     spin_oci::client::unpack_archive_layer(cache, bytes, digest).await
-}
-
-// Returns Some(WasmLayer) if the layer contains wasm, otherwise None
-pub(crate) fn is_wasm_content(layer: &WasmLayer) -> Option<WasmLayer> {
-    if let MediaType::Other(name) = layer.config.media_type() {
-        if name == constants::OCI_LAYER_MEDIA_TYPE_WASM {
-            return Some(layer.clone());
-        }
-    }
-    None
 }
 
 pub(crate) fn parse_addr(addr: &str) -> Result<SocketAddr> {
