@@ -174,8 +174,11 @@ mod test {
             anyhow::bail!("kubectl is not installed");
         }
 
-        // Publish a message to the MQTT broker
-        let mut mqttoptions = rumqttc::MqttOptions::new("123", "test.mosquitto.org", mqtt_port);
+        // Port forward the emqx mqtt broker
+        let forward_port = port_forward_emqx(mqtt_port).await?;
+
+        // Publish a message to the emqx broker
+        let mut mqttoptions = rumqttc::MqttOptions::new("123", "127.0.0.1", forward_port);
         mqttoptions.set_keep_alive(std::time::Duration::from_secs(1));
 
         let (client, mut eventloop) = rumqttc::AsyncClient::new(mqttoptions, 10);
@@ -214,6 +217,20 @@ mod test {
         let log = get_logs_by_label("app=spin-mqtt-message-logger").await?;
         assert!(log.contains(message));
         Ok(())
+    }
+
+    async fn port_forward_emqx(emqx_port: u16) -> Result<u16> {
+        let port = get_random_port()?;
+
+        println!(" >>> kubectl portforward emqx {}:{} ", port, emqx_port);
+
+        Command::new("kubectl")
+            .arg("port-forward")
+            .arg("emqx")
+            .arg(format!("{}:{}", port, emqx_port))
+            .spawn()?;
+        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+        Ok(port)
     }
 
     #[tokio::test]

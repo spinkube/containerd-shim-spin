@@ -287,7 +287,7 @@ spec:
           value: containerd-shim-spin/mqtt-test-17h24d
         # The MQTT trigger cannot do DNS resolution, so we need to use the IP address of the MQTT broker
         - name: SPIN_VARIABLE_MQTT_BROKER_URI
-          value: "mqtt://test.mosquitto.org"
+          value: "mqtt://EMQX_CLUSTER_IP:1883"
 ---
 apiVersion: v1
 kind: Service
