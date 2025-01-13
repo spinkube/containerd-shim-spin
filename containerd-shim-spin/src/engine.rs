@@ -5,8 +5,9 @@ use std::{
 };
 
 use anyhow::{Context, Result};
+use async_trait::async_trait;
 use containerd_shim_wasm::{
-    container::{Engine, RuntimeContext, Stdio},
+    container::{Engine, PrecompiledLayer, RuntimeContext},
     sandbox::WasmLayer,
     version,
 };
@@ -22,15 +23,14 @@ use trigger_mqtt::MqttTrigger;
 use trigger_sqs::SqsTrigger;
 
 use crate::{
-    constants,
+    constants, layers,
     source::Source,
     trigger::{
         self, get_supported_triggers, COMMAND_TRIGGER_TYPE, HTTP_TRIGGER_TYPE, MQTT_TRIGGER_TYPE,
         REDIS_TRIGGER_TYPE, SQS_TRIGGER_TYPE,
     },
     utils::{
-        configure_application_variables_from_environment_variables, initialize_cache,
-        is_wasm_content, parse_addr,
+        configure_application_variables_from_environment_variables, initialize_cache, parse_addr,
     },
 };
 
@@ -55,14 +55,13 @@ impl Default for SpinEngine {
     }
 }
 
+#[async_trait]
 impl Engine for SpinEngine {
     fn name() -> &'static str {
         "spin"
     }
 
-    fn run_wasi(&self, ctx: &impl RuntimeContext, stdio: Stdio) -> Result<i32> {
-        stdio.redirect()?;
-
+    fn run_wasi(&self, ctx: &impl RuntimeContext) -> Result<i32> {
         // Set the container environment variables which will be collected by Spin's
         // [environment variable provider]. We use these variables to configure both the Spin runtime
         // and the Spin application per the [SKIP 003] proposal.
@@ -112,34 +111,8 @@ impl Engine for SpinEngine {
         ]
     }
 
-    fn precompile(&self, layers: &[WasmLayer]) -> Result<Vec<Option<Vec<u8>>>> {
-        // Runwasi expects layers to be returned in the same order, so wrap each layer in an option, setting non Wasm layers to None
-        let precompiled_layers = layers
-            .iter()
-            .map(|layer| match is_wasm_content(layer) {
-                Some(wasm_layer) => {
-                    log::info!(
-                        "Precompile called for wasm layer {:?}",
-                        wasm_layer.config.digest()
-                    );
-                    if self
-                        .wasmtime_engine
-                        .detect_precompiled(&wasm_layer.layer)
-                        .is_some()
-                    {
-                        log::info!("Layer already precompiled {:?}", wasm_layer.config.digest());
-                        Ok(Some(wasm_layer.layer))
-                    } else {
-                        let component =
-                            spin_componentize::componentize_if_necessary(&wasm_layer.layer)?;
-                        let precompiled = self.wasmtime_engine.precompile_component(&component)?;
-                        Ok(Some(precompiled))
-                    }
-                }
-                None => Ok(None),
-            })
-            .collect::<anyhow::Result<_>>()?;
-        Ok(precompiled_layers)
+    async fn precompile(&self, layers: &[WasmLayer]) -> Result<Vec<PrecompiledLayer>> {
+        layers::compose_and_precompile(&self.wasmtime_engine, layers).await
     }
 
     fn can_precompile(&self) -> Option<String> {
