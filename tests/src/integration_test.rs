@@ -94,7 +94,7 @@ mod test {
             anyhow::bail!("kubectl is not installed");
         }
 
-        let forward_port = port_forward_redis(redis_port).await?;
+        let forward_port = port_forward_svc(redis_port, "redis").await?;
 
         let client = redis::Client::open(format!("redis://localhost:{}", forward_port))?;
         let mut con = client.get_multiplexed_async_connection().await?;
@@ -145,13 +145,14 @@ mod test {
             anyhow::bail!("kubectl is not installed");
         }
 
-        let forward_port = port_forward_redis(redis_port).await?;
+        let forward_port = port_forward_svc(redis_port, "redis").await?;
 
         let client = redis::Client::open(format!("redis://localhost:{}", forward_port))
             .context("connecting to redis")?;
         let mut con = client.get_multiplexed_async_connection().await?;
 
-        con.publish("testchannel", "some-payload").await?;
+        con.publish::<_, _, ()>("testchannel", "some-payload")
+            .await?;
 
         let one_sec = time::Duration::from_secs(1);
         thread::sleep(one_sec);
@@ -174,8 +175,11 @@ mod test {
             anyhow::bail!("kubectl is not installed");
         }
 
-        // Publish a message to the MQTT broker
-        let mut mqttoptions = rumqttc::MqttOptions::new("123", "test.mosquitto.org", mqtt_port);
+        // Port forward the emqx mqtt broker
+        let forward_port = port_forward_svc(mqtt_port, "emqx").await?;
+
+        // Publish a message to the emqx broker
+        let mut mqttoptions = rumqttc::MqttOptions::new("123", "127.0.0.1", forward_port);
         mqttoptions.set_keep_alive(std::time::Duration::from_secs(1));
 
         let (client, mut eventloop) = rumqttc::AsyncClient::new(mqttoptions, 10);
@@ -253,15 +257,18 @@ mod test {
         }
     }
 
-    async fn port_forward_redis(redis_port: u16) -> Result<u16> {
+    async fn port_forward_svc(svc_port: u16, svc_name: &str) -> Result<u16> {
         let port = get_random_port()?;
 
-        println!(" >>> kubectl portforward redis {}:{} ", port, redis_port);
+        println!(
+            " >>> kubectl portforward svc {} {}:{} ",
+            svc_name, port, svc_port
+        );
 
         Command::new("kubectl")
             .arg("port-forward")
-            .arg("redis")
-            .arg(format!("{}:{}", port, redis_port))
+            .arg(svc_name)
+            .arg(format!("{}:{}", port, svc_port))
             .spawn()?;
         tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
         Ok(port)
