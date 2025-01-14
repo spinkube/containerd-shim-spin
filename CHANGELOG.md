@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Bump Spin dependencies to v3.1.2 ([#263](https://github.com/spinkube/containerd-shim-spin/pull/263))
 - Updated the minimum required Rust version to 1.81
 
 ## [v0.17.0](https://github.com/spinkube/containerd-shim-spin/releases/tag/v0.17.0) - 2024-11-08
