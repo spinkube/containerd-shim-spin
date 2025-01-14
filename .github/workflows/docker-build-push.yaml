@@ -16,7 +16,7 @@ jobs:
       matrix:
         image:
           - imageName: examples/spin-rust-hello
-            context: images/spin
+            context: images/spin-hello-world
           - imageName: examples/spin-dotnet-hello
             context: images/spin_dotnet
           - imageName: examples/spin-outbound-redis

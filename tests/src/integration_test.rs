@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test {
     use std::{
+        env,
         process::Command,
         thread,
         time::{self, Duration},
@@ -12,6 +13,7 @@ mod test {
 
     const RETRY_TIMES: u32 = 5;
     const INTERVAL_IN_SECS: u64 = 10;
+    const DEFAULT_PORT: i32 = 8082;
 
     pub async fn retry_get(url: &str, retry_times: u32, interval_in_secs: u64) -> Result<Vec<u8>> {
         let mut i = 0;
@@ -52,7 +54,9 @@ mod test {
 
     #[tokio::test]
     async fn spin_test() -> Result<()> {
-        let host_port = 8082;
+        let host_port: i32 = env::var("SPIN_TEST_PORT")
+            .and_then(|s| Ok(s.parse::<i32>().unwrap()))
+            .unwrap_or_else(|_| DEFAULT_PORT);
 
         // curl for hello
         println!(" >>> curl http://localhost:{}/spin/hello", host_port);
@@ -69,7 +73,9 @@ mod test {
 
     #[tokio::test]
     async fn spin_keyvalue_test() -> Result<()> {
-        let host_port = 8082;
+        let host_port: i32 = env::var("SPIN_TEST_PORT")
+            .and_then(|s| Ok(s.parse::<i32>().unwrap()))
+            .unwrap_or_else(|_| DEFAULT_PORT);
 
         // curl for hello
         println!(" >>> curl http://localhost:{}/keyvalue/keyvalue", host_port);
@@ -86,7 +92,9 @@ mod test {
 
     #[tokio::test]
     async fn spin_inbound_redis_outbound_redis_test() -> Result<()> {
-        let host_port = 8082;
+        let host_port: i32 = env::var("SPIN_TEST_PORT")
+            .and_then(|s| Ok(s.parse::<i32>().unwrap()))
+            .unwrap_or_else(|_| DEFAULT_PORT);
         let redis_port = 6379;
 
         // Ensure kubectl is in PATH
@@ -123,7 +131,9 @@ mod test {
 
     #[tokio::test]
     async fn spin_multi_trigger_app_test() -> Result<()> {
-        let host_port = 8082;
+        let host_port: i32 = env::var("SPIN_TEST_PORT")
+            .and_then(|s| Ok(s.parse::<i32>().unwrap()))
+            .unwrap_or_else(|_| DEFAULT_PORT);
 
         // curl for hello
         println!(" >>> curl http://localhost:{}/multi-trigger-app", host_port);
@@ -222,7 +232,9 @@ mod test {
 
     #[tokio::test]
     async fn spin_static_assets_test() -> Result<()> {
-        let host_port = 8082;
+        let host_port: i32 = env::var("SPIN_TEST_PORT")
+            .and_then(|s| Ok(s.parse::<i32>().unwrap()))
+            .unwrap_or_else(|_| DEFAULT_PORT);
 
         // curl for static asset
         println!(
