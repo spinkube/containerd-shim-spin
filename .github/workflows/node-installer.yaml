@@ -55,7 +55,7 @@ jobs:
           for f in ./_artifacts/*/*-aarch64.tar.gz; do tar -xf $f --directory ./node-installer/.tmp/linux/arm64; done
 
       - name: build and push node-installer image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: |
