@@ -6,7 +6,6 @@ use containerd_shim_wasm::{
 
 mod constants;
 mod engine;
-mod retain;
 mod source;
 mod trigger;
 mod utils;
