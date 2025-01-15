@@ -4,12 +4,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [v0.18.0] - 2025-01-14
+
 ### Changed
 
 - Bump Spin dependencies to v3.1.2 ([#263](https://github.com/spinkube/containerd-shim-spin/pull/263))
 - Updated the minimum required Rust version to 1.81
 
-## [v0.17.0](https://github.com/spinkube/containerd-shim-spin/releases/tag/v0.17.0) - 2024-11-08
+## [v0.17.0] - 2024-11-08
 
 ### Added
 
@@ -26,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - FIxed CI errors due to old versions of Go and TinyGo and disk pressure ([#217](https://github.com/spinkube/containerd-shim-spin/pull/217))
 
 
-## [v0.16.0](https://github.com/spinkube/containerd-shim-spin/releases/tag/v0.16.0) - 2024-10-04
+## [v0.16.0] - 2024-10-04
 
 ### Added
 
@@ -51,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
-[Unreleased]: <https://github.com/spinkube/containerd-shim-spin/compare/v0.17.0..HEAD>
+[Unreleased]: <https://github.com/spinkube/containerd-shim-spin/compare/v0.18.0..HEAD>
+[v0.18.0]: <https://github.com/spinkube/containerd-shim-spin/compare/v0.17.0...v0.18.0>
 [v0.17.0]: https://github.com/spinkube/containerd-shim-spin/compare/v0.16.0...v0.17.0
 [v0.16.0]: https://github.com/spinkube/containerd-shim-spin/compare/v0.15.1...v0.16.0
