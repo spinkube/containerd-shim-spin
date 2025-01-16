@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Use component filtering utils from Spin crate, removing redundant `retain` module ([#213](https://github.com/spinkube/containerd-shim-spin/pull/213))
 - Bump Spin dependencies to v3.1.2 ([#263](https://github.com/spinkube/containerd-shim-spin/pull/263))
 - Updated the minimum required Rust version to 1.81
 
