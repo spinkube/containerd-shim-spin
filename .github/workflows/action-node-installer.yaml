@@ -35,10 +35,10 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: setup buildx
+      - name: Setup buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: login to GitHub container registry
+      - name: Login to GitHub container registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -47,14 +47,14 @@ jobs:
 
       # Build and push node-installer image
       # TODO: remove once https://github.com/spinkube/runtime-class-manager handles this
-      - name: untar musl artifacts into ./node-installer/.tmp/linux/(amd64|arm64) dir
+      - name: Extract musl artifacts into ./node-installer/.tmp/linux/(amd64|arm64) dir
         run: |
           mkdir -p ./node-installer/.tmp/linux/amd64
           mkdir -p ./node-installer/.tmp/linux/arm64
           for f in ./_artifacts/*/*-x86_64.tar.gz; do tar -xf $f --directory ./node-installer/.tmp/linux/amd64; done
           for f in ./_artifacts/*/*-aarch64.tar.gz; do tar -xf $f --directory ./node-installer/.tmp/linux/arm64; done
 
-      - name: build and push node-installer image
+      - name: Build and push node-installer image
         uses: docker/build-push-action@v5
         with:
           push: true
@@ -63,7 +63,7 @@ jobs:
           context: node-installer
           platforms: linux/amd64,linux/arm64
 
-      - name: clear
+      - name: Clear
         if: always()
         run: |
           rm -f ${HOME}/.docker/config.json
