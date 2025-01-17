@@ -13,6 +13,7 @@ use containerd_shim_wasm::{
 use futures::future;
 use log::info;
 use spin_app::locked::LockedApp;
+use spin_factor_outbound_networking::validate_service_chaining_for_components;
 use spin_trigger::cli::NoCliArgs;
 use spin_trigger_http::HttpTrigger;
 use spin_trigger_redis::RedisTrigger;
@@ -156,14 +157,21 @@ impl SpinEngine {
         let cache = initialize_cache().await?;
         let app_source = Source::from_ctx(ctx, &cache).await?;
         let mut locked_app = app_source.to_locked_app(&cache).await?;
-        let components_to_execute = env::var(constants::SPIN_COMPONENTS_TO_RETAIN_ENV)
-            .ok()
-            .map(|s| s.split(',').map(|s| s.to_string()).collect::<Vec<String>>());
-        if let Some(components) = components_to_execute {
-            if let Err(e) = crate::retain::retain_components(&mut locked_app, &components) {
-                println!("Error with selective deployment: {:?}", e);
-                return Err(e);
-            }
+        if let Ok(components_env) = env::var(constants::SPIN_COMPONENTS_TO_RETAIN_ENV) {
+            let components = components_env
+                .split(',')
+                .filter(|s| !s.is_empty())
+                .collect::<Vec<&str>>();
+            locked_app = spin_app::retain_components(
+                locked_app,
+                &components,
+                &[&validate_service_chaining_for_components],
+            )
+            .with_context(|| {
+                format!(
+                    "failed to resolve application with only [{components:?}] components retained by configured environment variable {}", constants::SPIN_COMPONENTS_TO_RETAIN_ENV
+                )
+            })?;
         }
         configure_application_variables_from_environment_variables(&locked_app)?;
         let trigger_cmds = get_supported_triggers(&locked_app)
