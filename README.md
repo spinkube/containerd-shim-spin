@@ -86,11 +86,10 @@ To carry out the installation step-by-step, do the following:
 
     ```yaml
     apiVersion: node.k8s.io/v1
+    handler: spin
     kind: RuntimeClass
     metadata:
-    name: wasmtime-spin-v2
-    handler: spin
-
+      name: wasmtime-spin-v2
     ```
 
 4. Deploy a Spin app to your cluster with the specified `RuntimeClass` name matching the "wasmtime-spin-v2" runtime class from step 3. The [Spin Operator](../spin-operator/_index.md) does this for you, translating `SpinApp` custom resources into Kubernetes deployments.
@@ -99,22 +98,22 @@ To carry out the installation step-by-step, do the following:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
-    name: wasm-spin
+      name: wasm-spin
     spec:
-    replicas: 1
-    selector:
+      replicas: 1
+      selector:
         matchLabels:
-        app: wasm-spin
-    template:
+          app: wasm-spin
+      template:
         metadata:
-        labels:
+          labels:
             app: wasm-spin
         spec:
-        runtimeClassName: wasmtime-spin-v2
-        containers:
+          runtimeClassName: wasmtime-spin-v2
+          containers:
             - name: spin-hello
-            image: ghcr.io/spinkube/containerd-shim-spin/examples/spin-rust-hello:v0.13.0
-            command: ["/"]
+              image: ghcr.io/spinkube/containerd-shim-spin/examples/spin-rust-hello:v0.13.0
+              command: ["/"]
     ```
 
 ## Locating build artifacts
