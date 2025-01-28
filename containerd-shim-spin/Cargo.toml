@@ -11,7 +11,7 @@ Containerd shim for running Spin workloads.
 """
 
 [dependencies]
-containerd-shim-wasm = { version ="0.7.0", default-features = false }
+containerd-shim-wasm = { version ="0.8.0", default-features = false }
 containerd-shim = "0.7.4"
 http = "1"
 log = "0.4"
