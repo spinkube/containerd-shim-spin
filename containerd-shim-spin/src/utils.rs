@@ -89,7 +89,9 @@ pub(crate) fn configure_application_variables_from_environment_variables(
 
 #[cfg(test)]
 mod tests {
-    use std::env;
+    use std::{env, str::FromStr};
+
+    use oci_spec::image::Digest;
 
     use super::*;
 
@@ -140,7 +142,10 @@ mod tests {
             config: oci_spec::image::Descriptor::new(
                 MediaType::Other(constants::OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
                 1024,
-                "sha256:1234",
+                Digest::from_str(
+                    "sha256:6c3c624b58dbbcd3c0dd82b4c53f04194d1247c6eebdaab7c610cf7d66709b3b",
+                )
+                .unwrap(),
             ),
         };
         // Should be ignored
@@ -149,7 +154,10 @@ mod tests {
             config: oci_spec::image::Descriptor::new(
                 MediaType::Other(spin_oci::client::DATA_MEDIATYPE.to_string()),
                 1024,
-                "sha256:1234",
+                Digest::from_str(
+                    "sha256:6c3c624b58dbbcd3c0dd82b4c53f04194d1247c6eebdaab7c610cf7d66709b3b",
+                )
+                .unwrap(),
             ),
         };
         assert!(is_wasm_content(&wasm_content).is_some());

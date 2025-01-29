@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Change
+
+- Bump containerd-shim-wasm to v0.9.0 ([#271](https://github.com/spinkube/containerd-shim-spin/pull/271)). To see the changes in the containerd-shim-wasm, please refer to the [containerd-shim-wasm changelog](https://github.com/containerd/runwasi/blob/containerd-shim-wasm/v0.9.0/crates/containerd-shim-wasm/CHANGELOG.md).
+
 ## [v0.18.0] - 2025-01-14
 
 ### Changed

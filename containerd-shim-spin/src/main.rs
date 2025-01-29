@@ -1,7 +1,7 @@
-use containerd_shim::Config;
 use containerd_shim_wasm::{
     container::Instance,
     sandbox::cli::{revision, shim_main, version},
+    Config,
 };
 
 mod constants;
