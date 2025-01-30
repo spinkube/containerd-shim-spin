@@ -6,7 +6,7 @@ use std::{
 
 use anyhow::{Context, Result};
 use containerd_shim_wasm::{
-    container::{Engine, RuntimeContext, Stdio},
+    container::{Engine, RuntimeContext},
     sandbox::WasmLayer,
     version,
 };
@@ -61,9 +61,7 @@ impl Engine for SpinEngine {
         "spin"
     }
 
-    fn run_wasi(&self, ctx: &impl RuntimeContext, stdio: Stdio) -> Result<i32> {
-        stdio.redirect()?;
-
+    fn run_wasi(&self, ctx: &impl RuntimeContext) -> Result<i32> {
         // Set the container environment variables which will be collected by Spin's
         // [environment variable provider]. We use these variables to configure both the Spin runtime
         // and the Spin application per the [SKIP 003] proposal.
@@ -258,7 +256,9 @@ impl SpinEngine {
 
 #[cfg(test)]
 mod tests {
-    use oci_spec::image::MediaType;
+    use std::str::FromStr as _;
+
+    use oci_spec::image::{Digest, MediaType};
 
     use super::*;
 
@@ -277,7 +277,10 @@ mod tests {
                 config: oci_spec::image::Descriptor::new(
                     MediaType::Other(constants::OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
                     1024,
-                    "sha256:1234",
+                    Digest::from_str(
+                        "sha256:6c3c624b58dbbcd3c0dd82b4c53f04194d1247c6eebdaab7c610cf7d66709b3b",
+                    )
+                    .unwrap(),
                 ),
             },
             // Precompiled
@@ -286,7 +289,10 @@ mod tests {
                 config: oci_spec::image::Descriptor::new(
                     MediaType::Other(constants::OCI_LAYER_MEDIA_TYPE_WASM.to_string()),
                     1024,
-                    "sha256:1234",
+                    Digest::from_str(
+                        "sha256:6c3c624b58dbbcd3c0dd82b4c53f04194d1247c6eebdaab7c610cf7d66709b3b",
+                    )
+                    .unwrap(),
                 ),
             },
             // Content that should be skipped
@@ -295,7 +301,10 @@ mod tests {
                 config: oci_spec::image::Descriptor::new(
                     MediaType::Other(spin_oci::client::DATA_MEDIATYPE.to_string()),
                     1024,
-                    "sha256:1234",
+                    Digest::from_str(
+                        "sha256:6c3c624b58dbbcd3c0dd82b4c53f04194d1247c6eebdaab7c610cf7d66709b3b",
+                    )
+                    .unwrap(),
                 ),
             },
         ];
