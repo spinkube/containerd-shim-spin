@@ -11,7 +11,7 @@ Containerd shim for running Spin workloads.
 """
 
 [dependencies]
-containerd-shim-wasm = { version ="0.9.0", default-features = false, features = ["opentelemetry"]}
+containerd-shim-wasm = { version ="0.10.0", default-features = false, features = ["opentelemetry"]}
 http = "1"
 log = "0.4"
 spin-app = { git = "https://github.com/fermyon/spin", tag = "v3.1.2" }

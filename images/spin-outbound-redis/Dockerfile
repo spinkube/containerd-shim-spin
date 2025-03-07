@@ -1,8 +1,8 @@
-FROM --platform=${BUILDPLATFORM} rust:1.72 AS build
+FROM --platform=${BUILDPLATFORM} rust:1.85 AS build
 WORKDIR /opt/build
 COPY . .
-RUN rustup target add wasm32-wasi && cargo build --target wasm32-wasi --release
+RUN rustup target add wasm32-wasip1 && cargo build --target wasm32-wasip1 --release
 
 FROM scratch
-COPY --from=build /opt/build/target/wasm32-wasi/release/spin_outbound_redis.wasm ./target/wasm32-wasi/release/spin_outbound_redis.wasm
+COPY --from=build /opt/build/target/wasm32-wasip1/release/spin_outbound_redis.wasm ./target/wasm32-wasip1/release/spin_outbound_redis.wasm
 COPY --from=build /opt/build/spin.toml .

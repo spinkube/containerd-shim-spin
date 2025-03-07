@@ -22,8 +22,8 @@ topic = "{{ mqtt_topic }}"
 qos = "1"
 
 [component.mqtt-message-logger]
-source = "target/wasm32-wasi/release/mqtt_message_logger.wasm"
+source = "target/wasm32-wasip1/release/mqtt_message_logger.wasm"
 allowed_outbound_hosts = []
 [component.mqtt-message-logger.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

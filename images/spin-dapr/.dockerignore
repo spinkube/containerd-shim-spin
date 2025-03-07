@@ -2,4 +2,6 @@ target/debug
 target/release
 target/wasm32-wasi/build
 target/wasm32-wasi/deps
+target/wasm32-wasip1/build
+target/wasm32-wasip1/deps
 .spin/

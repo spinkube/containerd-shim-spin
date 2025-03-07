@@ -86,10 +86,10 @@ Navigate to the directory where you created the application:
 cd qs-wasm-spin
 ```
 
-Use `rustup` to install the `wasm32-wasi` target and `spin build` to build the application. For example:
+Use `rustup` to install the `wasm32-wasip1` target and `spin build` to build the application. For example:
 
 ```bash
-rustup target add wasm32-wasi
+rustup target add wasm32-wasip1
 spin build
 ```
 
@@ -131,13 +131,13 @@ You have two choices for publishing spin apps.  The steps to deploy are the same
 Create a `Dockerfile` at the root of the application directory with the following:
 
 ```dockerfile
-FROM --platform=${BUILDPLATFORM} rust:1.71 AS build
+FROM --platform=${BUILDPLATFORM} rust:1.85 AS build
 WORKDIR /opt/build
 COPY . .
-RUN rustup target add wasm32-wasi && cargo build --target wasm32-wasi --release
+RUN rustup target add wasm32-wasip1 && cargo build --target wasm32-wasip1 --release
 
 FROM scratch
-COPY --from=build /opt/build/target/wasm32-wasi/release/qs_wasm_spin.wasm .
+COPY --from=build /opt/build/target/wasm32-wasip1/release/qs_wasm_spin.wasm .
 COPY --from=build /opt/build/spin.toml .
 ```
 
@@ -153,7 +153,7 @@ source = "qs_wasm_spin.wasm"
 Use `docker` to build the container image and push it to the k3d registry:
 
 ```bash
-docker buildx build --platform=wasi/wasm -t localhost:12345/qs-wasm-spin .
+docker buildx build --platform=wasip1/wasm -t localhost:12345/qs-wasm-spin .
 docker push localhost:12345/qs-wasm-spin:latest
 ```
 

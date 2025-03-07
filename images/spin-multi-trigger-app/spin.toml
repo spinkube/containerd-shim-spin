@@ -15,10 +15,10 @@ route = "/..."
 component = "spin-http-trigger"
 
 [component.spin-http-trigger]
-source = "spin-http-trigger/target/wasm32-wasi/release/spin_http_trigger.wasm"
+source = "spin-http-trigger/target/wasm32-wasip1/release/spin_http_trigger.wasm"
 allowed_outbound_hosts = []
 [component.spin-http-trigger.build]
-command = "cargo build --target wasm32-wasi --release --manifest-path spin-http-trigger/Cargo.toml"
+command = "cargo build --target wasm32-wasip1 --release --manifest-path spin-http-trigger/Cargo.toml"
 watch = ["src/**/*.rs", "Cargo.toml"]
 
 [[trigger.redis]]
@@ -27,11 +27,11 @@ address = "{{ redis_address }}"
 component = "spin-redis-trigger"
 
 [component.spin-redis-trigger]
-source = "spin-redis-trigger/target/wasm32-wasi/release/spin_redis_trigger.wasm"
+source = "spin-redis-trigger/target/wasm32-wasip1/release/spin_redis_trigger.wasm"
 allowed_outbound_hosts = ["redis://*:*"]
 
 [component.spin-redis-trigger.variables]
 redis_address = "{{ redis_address }}"
 
 [component.spin-redis-trigger.build]
-command = "cargo build --target wasm32-wasi --release --manifest-path spin-redis-trigger/Cargo.toml"
+command = "cargo build --target wasm32-wasip1 --release --manifest-path spin-redis-trigger/Cargo.toml"
