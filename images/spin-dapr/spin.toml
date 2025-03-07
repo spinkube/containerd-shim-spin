@@ -7,11 +7,11 @@ version = "0.1.0"
 
 [[component]]
 id = "spin-dapr"
-source = "target/wasm32-wasi/release/spin_dapr.wasm"
+source = "target/wasm32-wasip1/release/spin_dapr.wasm"
 allowed_http_hosts = []
 [component.trigger]
 route = "/..."
 
 [component.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

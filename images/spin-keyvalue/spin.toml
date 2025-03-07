@@ -11,10 +11,10 @@ route = "/keyvalue"
 component = "keyvalue"
 
 [component.keyvalue]
-source = "target/wasm32-wasi/release/spin_keyvalue.wasm"
+source = "target/wasm32-wasip1/release/spin_keyvalue.wasm"
 allowed_http_hosts = []
 key_value_stores = ["foo"]
 
 [component.keyvalue.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]
