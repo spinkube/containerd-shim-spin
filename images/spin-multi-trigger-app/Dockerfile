@@ -1,7 +1,7 @@
 FROM --platform=${BUILDPLATFORM} rust:1.85 AS build
 WORKDIR /opt/build
-COPY . .
 RUN rustup target add wasm32-wasip1
+COPY . .
 
 WORKDIR /opt/build/spin-http-trigger
 RUN cargo build --target wasm32-wasip1 --release
