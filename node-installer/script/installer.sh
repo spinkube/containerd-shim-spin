@@ -42,6 +42,8 @@ if ! grep -q spin $NODE_ROOT$CONTAINERD_CONF; then
     echo '
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
     runtime_type = "'$KWASM_DIR'/bin/containerd-shim-spin-v2"
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin.options]
+    SystemdCgroup = true
 ' >> $NODE_ROOT$CONTAINERD_CONF
     rm -Rf $NODE_ROOT$KWASM_DIR/active
 fi
