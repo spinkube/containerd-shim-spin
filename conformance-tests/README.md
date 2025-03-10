@@ -19,6 +19,8 @@ Containerd must be configured to access the `containerd-shim-spin`:
     ```toml
     [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
         runtime_type = "/usr/bin/containerd-shim-spin-v2"
+    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin.options]
+        SystemdCgroup = true
     ```
 3. Restart containerd if it is running as a service
     ```sh
