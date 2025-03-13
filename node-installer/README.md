@@ -8,15 +8,14 @@ which also bundles other shims.
 The intention is for the [spinkube/runtime-class-manager](https://github.com/spinkube/runtime-class-manager)
 project to handle this concern in the future.
 
-## Integration Test
+## Integration Tests
 
-The `integration-test.sh` script is used to test the node-installer image.
-It creates a kind cluster, applies the KWasm node installer job, and then tests
-the workload.
+The project includes integration test scripts for different Kubernetes distributions:
 
-```bash
-./integration-test.sh
-```
+1. Kind: `make test-kind`
+2. MiniKube: `make test-minikube`
+3. MicroK8s: `make test-microk8s`
+4. K3s: `make test-k3s`
 
 ## Build the Image Locally
 
