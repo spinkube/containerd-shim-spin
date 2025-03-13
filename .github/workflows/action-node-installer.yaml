@@ -1,4 +1,4 @@
-name: Publish node-installer image
+name: Build, Test, and Publish node-installer image
 
 on:
   workflow_call:
@@ -11,7 +11,7 @@ on:
 jobs:
   # Note: assumes being called in a workflow where build has already run and
   # required artifacts have been uploaded
-  publish:
+  build-test-publish:
     permissions:
       contents: read
       packages: write
@@ -38,21 +38,37 @@ jobs:
       - name: Setup buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to GitHub container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Build and push node-installer image
-      # TODO: remove once https://github.com/spinkube/runtime-class-manager handles this
+      # Build and extract node-installer image
       - name: Extract musl artifacts into ./node-installer/.tmp/linux/(amd64|arm64) dir
         run: |
           mkdir -p ./node-installer/.tmp/linux/amd64
           mkdir -p ./node-installer/.tmp/linux/arm64
           for f in ./_artifacts/*/*-x86_64.tar.gz; do tar -xf $f --directory ./node-installer/.tmp/linux/amd64; done
           for f in ./_artifacts/*/*-aarch64.tar.gz; do tar -xf $f --directory ./node-installer/.tmp/linux/arm64; done
+
+      # Build local image for testing
+      - name: Build node-installer image for testing
+        run: make build-dev-installer-image
+        working-directory: node-installer
+
+      # Install kind for integration testing
+      - name: Install kind
+        uses: helm/kind-action@v1.12.0
+        with:
+          install_only: true
+          
+      # Run the integration test
+      - name: Run integration test
+        run: ./integration-test.sh
+        working-directory: node-installer
+
+      # Login to registry and publish if tests pass
+      - name: Login to GitHub container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push node-installer image
         uses: docker/build-push-action@v5
