@@ -7,3 +7,20 @@ which also bundles other shims.
 
 The intention is for the [spinkube/runtime-class-manager](https://github.com/spinkube/runtime-class-manager)
 project to handle this concern in the future.
+
+## Integration Test
+
+The `integration-test.sh` script is used to test the node-installer image.
+It creates a kind cluster, applies the KWasm node installer job, and then tests
+the workload.
+
+```bash
+./integration-test.sh
+```
+
+## Build the Image Locally
+
+```bash
+make build-dev-installer-image
+```
+

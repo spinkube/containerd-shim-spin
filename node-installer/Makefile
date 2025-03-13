@@ -5,14 +5,17 @@ ARCH ?= x86_64
 TARGET ?= $(ARCH)-unknown-linux-musl
 
 compile-musl:
-	make build-spin-cross-$(TARGET) -C ../
+	make build-cross-$(TARGET) -C ../
 
 move-musl-to-tmp: compile-musl
 	mkdir -p ./.tmp
-	cp ../../containerd-shim-spin/target/$(TARGET)/release/containerd-shim-spin-$(SPIN_VERSION) ./.tmp/
+	cp ../target/$(TARGET)/release/containerd-shim-spin-$(SPIN_VERSION) ./.tmp/$(PLATFORM)/
 
 build-multi-installer-image: move-musl-to-tmp
 	docker buildx build -t $(IMAGE_NAME) --platform linux/amd64,linux/arm64 .
 
 build-dev-installer-image: move-musl-to-tmp
 	docker buildx build -t $(IMAGE_NAME) --load --platform $(PLATFORM) .
+
+test:
+	./integration-test.sh
