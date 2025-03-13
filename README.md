@@ -66,14 +66,18 @@ To carry out the installation step-by-step, do the following:
 
     ```toml
     [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.spin]
-    runtime_type = "io.containerd.spin.v2"
+      runtime_type = "io.containerd.spin.v2"
+    [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.spin.options]
+      SystemdCgroup = true
     ```
 
     Otherwise, add:
 
     ```toml
     [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
-    runtime_type = "io.containerd.spin.v2"
+      runtime_type = "io.containerd.spin.v2"
+    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin.options]
+      SystemdCgroup = true
     ```
 
     The [Node Installer script](./node-installer/script/installer.sh) that is used by the [`runtime-class-manager`](https://www.spinkube.dev/docs/topics/architecture/#runtime-class-manager) does this for you and is a good reference to understand the common paths to the containerd configuration file for popular Kubernetes distributions.
