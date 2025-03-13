@@ -11,6 +11,30 @@ IS_MICROK8S=false
 IS_K3S=false
 IS_RKE2_AGENT=false
 IS_K0S_WORKER=false
+# Set default cgroup driver to systemd
+SYSTEMD_CGROUP=true
+
+# Install D-Bus if it's not available but systemd cgroups are requested
+if [ "$SYSTEMD_CGROUP" = "true" ]; then
+    # Check if D-Bus daemon exists
+    if ! nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- which dbus-daemon >/dev/null 2>&1; then
+        if nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- which apt-get >/dev/null 2>&1; then
+            nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- apt-get update -y
+            nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- apt-get install -y dbus
+        elif nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- which yum >/dev/null 2>&1; then
+            nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- yum install -y dbus
+        elif nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- which dnf >/dev/null 2>&1; then
+            nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- dnf install -y dbus
+        elif nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- which apk >/dev/null 2>&1; then
+            nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- apk add dbus
+        else
+            echo "WARNING: Could not install D-Bus. No supported package manager found."
+            SYSTEMD_CGROUP=false
+            echo "SYSTEMD_CGROUP is now set to $SYSTEMD_CGROUP"
+        fi
+    fi
+fi
+
 if pgrep -f snap/microk8s > /dev/null; then
     CONTAINERD_CONF=/var/snap/microk8s/current/args/containerd-template.toml
     IS_MICROK8S=true
@@ -43,13 +67,19 @@ if ! grep -q spin $NODE_ROOT$CONTAINERD_CONF; then
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin]
     runtime_type = "'$KWASM_DIR'/bin/containerd-shim-spin-v2"
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.spin.options]
-    SystemdCgroup = true
+    SystemdCgroup = '$SYSTEMD_CGROUP'
 ' >> $NODE_ROOT$CONTAINERD_CONF
     rm -Rf $NODE_ROOT$KWASM_DIR/active
 fi
 
 if [ ! -f $NODE_ROOT$KWASM_DIR/active ]; then
     touch $NODE_ROOT$KWASM_DIR/active
+    
+    # Ensure D-Bus is running before restarting services if using systemd cgroups
+    if [ "$SYSTEMD_CGROUP" = "true" ]; then
+        nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart dbus
+    fi
+    
     if $IS_MICROK8S; then
         nsenter -m/$NODE_ROOT/proc/1/ns/mnt -- systemctl restart snap.microk8s.daemon-containerd
     elif $IS_K3S; then

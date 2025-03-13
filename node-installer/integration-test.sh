@@ -43,6 +43,9 @@ echo "Waiting for node installer job to complete..."
 kubectl --context=kind-spin-test wait -n kwasm --for=condition=Ready pod --selector=job-name=spin-test-control-plane-provision-kwasm --timeout=90s || true
 kubectl --context=kind-spin-test wait -n kwasm --for=jsonpath='{.status.phase}'=Succeeded pod --selector=job-name=spin-test-control-plane-provision-kwasm --timeout=60s
 
+# Verify the SystemdCgroup is set to true
+docker exec spin-test-control-plane cat /etc/containerd/config.toml | grep -A5 "spin" | grep "SystemdCgroup = true"
+
 if ! kubectl --context=kind-spin-test get pods -n kwasm | grep -q "spin-test-control-plane-provision-kwasm.*Completed"; then
   echo "Node installer job failed!"
   kubectl --context=kind-spin-test logs -n kwasm $(kubectl --context=kind-spin-test get pods -n kwasm -o name | grep spin-test-control-plane-provision-kwasm)
