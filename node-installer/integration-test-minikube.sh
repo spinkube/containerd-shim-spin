@@ -62,9 +62,12 @@ echo "Waiting for service to be ready..."
 sleep 10
 
 echo "Testing workload with curl..."
-minikube service wasm-spin --url -p minikube > service_url.txt
-SERVICE_URL=$(cat service_url.txt)
+PORT=8080
+kubectl port-forward service/wasm-spin $PORT:80 &
+PORT_FORWARD_PID=$!
+sleep 3
 
+SERVICE_URL="http://localhost:$PORT"
 MAX_RETRIES=3
 RETRY_COUNT=0
 SUCCESS=false
@@ -79,6 +82,8 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$SUCCESS" = false ]; do
     RETRY_COUNT=$((RETRY_COUNT+1))
   fi
 done
+
+kill $PORT_FORWARD_PID 2>/dev/null || true
 
 if [ "$SUCCESS" = true ]; then
   echo "=== Integration Test Passed! ==="
