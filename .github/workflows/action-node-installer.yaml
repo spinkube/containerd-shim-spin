@@ -60,6 +60,9 @@ jobs:
 
       - uses: medyagh/setup-minikube@v0.0.19
         if: matrix.distribution == 'minikube'
+        with:
+          start: false
+          container-runtime: containerd
 
       - uses: balchua/microk8s-actions@v0.4.3
         if: matrix.distribution == 'microk8s'
